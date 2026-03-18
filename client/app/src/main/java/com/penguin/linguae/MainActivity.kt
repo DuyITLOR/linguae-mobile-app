@@ -1,4 +1,4 @@
-package com.example.linguae
+package com.penguin.linguae
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

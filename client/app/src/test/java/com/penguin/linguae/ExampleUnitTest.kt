@@ -1,4 +1,4 @@
-package com.example.linguae
+package com.penguin.linguae
 
 import org.junit.Test
 
