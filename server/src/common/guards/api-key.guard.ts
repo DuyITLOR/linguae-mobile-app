@@ -7,16 +7,12 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { FirebaseAuthService } from '../services/firebase-auth.service';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly firebaseAuthService: FirebaseAuthService,
-  ) {}
+  constructor(private readonly reflector: Reflector) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -53,11 +49,6 @@ export class ApiKeyGuard implements CanActivate {
     if (!idToken) {
       throw new UnauthorizedException('Bearer token is empty');
     }
-
-    const decodedToken = await this.firebaseAuthService.verifyIdToken(idToken);
-
-    // Attach user context for downstream handlers/services.
-    request['user'] = decodedToken;
 
     return true;
   }
