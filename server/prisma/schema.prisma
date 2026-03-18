@@ -1,0 +1,376 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ThemeMode {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum InterfaceColorStyle {
+  OCEAN
+  FOREST
+  SUNSET
+  LAVENDER
+}
+
+enum ProficiencyLevel {
+  BEGINNER
+  ELEMENTARY
+  INTERMEDIATE
+  UPPER_INTERMEDIATE
+  ADVANCED
+}
+
+enum PracticeType {
+  MULTIPLE_CHOICE
+  MATCHING
+  CLOZE
+}
+
+enum LearningActivityType {
+  LESSON
+  FLASHCARD
+  PRACTICE
+}
+
+enum SessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+enum FlashcardResult {
+  KNOWN
+  REVIEW
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+  READ
+}
+
+enum NotificationChannel {
+  PUSH
+  EMAIL
+  IN_APP
+}
+
+model User {
+  id             String   @id @default(uuid())
+  firebaseUid    String?  @unique
+  email          String   @unique
+  passwordHash   String?
+  fullName       String
+  avatarUrl      String?
+  nativeLanguage String?  @db.VarChar(10)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  settings           UserSetting?
+  learningPlans      UserLearningPlan[]
+  favorites          FavoriteVocabulary[]
+  flashcardSessions  FlashcardSession[]
+  practiceSessions   PracticeSession[]
+  vocabularyProgress UserVocabularyProgress[]
+  learningHistories  LearningHistory[]
+  reminders          Reminder[]
+  notificationLogs   NotificationLog[]
+  dailyGoal          UserDailyGoal?
+
+  @@index([createdAt])
+}
+
+model UserSetting {
+  id                   String              @id @default(uuid())
+  userId               String              @unique
+  themeMode            ThemeMode           @default(SYSTEM)
+  colorStyle           InterfaceColorStyle @default(OCEAN)
+  appLanguage          String              @default("en") @db.VarChar(10)
+  notificationsEnabled Boolean             @default(true)
+  pushNotifications    Boolean             @default(true)
+  emailNotifications   Boolean             @default(false)
+  reminderTime         String?             @db.VarChar(5)
+  timezone             String?             @db.VarChar(64)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Language {
+  code      String   @id @db.VarChar(10)
+  name      String
+  flagEmoji String?  @db.VarChar(8)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  topics        Topic[]
+  vocabularies  Vocabulary[]
+  learningPlans UserLearningPlan[]
+}
+
+model UserLearningPlan {
+  id           String           @id @default(uuid())
+  userId       String
+  languageCode String           @db.VarChar(10)
+  level        ProficiencyLevel
+  isCurrent    Boolean          @default(true)
+  startedAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+
+  @@unique([userId, languageCode])
+  @@index([userId, isCurrent])
+}
+
+model Topic {
+  id           String           @id @default(uuid())
+  languageCode String           @db.VarChar(10)
+  title        String
+  description  String?
+  level        ProficiencyLevel @default(BEGINNER)
+  displayOrder Int              @default(0)
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  language          Language           @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+  vocabularies      Vocabulary[]
+  flashcardSessions FlashcardSession[]
+  practiceSessions  PracticeSession[]
+  learningHistories LearningHistory[]
+
+  @@index([languageCode, displayOrder])
+}
+
+model Vocabulary {
+  id                 String   @id @default(uuid())
+  languageCode       String   @db.VarChar(10)
+  topicId            String
+  word               String
+  meaning            String
+  pronunciationText  String?
+  pronunciationAudio String?
+  partOfSpeech       String?
+  difficulty         Int      @default(1)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  language    Language                 @relation(fields: [languageCode], references: [code], onDelete: Restrict)
+  topic       Topic                    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  examples    VocabularyExample[]
+  favorites   FavoriteVocabulary[]
+  progresses  UserVocabularyProgress[]
+  cardReviews FlashcardReview[]
+
+  @@unique([topicId, word])
+  @@index([languageCode, word])
+}
+
+model VocabularyExample {
+  id           String   @id @default(uuid())
+  vocabularyId String
+  sentence     String
+  translation  String?
+  audioUrl     String?
+  createdAt    DateTime @default(now())
+
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@index([vocabularyId])
+}
+
+model FavoriteVocabulary {
+  userId       String
+  vocabularyId String
+  note         String?
+  createdAt    DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, vocabularyId])
+  @@index([userId, createdAt])
+}
+
+model FlashcardSession {
+  id          String        @id @default(uuid())
+  userId      String
+  topicId     String
+  status      SessionStatus @default(IN_PROGRESS)
+  startedAt   DateTime      @default(now())
+  completedAt DateTime?
+  totalCards  Int           @default(0)
+  knownCount  Int           @default(0)
+  reviewCount Int           @default(0)
+
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic   Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  reviews FlashcardReview[]
+
+  @@index([userId, startedAt])
+}
+
+model FlashcardReview {
+  id                 String          @id @default(uuid())
+  flashcardSessionId String
+  vocabularyId       String
+  result             FlashcardResult
+  reviewedAt         DateTime        @default(now())
+
+  flashcardSession FlashcardSession @relation(fields: [flashcardSessionId], references: [id], onDelete: Cascade)
+  vocabulary       Vocabulary       @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@index([flashcardSessionId])
+  @@index([vocabularyId, reviewedAt])
+}
+
+model PracticeSession {
+  id             String        @id @default(uuid())
+  userId         String
+  topicId        String?
+  type           PracticeType
+  status         SessionStatus @default(IN_PROGRESS)
+  startedAt      DateTime      @default(now())
+  completedAt    DateTime?
+  score          Int?
+  totalQuestions Int           @default(0)
+  correctAnswers Int           @default(0)
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic?             @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  questions PracticeQuestion[]
+  history   LearningHistory[]
+
+  @@index([userId, startedAt])
+}
+
+model PracticeQuestion {
+  id                String       @id @default(uuid())
+  practiceSessionId String
+  questionType      PracticeType
+  prompt            String
+  choices           Json?
+  correctAnswer     Json
+  explanation       String?
+  displayOrder      Int          @default(0)
+
+  practiceSession PracticeSession  @relation(fields: [practiceSessionId], references: [id], onDelete: Cascade)
+  answers         PracticeAnswer[]
+
+  @@index([practiceSessionId, displayOrder])
+}
+
+model PracticeAnswer {
+  id                 String   @id @default(uuid())
+  practiceQuestionId String
+  answer             Json
+  isCorrect          Boolean
+  answeredAt         DateTime @default(now())
+
+  practiceQuestion PracticeQuestion @relation(fields: [practiceQuestionId], references: [id], onDelete: Cascade)
+
+  @@index([practiceQuestionId])
+}
+
+model UserVocabularyProgress {
+  userId         String
+  vocabularyId   String
+  exposureCount  Int       @default(0)
+  correctCount   Int       @default(0)
+  masteryScore   Float     @default(0)
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime?
+  updatedAt      DateTime  @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, vocabularyId])
+  @@index([userId, masteryScore])
+}
+
+model LearningHistory {
+  id                String               @id @default(uuid())
+  userId            String
+  activityType      LearningActivityType
+  topicId           String?
+  practiceSessionId String?
+  score             Int?
+  totalQuestions    Int?
+  correctAnswers    Int?
+  durationSeconds   Int?
+  details           Json?
+  completedAt       DateTime             @default(now())
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic           Topic?           @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  practiceSession PracticeSession? @relation(fields: [practiceSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, completedAt])
+  @@index([activityType, completedAt])
+}
+
+model UserDailyGoal {
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  targetWordsPerDay    Int       @default(10)
+  targetPracticePerDay Int       @default(1)
+  targetMinutesPerDay  Int       @default(15)
+  currentStreak        Int       @default(0)
+  bestStreak           Int       @default(0)
+  lastLearnedDate      DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id         String              @id @default(uuid())
+  userId     String
+  title      String
+  message    String?
+  timeOfDay  String              @db.VarChar(5)
+  daysOfWeek Json
+  timezone   String              @db.VarChar(64)
+  channel    NotificationChannel @default(PUSH)
+  isEnabled  Boolean             @default(true)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  user User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs NotificationLog[]
+
+  @@index([userId, isEnabled])
+}
+
+model NotificationLog {
+  id         String             @id @default(uuid())
+  userId     String
+  reminderId String?
+  title      String
+  body       String?
+  status     NotificationStatus @default(QUEUED)
+  sentAt     DateTime?
+  readAt     DateTime?
+  createdAt  DateTime           @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminder Reminder? @relation(fields: [reminderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
