@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  InternalServerErrorException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -21,6 +22,12 @@ interface AuthResult {
   accessToken: string;
 }
 
+type SignUpUserRow = PublicUser;
+
+interface SignInUserRow extends SignUpUserRow {
+  passwordHash: string | null;
+}
+
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService) {}
@@ -32,7 +39,7 @@ export class AuthService {
 
     this.validateSignUpInput({ email, fullName, password });
 
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.prisma.user.findFirst({
       where: { email },
       select: { id: true },
     });
@@ -43,7 +50,7 @@ export class AuthService {
 
     const passwordHash = this.hashPassword(password);
 
-    const user = await this.prisma.user.create({
+    const createdUser: unknown = await this.prisma.user.create({
       data: {
         email,
         fullName,
@@ -57,9 +64,13 @@ export class AuthService {
       },
     });
 
+    if (!this.isSignUpUserRow(createdUser)) {
+      throw new InternalServerErrorException('Created user payload is invalid');
+    }
+
     return {
-      user,
-      accessToken: this.generateAccessToken(user.id, user.email),
+      user: createdUser,
+      accessToken: this.generateAccessToken(createdUser.id, createdUser.email),
     };
   }
 
@@ -71,7 +82,7 @@ export class AuthService {
       throw new BadRequestException('Email and password are required');
     }
 
-    const user = await this.prisma.user.findUnique({
+    const foundUser: unknown = await this.prisma.user.findFirst({
       where: { email },
       select: {
         id: true,
@@ -81,6 +92,16 @@ export class AuthService {
         passwordHash: true,
       },
     });
+
+    if (!foundUser) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (!this.isSignInUserRow(foundUser)) {
+      throw new InternalServerErrorException('User payload is invalid');
+    }
+
+    const user = foundUser;
 
     if (
       !user?.passwordHash ||
@@ -168,5 +189,33 @@ export class AuthService {
 
   private toBase64Url(value: string): string {
     return Buffer.from(value).toString('base64url');
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
+  }
+
+  private isSignUpUserRow(value: unknown): value is SignUpUserRow {
+    if (!this.isRecord(value)) {
+      return false;
+    }
+
+    return (
+      typeof value.id === 'string' &&
+      typeof value.email === 'string' &&
+      typeof value.fullName === 'string' &&
+      (typeof value.avatarUrl === 'string' || value.avatarUrl === null)
+    );
+  }
+
+  private isSignInUserRow(value: unknown): value is SignInUserRow {
+    if (!this.isSignUpUserRow(value)) {
+      return false;
+    }
+
+    return (
+      'passwordHash' in value &&
+      (typeof value.passwordHash === 'string' || value.passwordHash === null)
+    );
   }
 }

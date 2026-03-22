@@ -6,244 +6,316 @@ datasource db {
   provider = "postgresql"
 }
 
-model favoritevocabulary {
-  userid       String
-  vocabularyid String
+model FavoriteVocabulary {
+  userId       String
+  vocabularyId String
   note         String?
-  createdat    DateTime   @default(now()) @db.Timestamp(6)
-  user         user       @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vocabulary   vocabulary @relation(fields: [vocabularyid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt    DateTime   @default(now())
+  User         User       @relation(fields: [userId], references: [id])
+  Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
 
-  @@id([userid, vocabularyid])
+  @@id([userId, vocabularyId])
+  @@index([vocabularyId])
 }
 
-model flashcardreview {
-  id                 String           @id
-  flashcardsessionid String
-  vocabularyid       String
-  result             String
-  reviewedat         DateTime         @default(now()) @db.Timestamp(6)
-  flashcardsession   flashcardsession @relation(fields: [flashcardsessionid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vocabulary         vocabulary       @relation(fields: [vocabularyid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model FlashcardReview {
+  id                 String           @id @default(uuid())
+  flashcardSessionId String
+  vocabularyId       String
+  result             ReviewResult
+  reviewedAt         DateTime         @default(now())
+  FlashcardSession   FlashcardSession @relation(fields: [flashcardSessionId], references: [id])
+  Vocabulary         Vocabulary       @relation(fields: [vocabularyId], references: [id])
+
+  @@index([flashcardSessionId])
 }
 
-model flashcardsession {
-  id              String            @id
-  userid          String
-  topicid         String
-  status          String            @default("IN_PROGRESS")
-  startedat       DateTime          @default(now()) @db.Timestamp(6)
-  completedat     DateTime?         @db.Timestamp(6)
-  totalcards      Int               @default(0)
-  knowncount      Int               @default(0)
-  reviewcount     Int               @default(0)
-  flashcardreview flashcardreview[]
-  topic           topic             @relation(fields: [topicid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user            user              @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model FlashcardSession {
+  id              String            @id @default(uuid())
+  userId          String
+  topicId         String
+  totalCards      Int               @default(0)
+  knownCount      Int               @default(0)
+  reviewCount     Int               @default(0)
+  startedAt       DateTime          @default(now())
+  completedAt     DateTime?
+  FlashcardReview FlashcardReview[]
+  Topic           Topic             @relation(fields: [topicId], references: [id])
+  User            User              @relation(fields: [userId], references: [id])
+
+  @@index([topicId])
+  @@index([userId])
 }
 
-model learninghistory {
-  id                String           @id
-  userid            String
-  activitytype      String
-  topicid           String?
-  practicesessionid String?
+model LearningHistory {
+  id                String           @id @default(uuid())
+  userId            String
+  activityType      ActivityType
+  topicId           String?
+  practiceSessionId String?
   score             Int?
-  totalquestions    Int?
-  correctanswers    Int?
-  durationseconds   Int?
+  totalQuestions    Int?
+  correctAnswers    Int?
+  durationSeconds   Int?
   details           Json?
-  completedat       DateTime         @default(now()) @db.Timestamp(6)
-  practicesession   practicesession? @relation(fields: [practicesessionid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  topic             topic?           @relation(fields: [topicid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user              user             @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  completedAt       DateTime         @default(now())
+  PracticeSession   PracticeSession? @relation(fields: [practiceSessionId], references: [id])
+  Topic             Topic?           @relation(fields: [topicId], references: [id])
+  User              User             @relation(fields: [userId], references: [id])
+
+  @@index([userId, completedAt(sort: Desc)])
 }
 
-model notificationlog {
-  id         String    @id
-  userid     String
-  reminderid String?
+model NotificationLog {
+  id         String    @id @default(uuid())
+  userId     String
+  reminderId String?
   title      String
   body       String?
-  status     String    @default("QUEUED")
-  sentat     DateTime? @db.Timestamp(6)
-  readat     DateTime? @db.Timestamp(6)
-  createdat  DateTime  @default(now()) @db.Timestamp(6)
-  reminder   reminder? @relation(fields: [reminderid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user       user      @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sentAt     DateTime?
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+  Reminder   Reminder? @relation(fields: [reminderId], references: [id])
+  User       User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
-model practiceanswer {
-  id                 String           @id
-  practicequestionid String
+model PracticeAnswer {
+  id                 String           @id @default(uuid())
+  practiceQuestionId String
   answer             Json
-  iscorrect          Boolean
-  answeredat         DateTime         @default(now()) @db.Timestamp(6)
-  practicequestion   practicequestion @relation(fields: [practicequestionid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  isCorrect          Boolean
+  answeredAt         DateTime         @default(now())
+  PracticeQuestion   PracticeQuestion @relation(fields: [practiceQuestionId], references: [id])
+
+  @@index([practiceQuestionId])
 }
 
-model practicequestion {
-  id                String           @id
-  practicesessionid String
-  questiontype      String
+model PracticeQuestion {
+  id                String           @id @default(uuid())
+  practiceSessionId String
+  questionType      QuestionType
   prompt            String
   choices           Json?
-  correctanswer     Json
+  correctAnswer     Json
   explanation       String?
-  displayorder      Int              @default(0)
-  practiceanswer    practiceanswer[]
-  practicesession   practicesession  @relation(fields: [practicesessionid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  displayOrder      Int              @default(0)
+  PracticeAnswer    PracticeAnswer[]
+  PracticeSession   PracticeSession  @relation(fields: [practiceSessionId], references: [id])
+
+  @@index([practiceSessionId])
 }
 
-model practicesession {
-  id               String             @id
-  userid           String
-  topicid          String?
-  type             String
-  status           String             @default("IN_PROGRESS")
-  startedat        DateTime           @default(now()) @db.Timestamp(6)
-  completedat      DateTime?          @db.Timestamp(6)
+model PracticeSession {
+  id               String             @id @default(uuid())
+  userId           String
+  topicId          String?
+  type             PracticeType
   score            Int?
-  totalquestions   Int                @default(0)
-  correctanswers   Int                @default(0)
-  learninghistory  learninghistory[]
-  practicequestion practicequestion[]
-  topic            topic?             @relation(fields: [topicid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user             user               @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  totalQuestions   Int                @default(0)
+  correctAnswers   Int                @default(0)
+  startedAt        DateTime           @default(now())
+  completedAt      DateTime?
+  LearningHistory  LearningHistory[]
+  PracticeQuestion PracticeQuestion[]
+  Topic            Topic?             @relation(fields: [topicId], references: [id])
+  User             User               @relation(fields: [userId], references: [id])
+
+  @@index([topicId])
+  @@index([userId])
 }
 
-model reminder {
-  id              String            @id
-  userid          String
+model Reminder {
+  id              String              @id @default(uuid())
+  userId          String
   title           String
   message         String?
-  timeofday       String            @db.VarChar
-  daysofweek      Json
-  timezone        String            @db.VarChar
-  channel         String            @default("PUSH")
-  isenabled       Boolean           @default(true)
-  createdat       DateTime          @default(now()) @db.Timestamp(6)
-  updatedat       DateTime          @db.Timestamp(6)
-  notificationlog notificationlog[]
-  user            user              @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  timeOfDay       String
+  daysOfWeek      Json
+  timezone        String
+  channel         NotificationChannel @default(PUSH)
+  isEnabled       Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime
+  NotificationLog NotificationLog[]
+  User            User                @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
-model topic {
-  id               String             @id
+model Topic {
+  id               String             @id @default(uuid())
   title            String
   description      String?
-  level            String             @default("BEGINNER")
-  displayorder     Int                @default(0)
-  isactive         Boolean            @default(true)
-  createdat        DateTime           @default(now()) @db.Timestamp(6)
-  updatedat        DateTime           @db.Timestamp(6)
-  flashcardsession flashcardsession[]
-  learninghistory  learninghistory[]
-  practicesession  practicesession[]
-  vocabulary       vocabulary[]
+  level            Level              @default(BEGINNER)
+  displayOrder     Int                @default(0)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  FlashcardSession FlashcardSession[]
+  LearningHistory  LearningHistory[]
+  PracticeSession  PracticeSession[]
+  Vocabulary       Vocabulary[]
 }
 
-model user {
-  id                     String                   @id
-  firebaseuid            String?
-  email                  String
-  passwordhash           String?
-  fullname               String
-  avatarurl              String?
-  isactive               Boolean                  @default(true)
-  createdat              DateTime                 @default(now()) @db.Timestamp(6)
-  updatedat              DateTime                 @db.Timestamp(6)
-  favoritevocabulary     favoritevocabulary[]
-  flashcardsession       flashcardsession[]
-  learninghistory        learninghistory[]
-  notificationlog        notificationlog[]
-  practicesession        practicesession[]
-  reminder               reminder[]
-  userdailygoal          userdailygoal[]
-  userlearningplan       userlearningplan[]
-  usersetting            usersetting[]
-  uservocabularyprogress uservocabularyprogress[]
+model UserDailyGoal {
+  id                   String    @id @default(uuid())
+  userId               String
+  targetWordsPerDay    Int       @default(10)
+  targetPracticePerDay Int       @default(1)
+  targetMinutesPerDay  Int       @default(15)
+  currentStreak        Int       @default(0)
+  bestStreak           Int       @default(0)
+  lastLearnedDate      DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime
+  User                 User      @relation(fields: [userId], references: [id])
 }
 
-model userdailygoal {
-  id                   String    @id
-  userid               String
-  targetwordsperday    Int       @default(10)
-  targetpracticeperday Int       @default(1)
-  targetminutesperday  Int       @default(15)
-  currentstreak        Int       @default(0)
-  beststreak           Int       @default(0)
-  lastlearneddate      DateTime? @db.Timestamp(6)
-  createdat            DateTime  @default(now()) @db.Timestamp(6)
-  updatedat            DateTime  @db.Timestamp(6)
-  user                 user      @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model UserLearningPlan {
+  id        String   @id @default(uuid())
+  userId    String
+  level     Level
+  isCurrent Boolean  @default(true)
+  startedAt DateTime @default(now())
+  updatedAt DateTime
+  User      User     @relation(fields: [userId], references: [id])
 }
 
-model userlearningplan {
-  id        String   @id
-  userid    String
-  level     String
-  iscurrent Boolean  @default(true)
-  startedat DateTime @default(now()) @db.Timestamp(6)
-  updatedat DateTime @db.Timestamp(6)
-  user      user     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model UserSetting {
+  id                   String   @id @default(uuid())
+  userId               String
+  appLanguage          String   @default("en")
+  notificationsEnabled Boolean  @default(true)
+  pushNotifications    Boolean  @default(true)
+  emailNotifications   Boolean  @default(false)
+  reminderTime         String?
+  timezone             String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+  User                 User     @relation(fields: [userId], references: [id])
 }
 
-model usersetting {
-  id                   String   @id
-  userid               String
-  thememode            String   @default("SYSTEM")
-  colorstyle           String   @default("OCEAN")
-  applanguage          String   @default("en") @db.VarChar
-  notificationsenabled Boolean  @default(true)
-  pushnotifications    Boolean  @default(true)
-  emailnotifications   Boolean  @default(false)
-  remindertime         String?  @db.VarChar
-  timezone             String?  @db.VarChar
-  createdat            DateTime @default(now()) @db.Timestamp(6)
-  updatedat            DateTime @db.Timestamp(6)
-  user                 user     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model UserVocabularyProgress {
+  userId         String
+  vocabularyId   String
+  exposureCount  Int        @default(0)
+  correctCount   Int        @default(0)
+  masteryScore   Float      @default(0)
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime?
+  updatedAt      DateTime
+  User           User       @relation(fields: [userId], references: [id])
+  Vocabulary     Vocabulary @relation(fields: [vocabularyId], references: [id])
+
+  @@id([userId, vocabularyId])
+  @@index([nextReviewAt])
+  @@index([vocabularyId])
 }
 
-model uservocabularyprogress {
-  userid         String
-  vocabularyid   String
-  exposurecount  Int        @default(0)
-  correctcount   Int        @default(0)
-  masteryscore   Float      @default(0)
-  lastreviewedat DateTime?  @db.Timestamp(6)
-  nextreviewat   DateTime?  @db.Timestamp(6)
-  updatedat      DateTime   @db.Timestamp(6)
-  user           user       @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vocabulary     vocabulary @relation(fields: [vocabularyid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([userid, vocabularyid])
-}
-
-model vocabulary {
-  id                     String                   @id
-  topicid                String
+model Vocabulary {
+  id                     String                   @id @default(uuid())
+  topicId                String
   word                   String
   meaning                String
-  pronunciationtext      String?
-  pronunciationaudio     String?
-  partofspeech           String?
+  pronunciationText      String?
+  pronunciationAudio     String?
+  partOfSpeech           PartOfSpeech?
   difficulty             Int                      @default(1)
-  createdat              DateTime                 @default(now()) @db.Timestamp(6)
-  updatedat              DateTime                 @db.Timestamp(6)
-  favoritevocabulary     favoritevocabulary[]
-  flashcardreview        flashcardreview[]
-  uservocabularyprogress uservocabularyprogress[]
-  topic                  topic                    @relation(fields: [topicid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vocabularyexample      vocabularyexample[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime
+  FavoriteVocabulary     FavoriteVocabulary[]
+  FlashcardReview        FlashcardReview[]
+  UserVocabularyProgress UserVocabularyProgress[]
+  Topic                  Topic                    @relation(fields: [topicId], references: [id])
+  VocabularyExample      VocabularyExample[]
+
+  @@index([topicId])
+  @@index([word])
 }
 
-model vocabularyexample {
-  id           String     @id
-  vocabularyid String
+model VocabularyExample {
+  id           String     @id @default(uuid())
+  vocabularyId String
   sentence     String
   translation  String?
-  audiourl     String?
-  createdat    DateTime   @default(now()) @db.Timestamp(6)
-  vocabulary   vocabulary @relation(fields: [vocabularyid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  audioUrl     String?
+  createdAt    DateTime   @default(now())
+  Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
+
+  @@index([vocabularyId])
+}
+
+model User {
+  id                     String                   @id @default(uuid())
+  firebaseUid            String?                  @unique
+  email                  String                   @unique
+  passwordHash           String?
+  fullName               String
+  avatarUrl              String?
+  isActive               Boolean                  @default(true)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @default(now())
+  FavoriteVocabulary     FavoriteVocabulary[]
+  FlashcardSession       FlashcardSession[]
+  LearningHistory        LearningHistory[]
+  NotificationLog        NotificationLog[]
+  PracticeSession        PracticeSession[]
+  Reminder               Reminder[]
+  UserDailyGoal          UserDailyGoal[]
+  UserLearningPlan       UserLearningPlan[]
+  UserSetting            UserSetting[]
+  UserVocabularyProgress UserVocabularyProgress[]
+}
+
+enum ActivityType {
+  FLASHCARD_REVIEW
+  PRACTICE_TEST
+  TOPIC_COMPLETION
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum NotificationChannel {
+  PUSH
+  EMAIL
+  SMS
+}
+
+enum PartOfSpeech {
+  NOUN
+  VERB
+  ADJECTIVE
+  ADVERB
+  PRONOUN
+  PREPOSITION
+  CONJUNCTION
+  INTERJECTION
+}
+
+enum PracticeType {
+  VOCABULARY
+  GRAMMAR
+  LISTENING
+  READING
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  FILL_IN_BLANK
+  TRUE_FALSE
+  MATCHING
+  FLASHCARD
+}
+
+enum ReviewResult {
+  AGAIN
+  HARD
+  GOOD
+  EASY
 }
