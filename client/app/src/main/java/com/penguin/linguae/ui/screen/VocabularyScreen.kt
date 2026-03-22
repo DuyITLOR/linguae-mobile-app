@@ -13,8 +13,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.model.Vocabulary
+
+import android.util.Log
+import com.penguin.linguae.data.network.RetrofitClient
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import com.penguin.linguae.model.Column
 import com.penguin.linguae.viewmodel.VocabularyViewModel
 
 val GreenHeader = Color(0xFF48C78E)
@@ -32,21 +38,22 @@ val PurpleButton = Color(0xFF7C4DFF)
 val BackgroundApp = Color(0xFFF4F5FA)
 val YellowStar = Color(0xFFFFC107)
 
+private val api = RetrofitClient.vocabularyApi
+
 @Composable
 fun VocabularyScreen(viewModel: VocabularyViewModel = viewModel()) {
+    val vocabularies = viewModel.vocabulary.collectAsState()
 
-    val sampleList = listOf(
-        Vocabulary(1, "Apple", "/'æpəl/", "Quả táo", true),
-        Vocabulary(2, "Banana", "/bə'nɑ:nə/", "Quả chuối", false),
-        Vocabulary(3, "Coffee", "/'kɒfi/", "Cà phê", true),
-        Vocabulary(4, "Rice", "/raɪs/", "Cơm / Gạo", false),
-        Vocabulary(5, "Noodle", "/'nu:dl/", "Mì", false)
-    )
+    Log.i("TEST API", vocabularies.toString())
+    LaunchedEffect(Unit) {
+        viewModel.fetchVocabulary()
+    }
 
     Scaffold(
         bottomBar = { PracticeButton() },
-        containerColor = BackgroundApp
-    ) { paddingValues ->
+        contentColor = BackgroundApp
+    ) {
+        paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,7 +61,8 @@ fun VocabularyScreen(viewModel: VocabularyViewModel = viewModel()) {
         ) {
             TopHeader()
             SearchBar()
-            VocabularyList(vocabularyList = sampleList)
+
+            VocabularyList(vocabularyList = vocabularies.value)
         }
     }
 }
@@ -113,7 +121,7 @@ fun SearchBar() {
 }
 
 @Composable
-fun VocabularyList(vocabularyList: List<Vocabulary>) {
+fun VocabularyList(vocabularyList: List<Column>) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -125,7 +133,7 @@ fun VocabularyList(vocabularyList: List<Vocabulary>) {
 }
 
 @Composable
-fun VocabularyCard(vocabulary: Vocabulary) {
+fun VocabularyCard(vocabulary: Column) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
