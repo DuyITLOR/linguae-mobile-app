@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.penguin.linguae.ui.navigation.AppNavigation
 
-import com.penguin.linguae.ui.screen.VocabularyScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +18,8 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                // Gọi màn hình danh sách từ vựng để hiển thị!
-                VocabularyScreen()
+
+                AppNavigation()
             }
         }
     }

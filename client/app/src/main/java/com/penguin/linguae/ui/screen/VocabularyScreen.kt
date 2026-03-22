@@ -22,12 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.penguin.linguae.model.Vocabulary
 
 import android.util.Log
 import com.penguin.linguae.data.network.RetrofitClient
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import com.penguin.linguae.model.Column
@@ -41,11 +38,13 @@ val YellowStar = Color(0xFFFFC107)
 private val api = RetrofitClient.vocabularyApi
 
 @Composable
-fun VocabularyScreen(viewModel: VocabularyViewModel = viewModel()) {
+fun VocabularyScreen(topicId: Int, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {
     val vocabularies = viewModel.vocabulary.collectAsState()
 
     Log.i("TEST API", vocabularies.toString())
+
     LaunchedEffect(Unit) {
+        Log.d("NAVIGATION_TEST", "Topic Id : $topicId")
         viewModel.fetchVocabulary()
     }
 
@@ -59,7 +58,7 @@ fun VocabularyScreen(viewModel: VocabularyViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TopHeader()
+            TopHeader(onNavigateBack = onNavigateBack)
             SearchBar()
 
             VocabularyList(vocabularyList = vocabularies.value)
@@ -68,7 +67,7 @@ fun VocabularyScreen(viewModel: VocabularyViewModel = viewModel()) {
 }
 
 @Composable
-fun TopHeader() {
+fun TopHeader(onNavigateBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,14 +75,17 @@ fun TopHeader() {
             .padding(top = 40.dp, bottom = 20.dp, start = 16.dp, end = 16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.White
-            )
-            Spacer(modifier = Modifier.width(16.dp))
+            IconButton(onNavigateBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "🍎 Đồ ăn & Thức uống",
+                text = "Đồ ăn & Thức uống",
                 color = Color.White,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -203,10 +205,10 @@ fun PracticeButton() {
     }
 }
 
-@Preview(showBackground = true, name = "Giao Diện Mới Đẹp Mắt")
-@Composable
-fun VocabularyScreenPreview() {
-    MaterialTheme {
-        VocabularyScreen()
-    }
-}
+//@Preview(showBackground = true, name = "Giao Diện Mới Đẹp Mắt")
+//@Composable
+//fun VocabularyScreenPreview() {
+//    MaterialTheme {
+//        VocabularyScreen()
+//    }
+//}
