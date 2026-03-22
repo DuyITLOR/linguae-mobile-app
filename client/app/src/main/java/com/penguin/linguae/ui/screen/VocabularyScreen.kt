@@ -26,15 +26,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.model.Column
+import com.penguin.linguae.ui.theme.AppBackground
+import com.penguin.linguae.ui.theme.PurpleBlueTheme
+import com.penguin.linguae.ui.theme.SearchBg
+import com.penguin.linguae.ui.theme.StarActive
+import com.penguin.linguae.ui.theme.SurfaceColor
+import com.penguin.linguae.ui.theme.TextDark
+import com.penguin.linguae.ui.theme.TextGray
 import com.penguin.linguae.viewmodel.VocabularyViewModel
-
-val AppBackground1 = Color(0xFFF4F5FA)
-val SurfaceColor = Color(0xFFFFFFFF)
-val TextPrimary = Color(0xFF1E1E2C)
-val TextSecondary = Color(0xFF8A8A9D)
-val PurpleBlueTheme = Color(0xFF5A67D8)
-val SearchBg = Color(0xFFEBE8FF)
-val StarActive = Color(0xFFFFC107)
 
 @Composable
 fun VocabularyScreen(topicId: Int, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {
@@ -46,7 +45,7 @@ fun VocabularyScreen(topicId: Int, onNavigateBack: () -> Unit, viewModel: Vocabu
 
     Scaffold(
         bottomBar = { PracticeButton() },
-        containerColor = AppBackground1
+        containerColor = AppBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -72,7 +71,7 @@ fun TopHeader(onNavigateBack: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = TextPrimary
+                    tint = TextDark
                 )
             }
             Text(
@@ -84,7 +83,7 @@ fun TopHeader(onNavigateBack: () -> Unit) {
         }
         Text(
             text = "25 từ vựng • 80% hoàn thành",
-            color = TextSecondary,
+            color = TextGray,
             fontSize = 14.sp,
             modifier = Modifier.padding(start = 48.dp, top = 2.dp)
         )
@@ -146,7 +145,7 @@ fun VocabularyCard(vocabulary: Column) {
                     text = vocabulary.word,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = TextDark
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -159,7 +158,7 @@ fun VocabularyCard(vocabulary: Column) {
                 Text(
                     text = vocabulary.meaning,
                     fontSize = 15.sp,
-                    color = TextPrimary.copy(alpha = 0.8f)
+                    color = TextDark.copy(alpha = 0.8f)
                 )
             }
 
@@ -167,7 +166,7 @@ fun VocabularyCard(vocabulary: Column) {
                 Icon(
                     imageVector = if (vocabulary.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
                     contentDescription = "Favorite",
-                    tint = if (vocabulary.isFavorite) StarActive else TextSecondary.copy(alpha = 0.3f),
+                    tint = if (vocabulary.isFavorite) StarActive else TextGray.copy(alpha = 0.3f),
                     modifier = Modifier.size(28.dp)
                 )
             }

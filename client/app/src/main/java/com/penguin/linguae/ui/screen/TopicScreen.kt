@@ -17,15 +17,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.model.Topic
-
-val AppBackground = Color(0xFFF4F5FA)
-val PrimaryPurple = Color(0xFF6B4EFF)
-val LightPurple = Color(0xFFEBE8FF)
-val TextDark = Color(0xFF1E1E2C)
-val TextGray = Color(0xFF8A8A9D)
-val IconBackground = Color(0xFFF8F8FB)
-
-
+import com.penguin.linguae.ui.theme.AppBackground
+import com.penguin.linguae.ui.theme.IconBackground
+import com.penguin.linguae.ui.theme.LightPurple
+import com.penguin.linguae.ui.theme.PrimaryPurple
+import com.penguin.linguae.ui.theme.TextDark
+import com.penguin.linguae.ui.theme.TextGray
 
 @Composable
 fun TopicScreen(
