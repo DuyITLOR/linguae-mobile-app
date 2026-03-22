@@ -1,6 +1,6 @@
-package com.penguin.linguae.data.network
+package com.penguin.linguae.core.network
 
-import com.penguin.linguae.data.network.api.VocabularyApi
+import com.penguin.linguae.core.network.api.VocabularyApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

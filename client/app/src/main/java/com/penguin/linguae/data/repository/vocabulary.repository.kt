@@ -1,7 +1,7 @@
 package com.penguin.linguae.data.repository
 
-import com.penguin.linguae.data.network.api.VocabularyApi
-import com.penguin.linguae.model.Column
+import com.penguin.linguae.core.network.api.VocabularyApi
+import com.penguin.linguae.data.model.Column
 
 
 class VocabularyRepository(private val vocabularyService: VocabularyApi) {

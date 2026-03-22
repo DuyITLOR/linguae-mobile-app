@@ -1,4 +1,4 @@
-package com.penguin.linguae.model
+package com.penguin.linguae.data.model
 
 data class Column(
     val id: Int,
