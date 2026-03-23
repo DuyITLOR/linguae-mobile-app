@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,5 +68,6 @@ dependencies {
     implementation(libs.converter.gson)
 
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.compose.foundation:foundation")
 
 }
