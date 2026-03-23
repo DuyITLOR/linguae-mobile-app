@@ -70,5 +70,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.compose.foundation:foundation")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
 }

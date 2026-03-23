@@ -1,4 +1,4 @@
-package com.penguin.linguae.core.network.api
+package com.penguin.linguae.data.remote
 
 import com.penguin.linguae.data.model.Column
 import retrofit2.http.GET
@@ -6,5 +6,5 @@ import retrofit2.http.GET
 interface VocabularyApi {
 
     @GET("columns")
-    suspend fun getVocabularies(): List<Column>
+    suspend fun getAllColumn(): List<Column>
 }
