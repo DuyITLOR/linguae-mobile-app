@@ -1,4 +1,4 @@
-package com.penguin.linguae.ui.theme
+package com.penguin.linguae.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

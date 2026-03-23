@@ -1,4 +1,4 @@
-package com.penguin.linguae.ui.navigation
+package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
@@ -6,8 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.penguin.linguae.ui.screen.TopicScreen
-import com.penguin.linguae.ui.screen.VocabularyScreen
+import com.penguin.linguae.feature.learning.TopicScreen
+import com.penguin.linguae.feature.learning.VocabularyScreen
 
 @Composable
 fun AppNavigation() {

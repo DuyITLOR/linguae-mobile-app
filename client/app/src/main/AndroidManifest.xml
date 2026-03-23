@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Linguae"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.screen.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

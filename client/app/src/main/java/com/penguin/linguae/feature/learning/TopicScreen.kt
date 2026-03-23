@@ -1,4 +1,4 @@
-package com.penguin.linguae.ui.screen
+package com.penguin.linguae.feature.learning
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,13 +16,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.penguin.linguae.model.Topic
-import com.penguin.linguae.ui.theme.AppBackground
-import com.penguin.linguae.ui.theme.IconBackground
-import com.penguin.linguae.ui.theme.LightPurple
-import com.penguin.linguae.ui.theme.PrimaryPurple
-import com.penguin.linguae.ui.theme.TextDark
-import com.penguin.linguae.ui.theme.TextGray
+import com.penguin.linguae.data.model.Topic
+import com.penguin.linguae.core.ui.theme.AppBackground
+import com.penguin.linguae.core.ui.theme.IconBackground
+import com.penguin.linguae.core.ui.theme.LightPurple
+import com.penguin.linguae.core.ui.theme.PrimaryPurple
+import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.core.ui.theme.TextGray
 
 @Composable
 fun TopicScreen(

@@ -1,4 +1,4 @@
-package com.penguin.linguae.ui.navigation
+package com.penguin.linguae.core.navigation
 
 sealed class Screen(val route: String) {
     object Topic: Screen("topic_screen")

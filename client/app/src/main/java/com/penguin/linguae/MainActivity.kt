@@ -1,4 +1,4 @@
-package com.penguin.linguae.ui.screen
+package com.penguin.linguae
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,15 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.penguin.linguae.ui.navigation.AppNavigation
-
+import com.penguin.linguae.core.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent{
+        setContent {
             Surface(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.Companion.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
 
