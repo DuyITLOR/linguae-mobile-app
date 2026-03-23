@@ -14,9 +14,7 @@ import kotlinx.coroutines.launch
 
 class VocabularyViewModel: ViewModel() {
 
-    private val repository = VocabularyRepository(
-        RetrofitClient.vocabularyApi
-    )
+    private val repository = VocabularyRepository()
 
     private val _vocabulary = MutableStateFlow<List<Column>>(emptyList())
     val vocabulary: StateFlow<List<Column>> = _vocabulary.asStateFlow()

@@ -31,14 +31,30 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.BorderGray
+import com.penguin.linguae.feature.auth.viewmodel.LoginViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    onNavigateHome: () -> Unit
+) {
+    val navigateHome by viewModel.navigateHome.collectAsState()
+
+    LaunchedEffect(navigateHome) {
+        if (navigateHome) {
+            onNavigateHome()
+            viewModel.resetNavigation()
+        }
+    }
+
     var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("")}
 
@@ -48,14 +64,18 @@ fun LoginScreen() {
         LoginHeader()
 
         Column(
-            modifier = Modifier.weight(1f).padding(30.dp, 20.dp)
+            modifier = Modifier
+                .weight(1f)
+                .padding(30.dp, 20.dp)
         ) {
             Text("EMAIL")
 
             OutlinedTextField(
                 value = email,
                 onValueChange = {email = it},
-                modifier = Modifier.fillMaxWidth().padding(0.dp, 5.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp, 5.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryPurple,
@@ -71,7 +91,9 @@ fun LoginScreen() {
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth().padding(0.dp, 5.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp, 5.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryPurple,
@@ -92,7 +114,9 @@ fun LoginScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             Button (
-                onClick = {},
+                onClick = {
+                    viewModel.login(email, password)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
