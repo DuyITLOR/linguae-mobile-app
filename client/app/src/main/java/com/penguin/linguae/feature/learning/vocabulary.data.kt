@@ -1,5 +1,5 @@
 // data/VocabularyRepository.kt
-package com.penguin.linguae.data
+package com.penguin.linguae.feature.learning
 
 import com.penguin.linguae.data.model.Vocabulary
 import kotlinx.coroutines.flow.Flow

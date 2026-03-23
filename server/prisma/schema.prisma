@@ -160,7 +160,7 @@ model Topic {
 }
 
 model User {
-  id                     String                   @id
+  id                     String                   @id @default(uuid())
   firebaseUid            String?                  @unique
   email                  String                   @unique
   passwordHash           String?
