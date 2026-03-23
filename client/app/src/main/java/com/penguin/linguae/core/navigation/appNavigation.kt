@@ -13,7 +13,7 @@ import com.penguin.linguae.feature.learning.VocabularyScreen
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.Topic.route) {
+    NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(route = Screen.Topic.route) {
             TopicScreen(
                 onTopicClick = { topicId ->
