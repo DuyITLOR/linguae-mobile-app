@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.penguin.linguae.R
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,10 +28,11 @@ import com.penguin.linguae.feature.auth.component.LoginHeader
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import com.penguin.linguae.core.ui.theme.BorderGray
 
@@ -127,6 +131,15 @@ fun LoginScreen() {
                     BorderGray
                 )
             ) {
+                Icon (
+                    painter = painterResource(id = R.drawable.google_icon),
+                    contentDescription = "Google Icon",
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.Unspecified
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
                     "Tiếp tục với Google",
                     fontSize = 18.sp
