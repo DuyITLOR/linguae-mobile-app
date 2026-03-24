@@ -12,5 +12,6 @@ val StarActive = Color(0xFFFFC107)
 val PrimaryPurple = Color(0xFF6B4EFF)
 val LightPurple = Color(0xFFEBE8FF)
 val IconBackground = Color(0xFFF8F8FB)
-
+val BlueSurfaceBackground = Color(0xFFC7CCFC)
+val FlashCard = Color(0xFFFFFFFF)
 val BorderGray = Color(0xFFE0E0E0)
