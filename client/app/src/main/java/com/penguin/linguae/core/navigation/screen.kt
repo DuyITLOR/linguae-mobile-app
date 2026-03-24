@@ -5,6 +5,7 @@ sealed class Screen(val route: String) {
 
     object Login: Screen("login_screen")
 
+    object Flashcard : Screen("flashcard_screen")
 
     object Vocabulary: Screen("vocabulary_screen/{topicId}") {
         fun createRoute(topicId: Int): String {

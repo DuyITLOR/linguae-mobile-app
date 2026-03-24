@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
 
@@ -44,6 +45,12 @@ fun AppNavigation() {
             VocabularyScreen(
                 topicId = topicId,
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Flashcard.route) {
+            FlashcardScreen (
+                onBack = { navController.popBackStack() }
             )
         }
     }
