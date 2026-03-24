@@ -1,5 +1,7 @@
 package com.penguin.linguae.feature.auth
 
+import androidx.compose.foundation.clickable
+import com.penguin.linguae.feature.auth.viewmodel.RegisterViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -25,6 +29,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,11 +49,31 @@ import com.penguin.linguae.core.ui.theme.PrimaryPurple
 import com.penguin.linguae.feature.auth.component.AuthHeader
 
 
+
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreen (
+    viewModel: RegisterViewModel = viewModel(),
+    onNavigateLogin: () -> Unit = {}
 ) {
+    val navigateLogin by viewModel.navigateLogin.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(navigateLogin) {
+        if (navigateLogin) {
+            snackbarHostState.showSnackbar("Đăng ký thành công!")
+            viewModel.resetNavigation()
+            onNavigateLogin()
+        }
+    }
+
+    LaunchedEffect(viewModel.error.value) {
+        viewModel.error.value?.let {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
+
 
     var email by remember { mutableStateOf("") }
     var fullname by remember { mutableStateOf("") }
@@ -57,6 +82,13 @@ fun RegisterScreen (
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
+    LaunchedEffect(navigateLogin) {
+        if (navigateLogin) {
+            snackbarHostState.showSnackbar("Đăng ký thành công!")
+            viewModel.resetNavigation()
+            onNavigateLogin()
+        }
+    }
 
 
     Scaffold(
@@ -192,11 +224,19 @@ fun RegisterScreen (
                         disabledContainerColor = PrimaryPurple.copy(alpha = 0.5f)
                     )
                 ) {
-                    Text(
-                        "Đăng ký",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
+                    if (viewModel.isLoading.value) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            "Đăng ký",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -208,7 +248,10 @@ fun RegisterScreen (
                     Text("Đã có tài khoản? ")
                     Text(
                         "Đăng nhập",
-                        color = PrimaryPurple
+                        color = PrimaryPurple,
+                        modifier = Modifier.clickable {
+                            onNavigateLogin()
+                        }
                     )
                 }
 

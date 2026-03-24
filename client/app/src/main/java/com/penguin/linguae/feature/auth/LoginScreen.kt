@@ -1,4 +1,5 @@
     import androidx.compose.foundation.BorderStroke
+    import androidx.compose.foundation.clickable
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Column
     import androidx.compose.foundation.layout.Row
@@ -56,9 +57,9 @@
     @Preview(showBackground = true)
     @Composable
     fun LoginScreen(
-        // Added default values for viewModel and onNavigateHome to fix the NullPointerException during Preview rendering.
         viewModel: LoginViewModel = viewModel(),
-        onNavigateHome: () -> Unit = {}
+        onNavigateHome: () -> Unit = {},
+        onNavigateRegister: () -> Unit = {}
     ) {
         val navigateHome by viewModel.navigateHome.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
@@ -233,7 +234,10 @@
                     Text("Chưa có tài khoản? ")
                     Text(
                         "Đăng ký ngay",
-                        color = PrimaryPurple
+                        color = PrimaryPurple,
+                        modifier = Modifier.clickable{
+                            onNavigateRegister()
+                        }
                     )
                 }
             }

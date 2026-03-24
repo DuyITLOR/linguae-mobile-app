@@ -1,0 +1,46 @@
+package com.penguin.linguae.feature.auth.viewmodel
+
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.penguin.linguae.data.repository.AuthRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+
+
+
+class RegisterViewModel (
+    private val repo: AuthRepository = AuthRepository()
+) : ViewModel() {
+    var isLoading = mutableStateOf(false)
+    var error =  mutableStateOf<String?>(null)
+
+    private val _navigateLogin = MutableStateFlow(false)
+    val navigateLogin: StateFlow<Boolean> = _navigateLogin
+
+    fun register(fullName: String, email: String, password: String) {
+        viewModelScope.launch{
+            isLoading.value = true
+            error.value = null
+
+            try {
+                repo.register(fullName, email, password)
+                _navigateLogin.value = true
+
+            } catch (e: HttpException) {
+                error.value = "Email đã tồn tại"
+
+            } catch (e: Exception) {
+                error.value = e.message ?: "Đăng ký thất bại"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun resetNavigation() {
+        _navigateLogin.value = false
+    }
+}

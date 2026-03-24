@@ -13,7 +13,7 @@ Content-Type: application/json
 
 {
 	"fullName": "Lê Nhựt Duy",
-	"email": "lenhutduy@gmail.com",
+	"email": "lenhuuy@gmail.com",
 	"password": "123456"
 }
 

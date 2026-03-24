@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
 
@@ -16,6 +17,8 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login_screen") {
+
+
         composable(route = Screen.Topic.route) {
             TopicScreen(
                 onTopicClick = { topicId ->
@@ -31,6 +34,18 @@ fun AppNavigation() {
                     navController.navigate(Screen.Topic.route) {
                         popUpTo("login_screen") { inclusive = true }
                     }
+                },
+                onNavigateRegister = {
+                    navController.navigate("register_screen")
+                }
+            )
+        }
+
+        composable("register_screen") {
+            RegisterScreen(
+                viewModel = viewModel(),
+                onNavigateLogin = {
+                    navController.popBackStack()
                 }
             )
         }

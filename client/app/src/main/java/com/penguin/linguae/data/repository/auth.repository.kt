@@ -3,6 +3,7 @@ package com.penguin.linguae.data.repository
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.remote.AuthApi
 import com.penguin.linguae.data.remote.LoginRequest
+import com.penguin.linguae.data.remote.RegisterRequest
 
 class AuthRepository {
     private val api = RetrofitClient.create(AuthApi::class.java)
@@ -15,6 +16,16 @@ class AuthRepository {
         if (response.success) {
             return response.data.accessToken
         } else {
+            throw Exception(response.message)
+        }
+    }
+
+
+    suspend fun register(fullName: String, email: String, password: String) {
+        val response = api.register(
+            RegisterRequest(fullName, email, password)
+        )
+        if (!response.success) {
             throw Exception(response.message)
         }
     }
