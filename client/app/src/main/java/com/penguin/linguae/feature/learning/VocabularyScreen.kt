@@ -1,6 +1,5 @@
-package com.penguin.linguae.ui.screen
+package com.penguin.linguae.feature.learning
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,15 +24,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.penguin.linguae.model.Column
-import com.penguin.linguae.ui.theme.AppBackground
-import com.penguin.linguae.ui.theme.PurpleBlueTheme
-import com.penguin.linguae.ui.theme.SearchBg
-import com.penguin.linguae.ui.theme.StarActive
-import com.penguin.linguae.ui.theme.SurfaceColor
-import com.penguin.linguae.ui.theme.TextDark
-import com.penguin.linguae.ui.theme.TextGray
-import com.penguin.linguae.viewmodel.VocabularyViewModel
+import com.penguin.linguae.data.model.Column
+import com.penguin.linguae.core.ui.theme.AppBackground
+import com.penguin.linguae.core.ui.theme.PurpleBlueTheme
+import com.penguin.linguae.core.ui.theme.SearchBg
+import com.penguin.linguae.core.ui.theme.StarActive
+import com.penguin.linguae.core.ui.theme.SurfaceColor
+import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.core.ui.theme.TextGray
+import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
 @Composable
 fun VocabularyScreen(topicId: Int, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {

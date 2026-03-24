@@ -19,7 +19,7 @@ model FavoriteVocabulary {
 }
 
 model FlashcardReview {
-  id                 String           @id @default(uuid())
+  id                 String           @id
   flashcardSessionId String
   vocabularyId       String
   result             ReviewResult
@@ -31,7 +31,7 @@ model FlashcardReview {
 }
 
 model FlashcardSession {
-  id              String            @id @default(uuid())
+  id              String            @id
   userId          String
   topicId         String
   totalCards      Int               @default(0)
@@ -48,7 +48,7 @@ model FlashcardSession {
 }
 
 model LearningHistory {
-  id                String           @id @default(uuid())
+  id                String           @id
   userId            String
   activityType      ActivityType
   topicId           String?
@@ -67,7 +67,7 @@ model LearningHistory {
 }
 
 model NotificationLog {
-  id         String    @id @default(uuid())
+  id         String    @id
   userId     String
   reminderId String?
   title      String
@@ -82,7 +82,7 @@ model NotificationLog {
 }
 
 model PracticeAnswer {
-  id                 String           @id @default(uuid())
+  id                 String           @id
   practiceQuestionId String
   answer             Json
   isCorrect          Boolean
@@ -93,7 +93,7 @@ model PracticeAnswer {
 }
 
 model PracticeQuestion {
-  id                String           @id @default(uuid())
+  id                String           @id
   practiceSessionId String
   questionType      QuestionType
   prompt            String
@@ -108,7 +108,7 @@ model PracticeQuestion {
 }
 
 model PracticeSession {
-  id               String             @id @default(uuid())
+  id               String             @id
   userId           String
   topicId          String?
   type             PracticeType
@@ -127,7 +127,7 @@ model PracticeSession {
 }
 
 model Reminder {
-  id              String              @id @default(uuid())
+  id              String              @id
   userId          String
   title           String
   message         String?
@@ -145,7 +145,7 @@ model Reminder {
 }
 
 model Topic {
-  id               String             @id @default(uuid())
+  id               String             @id
   title            String
   description      String?
   level            Level              @default(BEGINNER)
@@ -159,8 +159,30 @@ model Topic {
   Vocabulary       Vocabulary[]
 }
 
+model User {
+  id                     String                   @id @default(uuid())
+  firebaseUid            String?                  @unique
+  email                  String                   @unique
+  passwordHash           String?
+  fullName               String
+  avatarUrl              String?
+  isActive               Boolean                  @default(true)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @default(now())
+  FavoriteVocabulary     FavoriteVocabulary[]
+  FlashcardSession       FlashcardSession[]
+  LearningHistory        LearningHistory[]
+  NotificationLog        NotificationLog[]
+  PracticeSession        PracticeSession[]
+  Reminder               Reminder[]
+  UserDailyGoal          UserDailyGoal[]
+  UserLearningPlan       UserLearningPlan[]
+  UserSetting            UserSetting[]
+  UserVocabularyProgress UserVocabularyProgress[]
+}
+
 model UserDailyGoal {
-  id                   String    @id @default(uuid())
+  id                   String    @id
   userId               String
   targetWordsPerDay    Int       @default(10)
   targetPracticePerDay Int       @default(1)
@@ -174,7 +196,7 @@ model UserDailyGoal {
 }
 
 model UserLearningPlan {
-  id        String   @id @default(uuid())
+  id        String   @id
   userId    String
   level     Level
   isCurrent Boolean  @default(true)
@@ -184,7 +206,7 @@ model UserLearningPlan {
 }
 
 model UserSetting {
-  id                   String   @id @default(uuid())
+  id                   String   @id
   userId               String
   appLanguage          String   @default("en")
   notificationsEnabled Boolean  @default(true)
@@ -215,7 +237,7 @@ model UserVocabularyProgress {
 }
 
 model Vocabulary {
-  id                     String                   @id @default(uuid())
+  id                     String                   @id
   topicId                String
   word                   String
   meaning                String
@@ -236,7 +258,7 @@ model Vocabulary {
 }
 
 model VocabularyExample {
-  id           String     @id @default(uuid())
+  id           String     @id
   vocabularyId String
   sentence     String
   translation  String?
@@ -245,28 +267,6 @@ model VocabularyExample {
   Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
 
   @@index([vocabularyId])
-}
-
-model User {
-  id                     String                   @id @default(uuid())
-  firebaseUid            String?                  @unique
-  email                  String                   @unique
-  passwordHash           String?
-  fullName               String
-  avatarUrl              String?
-  isActive               Boolean                  @default(true)
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @default(now())
-  FavoriteVocabulary     FavoriteVocabulary[]
-  FlashcardSession       FlashcardSession[]
-  LearningHistory        LearningHistory[]
-  NotificationLog        NotificationLog[]
-  PracticeSession        PracticeSession[]
-  Reminder               Reminder[]
-  UserDailyGoal          UserDailyGoal[]
-  UserLearningPlan       UserLearningPlan[]
-  UserSetting            UserSetting[]
-  UserVocabularyProgress UserVocabularyProgress[]
 }
 
 enum ActivityType {
