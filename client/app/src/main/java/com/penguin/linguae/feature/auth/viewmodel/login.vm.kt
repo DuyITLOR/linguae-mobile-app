@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class LoginViewModel (
     private val repo : AuthRepository = AuthRepository()
@@ -30,8 +32,17 @@ class LoginViewModel (
                 val token = repo.login(email, password)
                 TokenManager.saveToken(token)
                 _navigateHome.value = true
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val message = try {
+                    val json = Gson().fromJson(errorBody, Map::class.java)
+                    json["message"]?.toString()
+                } catch (ex: Exception) {
+                    "Lỗi đăng nhập, vui lòng thử lại"
+                }
+                error = message
             } catch (e: Exception) {
-                error = e.message
+                error = "Không thể kết nối đến máy chủ"
             } finally {
                 isLoading = false
             }
