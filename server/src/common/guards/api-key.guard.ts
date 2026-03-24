@@ -29,13 +29,6 @@ export class ApiKeyGuard implements CanActivate {
       return true;
     }
 
-    const configuredApiKey = process.env.INTERNAL_API_KEY;
-    const incomingApiKey = request.headers['x-api-key'];
-
-    if (configuredApiKey && incomingApiKey !== configuredApiKey) {
-      throw new UnauthorizedException('Invalid or missing x-api-key header');
-    }
-
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
