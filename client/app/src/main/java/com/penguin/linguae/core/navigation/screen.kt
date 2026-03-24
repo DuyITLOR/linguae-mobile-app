@@ -1,7 +1,10 @@
 package com.penguin.linguae.core.navigation
 
 sealed class Screen(val route: String) {
-    object Topic: Screen("topic_screen")
+    object Home : Screen("home_screen")
+    object Topic : Screen("topic_screen")
+    object Progress : Screen("progress_screen")
+    object Profile : Screen("profile_screen")
 
     object Login: Screen("login_screen")
 

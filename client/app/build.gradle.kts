@@ -68,8 +68,11 @@ dependencies {
     implementation(libs.converter.gson)
 
     implementation(libs.androidx.navigation.compose)
-    implementation("androidx.compose.foundation:foundation")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation(libs.androidx.compose.foundation.foundation)
+    implementation(libs.logging.interceptor)
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v261)
+
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.material3)
 
 }
