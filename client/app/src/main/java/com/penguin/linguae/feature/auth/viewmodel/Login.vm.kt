@@ -1,6 +1,5 @@
 package com.penguin.linguae.feature.auth.viewmodel
 
-import android.view.View
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
