@@ -1,198 +1,297 @@
 package com.penguin.linguae.feature.learning
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.penguin.linguae.core.ui.theme.AppBackground
-import com.penguin.linguae.core.ui.theme.PurpleBlueTheme
-import com.penguin.linguae.core.ui.theme.SearchBg
-import com.penguin.linguae.core.ui.theme.StarActive
-import com.penguin.linguae.core.ui.theme.SurfaceColor
-import com.penguin.linguae.core.ui.theme.TextDark
-import com.penguin.linguae.core.ui.theme.TextGray
-import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
-@Composable
-fun VocabularyScreen(topicId: String, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {
-    val vocabularies = viewModel.vocabulary.collectAsState()
+val GradientTop = Color(0xFF6E68D1)
+val GradientBottom = Color(0xFF534192)
+val CardBackground = Color(0xFFF6F5FB)
+val PrimaryPurple = Color(0xFF7B61FF)
+val TextGrayTitle = Color(0xFF8A8A99)
+val TextDarkMain = Color(0xFF2D2D3A)
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchVocabularyByTopic(topicId)
+@Composable
+fun VocabularyScreen(
+    vocabId: String,
+    onNavigateBack: () -> Unit = {},
+    viewModel: VocabularyViewModel = viewModel()
+) {
+    val vocabulary by viewModel.selectedVocabulary.collectAsState()
+
+    LaunchedEffect(vocabId) {
+        viewModel.fetchVocabularyById(vocabId)
     }
 
-    Scaffold(
-        bottomBar = { PracticeButton() },
-        containerColor = AppBackground
-    ) { paddingValues ->
+    if (vocabulary == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = PrimaryPurple)
+        }
+        return
+    }
+
+    val vocab = vocabulary!!
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+    ) {
+        HeaderSection(
+            word = vocab.word,
+            pronunciation = vocab.pronunciationText,
+            partOfSpeech = vocab.partOfSpeech?: "",
+            onNavigateBack = onNavigateBack
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(horizontal = 24.dp, vertical = 24.dp)
         ) {
-            TopHeader(onNavigateBack = onNavigateBack)
-            SearchBar()
-            VocabularyList(vocabularyList = vocabularies.value)
+            SectionTitle("NGHĨA")
+            MeaningCard(
+                meaning = vocab.meaning
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SectionTitle("VÍ DỤ")
+
+            if (vocab.VocabularyExample.isEmpty()) {
+                Text(
+                    text = "Chưa có ví dụ",
+                    color = TextGrayTitle
+                )
+            } else {
+                vocab.VocabularyExample.forEach { example ->
+                    ExampleCard(
+                        fullSentence = example.sentence,
+                        targetWord = vocab.word,
+                        translation = example.translation ?: ""
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            FavoriteButton()
+            Spacer(modifier = Modifier.height(16.dp))
+            FlashcardButton()
         }
     }
 }
 
 @Composable
-fun TopHeader(onNavigateBack: () -> Unit) {
-    Column(
+fun HeaderSection(
+    word: String,
+    pronunciation: String,
+    partOfSpeech: String,
+    onNavigateBack: () -> Unit
+) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp, bottom = 12.dp, start = 8.dp, end = 20.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(GradientTop, GradientBottom)
+                )
+            )
+            .padding(top = 48.dp, bottom = 40.dp, start = 20.dp, end = 20.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = TextDark
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Back",
+                    color = Color.White,
+                    modifier = Modifier.clickable { onNavigateBack() }
+                )
+                Text(
+                    text = "",
+                    color = Color.White
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Text(
-                text = "Đồ ăn & Thức uống",
-                color = PurpleBlueTheme,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold
+                text = word,
+                fontSize = 42.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "$pronunciation · $partOfSpeech",
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.8f)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .clickable { },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "")
+            }
         }
-        Text(
-            text = "25 từ vựng • 80% hoàn thành",
-            color = TextGray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 48.dp, top = 2.dp)
-        )
     }
 }
 
 @Composable
-fun SearchBar() {
-    TextField(
-        value = "",
-        onValueChange = {},
-        placeholder = { Text("Tìm từ vựng...", color = PurpleBlueTheme.copy(alpha = 0.6f)) },
-        leadingIcon = {
-            Icon(Icons.Default.Search, contentDescription = "Search", tint = PurpleBlueTheme)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(16.dp)),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = SearchBg,
-            unfocusedContainerColor = SearchBg,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = PurpleBlueTheme
-        )
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold,
+        color = TextGrayTitle,
+        letterSpacing = 1.sp,
+        modifier = Modifier.padding(bottom = 12.dp)
     )
 }
 
 @Composable
-fun VocabularyList(vocabularyList: List<Vocabulary>) {
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+fun MeaningCard(meaning: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(CardBackground)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(vocabularyList, key = { it.id }) { vocab ->
-            VocabularyCard(vocabulary = vocab)
-        }
+        Text(
+            text = meaning,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = TextDarkMain
+        )
     }
 }
 
 @Composable
-fun VocabularyCard(vocabulary: Vocabulary) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = vocabulary.word,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextDark
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = vocabulary.pronunciationText,
-                    fontSize = 14.sp,
-                    color = PurpleBlueTheme,
-                    fontStyle = FontStyle.Italic
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = vocabulary.meaning,
-                    fontSize = 15.sp,
-                    color = TextDark.copy(alpha = 0.8f)
-                )
+fun ExampleCard(fullSentence: String, targetWord: String, translation: String) {
+    val annotatedString = buildAnnotatedString {
+        val startIndex = fullSentence.indexOf(targetWord, ignoreCase = true)
+        if (startIndex >= 0) {
+            append(fullSentence.substring(0, startIndex))
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = TextDarkMain)) {
+                append(fullSentence.substring(startIndex, startIndex + targetWord.length))
             }
+            append(fullSentence.substring(startIndex + targetWord.length))
+        } else {
+            append(fullSentence)
+        }
+    }
 
-//            IconButton(onClick = { }) {
-//                Icon(
-//                    imageVector = if (vocabulary.) Icons.Filled.Star else Icons.Outlined.Star,
-//                    contentDescription = "Favorite",
-//                    tint = if (vocabulary.isFavorite) StarActive else TextGray.copy(alpha = 0.3f),
-//                    modifier = Modifier.size(28.dp)
-//                )
-//            }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .clip(RoundedCornerShape(12.dp))
+            .background(CardBackground)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(4.dp)
+                .fillMaxHeight()
+                .background(PrimaryPurple)
+        )
+
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = annotatedString,
+                fontSize = 16.sp,
+                color = TextDarkMain
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = translation,
+                fontSize = 15.sp,
+                color = TextGrayTitle
+            )
         }
     }
 }
 
 @Composable
-fun PracticeButton() {
+fun FavoriteButton() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)
-            .background(Color.Transparent),
-        contentAlignment = Alignment.BottomCenter
+            .border(width = 1.dp, color = Color(0xFFE5E5EA), shape = RoundedCornerShape(16.dp))
+            .background(Color(0xFFFAFAFC), shape = RoundedCornerShape(16.dp))
+            .clickable { }
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = PurpleBlueTheme)
-        ) {
-            Icon(Icons.Default.Edit, contentDescription = "Practice", tint = Color.White)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Luyện tập chủ đề này", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        }
+        Text(
+            text = "Đã lưu vào yêu thích",
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = TextDarkMain
+        )
+    }
+}
+
+@Composable
+fun FlashcardButton() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(Color(0xFF8871FF), Color(0xFF6A50FF))
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .clickable { }
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Học bằng Flashcard",
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = Color.White
+        )
     }
 }

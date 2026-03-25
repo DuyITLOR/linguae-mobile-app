@@ -9,6 +9,11 @@ interface VocabularyApi {
     @GET("vocabulary")
     suspend fun getAllVocabulary(): List<Vocabulary>
 
+    @GET("vocabulary/{id}")
+    suspend fun getVocabularyById(
+        @Path("id") id: String
+    ): Vocabulary
+
     @GET("vocabulary/topic/{id}")
     suspend fun getVocabularyByTopic(
         @Path("id") topicId: String
