@@ -7,9 +7,8 @@ import com.penguin.linguae.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.HttpException
-
-
 
 class RegisterViewModel (
     private val repo: AuthRepository = AuthRepository()
@@ -30,10 +29,15 @@ class RegisterViewModel (
                 _navigateLogin.value = true
 
             } catch (e: HttpException) {
-                error.value = "Email đã tồn tại"
-
+                // Lấy message từ body lỗi của server
+                val errorBody = e.response()?.errorBody()?.string()
+                error.value = try {
+                    JSONObject(errorBody).getString("message")
+                } catch (ex: Exception) {
+                    "Đăng ký thất bại"
+                }
             } catch (e: Exception) {
-                error.value = e.message ?: "Đăng ký thất bại"
+                error.value = e.message ?: "Đã có lỗi xảy ra"
             } finally {
                 isLoading.value = false
             }

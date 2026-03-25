@@ -92,7 +92,6 @@
             Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
         ) {
             AuthHeader()
 

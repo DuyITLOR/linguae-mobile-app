@@ -12,9 +12,9 @@ POST {{baseUrl}}/auth/sign-up
 Content-Type: application/json
 
 {
-	"fullName": "Lê Nhựt Duy",
-	"email": "lenhuuy@gmail.com",
-	"password": "123456"
+	"fullName": "Truong Thanh Dat",
+	"email": "truongthanhdathaha@gmail.com",
+	"password": "12345"
 }
 
 ### Sign in

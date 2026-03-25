@@ -16,7 +16,7 @@ import com.penguin.linguae.feature.learning.VocabularyScreen
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login_screen") {
+    NavHost(navController = navController, startDestination = Screen.Login.route) {
 
 
         composable(route = Screen.Topic.route) {
@@ -27,7 +27,7 @@ fun AppNavigation() {
             )
         }
 
-        composable("login_screen") {
+        composable(Screen.Login.route) {
             LoginScreen(
                 viewModel = viewModel(),
                 onNavigateHome = {
@@ -41,7 +41,7 @@ fun AppNavigation() {
             )
         }
 
-        composable("register_screen") {
+        composable(Screen.Register.route) {
             RegisterScreen(
                 viewModel = viewModel(),
                 onNavigateLogin = {

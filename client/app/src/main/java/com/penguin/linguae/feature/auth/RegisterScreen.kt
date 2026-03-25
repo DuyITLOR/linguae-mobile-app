@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,7 +48,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.BorderGray
 import com.penguin.linguae.core.ui.theme.PrimaryPurple
 import com.penguin.linguae.feature.auth.component.AuthHeader
-
+import kotlinx.coroutines.launch
 
 
 @Preview(showBackground = true)
@@ -58,6 +59,7 @@ fun RegisterScreen (
 ) {
     val navigateLogin by viewModel.navigateLogin.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(navigateLogin) {
         if (navigateLogin) {
@@ -84,7 +86,9 @@ fun RegisterScreen (
 
     LaunchedEffect(navigateLogin) {
         if (navigateLogin) {
-            snackbarHostState.showSnackbar("Đăng ký thành công!")
+            launch {
+                snackbarHostState.showSnackbar("Đăng ký thành công!")
+            }
             viewModel.resetNavigation()
             onNavigateLogin()
         }
@@ -212,7 +216,19 @@ fun RegisterScreen (
 
                 Button(
                     onClick = {
+                        scope.launch {
+                            if (fullname.isBlank() || email.isBlank() || password.isBlank()) {
+                                snackbarHostState.showSnackbar("Vui lòng nhập đầy đủ thông tin")
+                                return@launch
+                            }
 
+                            if (password != confirmPassword) {
+                                snackbarHostState.showSnackbar("Mật khẩu không khớp")
+                                return@launch
+                            }
+
+                            viewModel.register(fullname, email, password)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
