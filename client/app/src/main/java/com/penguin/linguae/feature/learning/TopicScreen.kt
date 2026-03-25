@@ -47,7 +47,6 @@ fun TopicScreen(
     val topics by viewModel.topics.collectAsState()
 
     LaunchedEffect(Unit) {
-        Log.i("API", "fetchTopic called")
         viewModel.fetchTopic()
     }
 

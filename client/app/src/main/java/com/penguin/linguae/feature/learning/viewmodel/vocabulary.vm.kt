@@ -18,12 +18,10 @@ class VocabularyViewModel: ViewModel() {
     private val _vocabulary = MutableStateFlow<List<Vocabulary>>(emptyList())
     val vocabulary: StateFlow<List<Vocabulary>> = _vocabulary.asStateFlow()
 
-    init {
-        fetchVocabulary()
-    }
-    fun fetchVocabulary() {
+    fun fetchVocabularyByTopic(topicId: String) {
         viewModelScope.launch {
-            val result = repository.getAllVocabulary()
+            val result = repository.getVocabularyByTopic(topicId)
+            Log.i("API_TEST_VOCA", result.toString())
             result.onSuccess {
                 _vocabulary.value = it
             }.onFailure {

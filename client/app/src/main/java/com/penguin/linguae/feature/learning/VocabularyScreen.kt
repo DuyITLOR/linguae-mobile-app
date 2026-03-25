@@ -39,7 +39,7 @@ fun VocabularyScreen(topicId: String, onNavigateBack: () -> Unit, viewModel: Voc
     val vocabularies = viewModel.vocabulary.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchVocabulary()
+        viewModel.fetchVocabularyByTopic(topicId)
     }
 
     Scaffold(
