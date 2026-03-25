@@ -4,6 +4,7 @@ import { HttpResponseService } from '../../common';
 import type { HttpResponseBody } from '../../common';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 import { AuthService } from './auth.service';
 
 interface AuthPayload {
@@ -40,5 +41,15 @@ export class AuthController {
   ): Promise<HttpResponseBody<AuthPayload>> {
     const result = await this.authService.signIn(body);
     return this.httpResponse.ok(result, 'Đăng nhập thành công');
+  }
+
+  @Public()
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  async signinWithGoogle(
+    @Body() body: GoogleAuthDto,
+  ): Promise<HttpResponseBody<AuthPayload>> {
+    const result = await this.authService.signInWithGoogle(body);
+    return this.httpResponse.ok(result, 'Đăng nhập bằng Google thành công');
   }
 }

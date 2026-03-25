@@ -28,6 +28,7 @@ type SignUpUserRow = PublicUser;
 
 interface SignInUserRow extends SignUpUserRow {
   passwordHash: string | null;
+  provider: string;
 }
 
 @Injectable()
@@ -115,6 +116,12 @@ export class AuthService {
     }
 
     const user = foundUser;
+
+    if (user.provider !== 'local') {
+      throw new UnauthorizedException(
+        'Tài khoản này không đăng nhập bằng mật khẩu',
+      );
+    }
 
     if (
       !user?.passwordHash ||
@@ -227,6 +234,8 @@ export class AuthService {
     }
 
     return (
+      'provider' in value &&
+      typeof value.provider === 'string' &&
       'passwordHash' in value &&
       (typeof value.passwordHash === 'string' || value.passwordHash === null)
     );
