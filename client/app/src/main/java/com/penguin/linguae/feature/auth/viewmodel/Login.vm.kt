@@ -51,4 +51,31 @@ class LoginViewModel (
     fun resetNavigation() {
         _navigateHome.value = false
     }
+
+    fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            isLoading = true
+            error = null
+
+            try {
+                val token = repo.loginWithGoogle(idToken)
+                TokenManager.saveToken(token)
+                _navigateHome.value = true
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+
+                val message = try {
+                    val json = Gson().fromJson(errorBody, Map::class.java)
+                    json["message"]?.toString()
+                } catch (ex: Exception) {
+                    "Lỗi đăng nhập, vui lòng thử lại"
+                }
+                error = message
+            } catch (e: Exception) {
+                error = "Không thể kết nối đến máy chủ"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 }

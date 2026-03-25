@@ -3,6 +3,7 @@ package com.penguin.linguae.data.repository
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.remote.AuthApi
 import com.penguin.linguae.data.remote.LoginRequest
+import com.penguin.linguae.data.remote.LoginWithGoogleRequest
 import com.penguin.linguae.data.remote.RegisterRequest
 
 class AuthRepository {
@@ -26,6 +27,17 @@ class AuthRepository {
             RegisterRequest(fullName, email, password)
         )
         if (!response.success) {
+            throw Exception(response.message)
+        }
+    }
+
+    suspend fun loginWithGoogle(idToken: String) : String {
+        val response = api.loginWithGoogle(
+            LoginWithGoogleRequest(idToken)
+        )
+        if(response.success && response.data != null) {
+            return response.data.accessToken
+        } else {
             throw Exception(response.message)
         }
     }

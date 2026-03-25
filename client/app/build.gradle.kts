@@ -1,7 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     id("org.jetbrains.kotlin.plugin.compose")
 }
+
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+val googleClientId = localProperties.getProperty("GOOGLE_CLIENT_ID")
+    ?: throw GradleException("GOOGLE_CLIENT_ID not found in local.properties")
 
 android {
     namespace = "com.penguin.linguae"
@@ -19,6 +28,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "GOOGLE_CLIENT_ID",
+            "\"$googleClientId\""
+        )
     }
 
     buildTypes {
