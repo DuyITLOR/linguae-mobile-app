@@ -45,7 +45,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email is already registered');
+      throw new ConflictException('Email đã được đăng ký trước đó');
     }
 
     const passwordHash = this.hashPassword(password);
@@ -65,7 +65,9 @@ export class AuthService {
     });
 
     if (!this.isSignUpUserRow(createdUser)) {
-      throw new InternalServerErrorException('Created user payload is invalid');
+      throw new InternalServerErrorException(
+        'Đã xảy ra lỗi khi tạo người dùng',
+      );
     }
 
     return {
@@ -79,7 +81,7 @@ export class AuthService {
     const password = body.password;
 
     if (!email || !password) {
-      throw new BadRequestException('Email and password are required');
+      throw new BadRequestException('Vui lòng cung cấp email và mật khẩu');
     }
 
     const foundUser: unknown = await this.prisma.user.findFirst({
@@ -94,11 +96,11 @@ export class AuthService {
     });
 
     if (!foundUser) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
     if (!this.isSignInUserRow(foundUser)) {
-      throw new InternalServerErrorException('User payload is invalid');
+      throw new InternalServerErrorException('Dữ liệu người dùng không hợp lệ');
     }
 
     const user = foundUser;
@@ -107,7 +109,7 @@ export class AuthService {
       !user?.passwordHash ||
       !this.verifyPassword(password, user.passwordHash)
     ) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
     return {
@@ -128,16 +130,16 @@ export class AuthService {
   }): void {
     if (!input.email || !input.fullName || !input.password) {
       throw new BadRequestException(
-        'Full name, email and password are required',
+        'Vui lòng cung cấp họ tên, email và mật khẩu',
       );
     }
 
     if (!this.isValidEmail(input.email)) {
-      throw new BadRequestException('Email format is invalid');
+      throw new BadRequestException('Định dạng email không hợp lệ');
     }
 
     if (input.password.length < 6) {
-      throw new BadRequestException('Password must be at least 6 characters');
+      throw new BadRequestException('Mật khẩu phải có ít nhất 6 ký tự');
     }
   }
 

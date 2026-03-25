@@ -1,7 +1,6 @@
 package com.penguin.linguae.feature.auth.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,17 +12,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-//@Preview(showBackground = true)
 @Composable
-fun LoginHeader() {
+fun AuthHeader(
+    title: String = "Chào mừng!",
+    subtitle: String = "Đăng nhập để tiếp tục học",
+    height: Dp = 300.dp,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(300.dp)
+            .height(height)
             .background(
                 Brush.verticalGradient(
                     listOf(
@@ -37,17 +40,16 @@ fun LoginHeader() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("🐧", fontSize = 42.sp)
             Text(
-                text = "Chào mừng!",
+                text = title,
                 fontSize = 26.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Đăng nhập để tiếp tục học",
+                text = subtitle,
                 color = Color.White.copy(alpha = 0.8f)
             )
         }
     }
-
 }

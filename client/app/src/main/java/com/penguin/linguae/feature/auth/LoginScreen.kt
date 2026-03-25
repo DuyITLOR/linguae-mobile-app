@@ -91,7 +91,7 @@
         ) { paddingValues ->
             Column(
             modifier = Modifier
-                .fillMaxSize().padding(paddingValues)
+                .fillMaxSize()
         ) {
             AuthHeader()
 

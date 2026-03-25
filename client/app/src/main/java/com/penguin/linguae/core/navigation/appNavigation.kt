@@ -9,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
@@ -22,8 +23,10 @@ fun AppNavigation(
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = "login_screen"
+        startDestination = Screen.Login.route
     ) {
+
+
         composable(Screen.Home.route) { HomeScreen() }
         composable(Screen.Topic.route) {
             TopicScreen(
@@ -33,13 +36,25 @@ fun AppNavigation(
             )
         }
 
-        composable("login_screen") {
+        composable(Screen.Login.route) {
             LoginScreen(
                 viewModel = viewModel(),
                 onNavigateHome = {
                     navController.navigate(Screen.Topic.route) {
                         popUpTo("login_screen") { inclusive = true }
                     }
+                },
+                onNavigateRegister = {
+                    navController.navigate("register_screen")
+                }
+            )
+        }
+
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                viewModel = viewModel(),
+                onNavigateLogin = {
+                    navController.popBackStack()
                 }
             )
         }

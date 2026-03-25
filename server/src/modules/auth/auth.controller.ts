@@ -29,7 +29,7 @@ export class AuthController {
     @Body() body: SignUpDto,
   ): Promise<HttpResponseBody<AuthPayload>> {
     const result = await this.authService.signUp(body);
-    return this.httpResponse.created(result, 'Sign up successful');
+    return this.httpResponse.created(result, 'Đăng ký thành công');
   }
 
   @Public()
@@ -39,6 +39,6 @@ export class AuthController {
     @Body() body: SignInDto,
   ): Promise<HttpResponseBody<AuthPayload>> {
     const result = await this.authService.signIn(body);
-    return this.httpResponse.ok(result, 'Sign in successful');
+    return this.httpResponse.ok(result, 'Đăng nhập thành công');
   }
 }
