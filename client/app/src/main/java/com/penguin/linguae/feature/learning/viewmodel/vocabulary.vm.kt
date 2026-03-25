@@ -14,20 +14,32 @@ import kotlinx.coroutines.launch
 class VocabularyViewModel: ViewModel() {
 
     private val repository = VocabularyRepository()
-
     private val _vocabulary = MutableStateFlow<List<Vocabulary>>(emptyList())
     val vocabulary: StateFlow<List<Vocabulary>> = _vocabulary.asStateFlow()
 
-    init {
-        fetchVocabulary()
-    }
-    fun fetchVocabulary() {
+    private val _selectedVocabulary = MutableStateFlow<Vocabulary?>(null)
+    val selectedVocabulary = _selectedVocabulary.asStateFlow()
+
+    fun fetchVocabularyByTopic(topicId: String) {
         viewModelScope.launch {
-            val result = repository.getAllVocabulary()
+            val result = repository.getVocabularyByTopic(topicId)
+            Log.i("API_TEST_VOCA_TOPIC", result.toString())
             result.onSuccess {
                 _vocabulary.value = it
             }.onFailure {
                 Log.e("ColumnVM", "Error: ${it.message}")
+            }
+        }
+    }
+
+    fun fetchVocabularyById(id: String) {
+        viewModelScope.launch {
+            val result = repository.getVocabularyById(id)
+            Log.i("API_TEST_VOCA_ID", result.toString())
+            result.onSuccess {
+                _selectedVocabulary.value = it
+            }.onFailure {
+                Log.e("Vocabulary by id", "Error: ${it.message}")
             }
         }
     }

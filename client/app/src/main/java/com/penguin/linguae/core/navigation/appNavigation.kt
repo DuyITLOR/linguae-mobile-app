@@ -13,6 +13,7 @@ import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
+import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
 
 @Composable
@@ -33,7 +34,7 @@ fun AppNavigation(
         composable(Screen.Topic.route) {
             TopicScreen(
                 onTopicClick = { topicId ->
-                    navController.navigate(Screen.Vocabulary.createRoute(topicId))
+                    navController.navigate(Screen.VocabularyList.createRoute(topicId))
                 }
             )
         }
@@ -62,7 +63,7 @@ fun AppNavigation(
         }
 
         composable(
-            route = Screen.Vocabulary.route,
+            route = Screen.VocabularyList.route,
             arguments = listOf(
                 navArgument("topicId") {
                     type = NavType.StringType
@@ -71,8 +72,24 @@ fun AppNavigation(
         ) { backStackEntry ->
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
 
-            VocabularyScreen(
+            VocabularyListScreen(
                 topicId = topicId,
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Vocabulary.route,
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val vocabId = backStackEntry.arguments?.getString("id") ?: ""
+            VocabularyScreen(
+                vocabId = vocabId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

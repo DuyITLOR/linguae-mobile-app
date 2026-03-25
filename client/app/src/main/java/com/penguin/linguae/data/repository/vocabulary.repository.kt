@@ -17,4 +17,22 @@ class VocabularyRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun getVocabularyById(id: String): Result<Vocabulary> {
+        return try {
+            val data = api.getVocabularyById(id)
+            Result.success(data)
+        } catch(e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getVocabularyByTopic(topicId: String): Result<List<Vocabulary>> {
+        return try {
+            val data = api.getVocabularyByTopic(topicId)
+            Result.success(data)
+        } catch(e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

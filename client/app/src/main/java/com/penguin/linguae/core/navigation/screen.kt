@@ -12,9 +12,15 @@ sealed class Screen(val route: String) {
 
     object Flashcard : Screen("flashcard_screen")
 
-    object Vocabulary: Screen("vocabulary_screen/{topicId}") {
+    object VocabularyList: Screen("vocabulary_screen/{topicId}") {
         fun createRoute(topicId: String): String {
             return "vocabulary_screen/$topicId"
+        }
+    }
+
+    object Vocabulary: Screen("vocabulary/{id}") {
+        fun createRoute(id: String): String {
+            return "vocabulary/$id"
         }
     }
 }

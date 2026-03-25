@@ -9,6 +9,16 @@ data class Vocabulary(
     val pronunciationAudio: String?,
     val partOfSpeech: String?,
     val difficulty: Int,
+    val VocabularyExample: List<Example>,
     val createdAt: String,
     val updatedAt: String
+)
+
+data class Example(
+    val id: String,
+    val vocabularyId: String,
+    val sentence: String,
+    val translation: String?,
+    val audioUrl: String?,
+    val createdAt: String,
 )
