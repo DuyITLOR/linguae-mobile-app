@@ -19,7 +19,7 @@ model FavoriteVocabulary {
 }
 
 model FlashcardReview {
-  id                 String           @id
+  id                 String           @id @default(uuid())
   flashcardSessionId String
   vocabularyId       String
   result             ReviewResult
@@ -31,7 +31,7 @@ model FlashcardReview {
 }
 
 model FlashcardSession {
-  id              String            @id
+  id              String            @id @default(uuid())
   userId          String
   topicId         String
   totalCards      Int               @default(0)
@@ -48,7 +48,7 @@ model FlashcardSession {
 }
 
 model LearningHistory {
-  id                String           @id
+  id                String           @id @default(uuid())
   userId            String
   activityType      ActivityType
   topicId           String?
@@ -67,7 +67,7 @@ model LearningHistory {
 }
 
 model NotificationLog {
-  id         String    @id
+  id         String    @id @default(uuid())
   userId     String
   reminderId String?
   title      String
@@ -82,7 +82,7 @@ model NotificationLog {
 }
 
 model PracticeAnswer {
-  id                 String           @id
+  id                 String           @id @default(uuid())
   practiceQuestionId String
   answer             Json
   isCorrect          Boolean
@@ -93,7 +93,7 @@ model PracticeAnswer {
 }
 
 model PracticeQuestion {
-  id                String           @id
+  id                String           @id @default(uuid())
   practiceSessionId String
   questionType      QuestionType
   prompt            String
@@ -108,7 +108,7 @@ model PracticeQuestion {
 }
 
 model PracticeSession {
-  id               String             @id
+  id               String             @id @default(uuid())
   userId           String
   topicId          String?
   type             PracticeType
@@ -127,7 +127,7 @@ model PracticeSession {
 }
 
 model Reminder {
-  id              String              @id
+  id              String              @id @default(uuid())
   userId          String
   title           String
   message         String?
@@ -145,7 +145,7 @@ model Reminder {
 }
 
 model Topic {
-  id               String             @id
+  id               String             @id @default(uuid())
   title            String
   description      String?
   level            Level              @default(BEGINNER)
@@ -182,7 +182,7 @@ model User {
 }
 
 model UserDailyGoal {
-  id                   String    @id
+  id                   String    @id @default(uuid())
   userId               String
   targetWordsPerDay    Int       @default(10)
   targetPracticePerDay Int       @default(1)
@@ -196,7 +196,7 @@ model UserDailyGoal {
 }
 
 model UserLearningPlan {
-  id        String   @id
+  id        String   @id @default(uuid())
   userId    String
   level     Level
   isCurrent Boolean  @default(true)
@@ -206,7 +206,7 @@ model UserLearningPlan {
 }
 
 model UserSetting {
-  id                   String   @id
+  id                   String   @id @default(uuid())
   userId               String
   appLanguage          String   @default("en")
   notificationsEnabled Boolean  @default(true)
@@ -237,7 +237,7 @@ model UserVocabularyProgress {
 }
 
 model Vocabulary {
-  id                     String                   @id
+  id                     String                   @id @default(uuid())
   topicId                String
   word                   String
   meaning                String
@@ -258,7 +258,7 @@ model Vocabulary {
 }
 
 model VocabularyExample {
-  id           String     @id
+  id           String     @id @default(uuid())
   vocabularyId String
   sentence     String
   translation  String?
