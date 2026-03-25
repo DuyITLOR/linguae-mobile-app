@@ -105,7 +105,7 @@ fun RegisterScreen (
             AuthHeader(
                 title = "Tạo tài khoản",
                 subtitle = "Tham gia học cùng chúng tôi ngay",
-                height = 250.dp // Bạn có thể chỉnh thấp xuống một chút cho đỡ chiếm chỗ
+                height = 200.dp // Bạn có thể chỉnh thấp xuống một chút cho đỡ chiếm chỗ
 
             )
 
