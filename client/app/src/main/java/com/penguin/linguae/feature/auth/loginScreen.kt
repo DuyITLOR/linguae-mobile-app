@@ -1,3 +1,5 @@
+package com.penguin.linguae.feature.auth
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
