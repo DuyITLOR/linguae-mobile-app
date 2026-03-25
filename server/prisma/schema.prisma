@@ -161,10 +161,10 @@ model Topic {
 
 model User {
   id                     String                   @id @default(uuid())
-  firebaseUid            String?                  @unique
   email                  String                   @unique
   passwordHash           String?
   fullName               String
+  provider               AuthProvider @default(local)
   avatarUrl              String?
   isActive               Boolean                  @default(true)
   createdAt              DateTime                 @default(now())
@@ -318,4 +318,10 @@ enum ReviewResult {
   HARD
   GOOD
   EASY
+}
+
+
+enum AuthProvider {
+  local
+  google
 }
