@@ -228,7 +228,6 @@ fun CompactTopicCard(
             .background(Color.White)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(color = PurpleLight),
                 onClick = onClick
             )
             .padding(18.dp),
@@ -259,7 +258,7 @@ fun CompactTopicCard(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
-                LevelBadge(level = topic.level.toString())
+                LevelBadge(level = topic.level)
             }
             if (!topic.description.isNullOrEmpty()) {
                 Spacer(Modifier.height(4.dp))

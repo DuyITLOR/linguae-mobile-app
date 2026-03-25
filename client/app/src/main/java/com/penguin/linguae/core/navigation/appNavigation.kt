@@ -1,16 +1,14 @@
 package com.penguin.linguae.core.navigation
 
-
-import com.penguin.linguae.feature.auth.LoginScreen
-import com.penguin.linguae.core.navigation.Screen
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
@@ -20,7 +18,7 @@ import com.penguin.linguae.feature.learning.VocabularyScreen
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
@@ -28,8 +26,9 @@ fun AppNavigation(
         startDestination = Screen.Login.route
     ) {
 
-
-        composable(Screen.Home.route) { HomeScreen() }
+        composable(Screen.Home.route) {
+            HomeScreen()
+        }
 
         composable(Screen.Topic.route) {
             TopicScreen(
@@ -44,11 +43,11 @@ fun AppNavigation(
                 viewModel = viewModel(),
                 onNavigateHome = {
                     navController.navigate(Screen.Topic.route) {
-                        popUpTo("login_screen") { inclusive = true }
+                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
                 onNavigateRegister = {
-                    navController.navigate("register_screen")
+                    navController.navigate(Screen.Register.route)
                 }
             )
         }
@@ -62,7 +61,6 @@ fun AppNavigation(
             )
         }
 
-
         composable(
             route = Screen.Vocabulary.route,
             arguments = listOf(
@@ -71,16 +69,8 @@ fun AppNavigation(
                 }
             )
         ) { backStackEntry ->
-
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
 
-//        composable(Screen.Progress.route) { ProgressScreen() }
-//        composable(Screen.Profile.route) { ProfileScreen() }
-        composable(
-            route = Screen.Vocabulary.route,
-            arguments = listOf(navArgument("topicId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val topicId = backStackEntry.arguments?.getInt("topicId") ?: 0
             VocabularyScreen(
                 topicId = topicId,
                 onNavigateBack = { navController.popBackStack() }
@@ -92,6 +82,5 @@ fun AppNavigation(
                 onBack = { navController.popBackStack() }
             )
         }
-            }
     }
 }

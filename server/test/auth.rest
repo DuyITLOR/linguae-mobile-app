@@ -14,7 +14,7 @@ Content-Type: application/json
 {
 	"fullName": "Truong Thanh Dat",
 	"email": "truongthanhdathaha@gmail.com",
-	"password": "12345"
+	"password": "Thdat@123"
 }
 
 ### Sign in
