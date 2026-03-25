@@ -1,4 +1,7 @@
+package com.penguin.linguae.feature.auth
+
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,12 +33,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.PrimaryPurple
-import com.penguin.linguae.feature.auth.component.LoginHeader
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -40,20 +49,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.BorderGray
+import com.penguin.linguae.feature.auth.component.AuthHeader
 import com.penguin.linguae.feature.auth.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreen(
-    // Added default values for viewModel and onNavigateHome to fix the NullPointerException during Preview rendering.
     viewModel: LoginViewModel = viewModel(),
-    onNavigateHome: () -> Unit = {}
+    onNavigateHome: () -> Unit = {},
+    onNavigateRegister: () -> Unit = {}
 ) {
     val navigateHome by viewModel.navigateHome.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(navigateHome) {
         if (navigateHome) {
@@ -74,6 +89,7 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("")}
     var password by remember { mutableStateOf("")}
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -82,14 +98,15 @@ fun LoginScreen(
         Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
+            .verticalScroll(scrollState)
     ) {
-        LoginHeader()
-
+        AuthHeader()
         Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxWidth()
                 .padding(30.dp, 20.dp)
+                .padding(bottom = paddingValues.calculateBottomPadding())
+
         ) {
             Text("EMAIL")
 
@@ -118,6 +135,19 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(0.dp, 5.dp),
                 shape = RoundedCornerShape(16.dp),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    val description = if (passwordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu"
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, description)
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryPurple,
                     unfocusedBorderColor = BorderGray,
@@ -211,7 +241,10 @@ fun LoginScreen(
                 Text("Chưa có tài khoản? ")
                 Text(
                     "Đăng ký ngay",
-                    color = PrimaryPurple
+                    color = PrimaryPurple,
+                    modifier = Modifier.clickable{
+                        onNavigateRegister()
+                    }
                 )
             }
         }
