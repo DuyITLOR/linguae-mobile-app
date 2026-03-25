@@ -1,6 +1,8 @@
 package com.penguin.linguae.core.navigation
 
+
 import com.penguin.linguae.feature.auth.LoginScreen
+import com.penguin.linguae.core.navigation.Screen
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Modifier
@@ -28,6 +30,7 @@ fun AppNavigation(
 
 
         composable(Screen.Home.route) { HomeScreen() }
+
         composable(Screen.Topic.route) {
             TopicScreen(
                 onTopicClick = { topicId ->

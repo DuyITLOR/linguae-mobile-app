@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -61,6 +63,8 @@ fun RegisterScreen (
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    val scrollState = rememberScrollState()
+
     LaunchedEffect(navigateLogin) {
         if (navigateLogin) {
             snackbarHostState.showSnackbar("Đăng ký thành công!")
@@ -100,17 +104,18 @@ fun RegisterScreen (
         containerColor = Color.White
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
         ) {
             AuthHeader(
                 title = "Tạo tài khoản",
                 subtitle = "Tham gia học cùng chúng tôi ngay",
-                height = 250.dp // Bạn có thể chỉnh thấp xuống một chút cho đỡ chiếm chỗ
+                height = 250.dp
 
             )
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(30.dp)
                     .padding(bottom = padding.calculateBottomPadding())
 
