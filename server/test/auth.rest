@@ -13,7 +13,7 @@ Content-Type: application/json
 
 {
 	"fullName": "Test User",
-	"email": "test.user+2@gmail.com",
+	"email": "test.user+3@gmail.com",
 	"password": "123456"
 }
 
@@ -21,7 +21,7 @@ Content-Type: application/json
 POST {{baseUrl}}/auth/sign-in
 Content-Type: application/json
 {
-	"email": "test.user+1@gmail.com",
+	"email": "test.user+2@gmail.com",
 	"password": "123456"
 }
 

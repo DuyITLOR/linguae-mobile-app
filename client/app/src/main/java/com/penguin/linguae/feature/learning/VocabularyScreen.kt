@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.penguin.linguae.data.model.Column
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.core.ui.theme.PurpleBlueTheme
 import com.penguin.linguae.core.ui.theme.SearchBg
@@ -32,10 +31,11 @@ import com.penguin.linguae.core.ui.theme.StarActive
 import com.penguin.linguae.core.ui.theme.SurfaceColor
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
+import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
 @Composable
-fun VocabularyScreen(topicId: Int, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {
+fun VocabularyScreen(topicId: String, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {
     val vocabularies = viewModel.vocabulary.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -113,7 +113,7 @@ fun SearchBar() {
 }
 
 @Composable
-fun VocabularyList(vocabularyList: List<Column>) {
+fun VocabularyList(vocabularyList: List<Vocabulary>) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -125,7 +125,7 @@ fun VocabularyList(vocabularyList: List<Column>) {
 }
 
 @Composable
-fun VocabularyCard(vocabulary: Column) {
+fun VocabularyCard(vocabulary: Vocabulary) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -148,7 +148,7 @@ fun VocabularyCard(vocabulary: Column) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = vocabulary.pronunciation,
+                    text = vocabulary.pronunciationText,
                     fontSize = 14.sp,
                     color = PurpleBlueTheme,
                     fontStyle = FontStyle.Italic
@@ -161,14 +161,14 @@ fun VocabularyCard(vocabulary: Column) {
                 )
             }
 
-            IconButton(onClick = { }) {
-                Icon(
-                    imageVector = if (vocabulary.isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
-                    contentDescription = "Favorite",
-                    tint = if (vocabulary.isFavorite) StarActive else TextGray.copy(alpha = 0.3f),
-                    modifier = Modifier.size(28.dp)
-                )
-            }
+//            IconButton(onClick = { }) {
+//                Icon(
+//                    imageVector = if (vocabulary.) Icons.Filled.Star else Icons.Outlined.Star,
+//                    contentDescription = "Favorite",
+//                    tint = if (vocabulary.isFavorite) StarActive else TextGray.copy(alpha = 0.3f),
+//                    modifier = Modifier.size(28.dp)
+//                )
+//            }
         }
     }
 }

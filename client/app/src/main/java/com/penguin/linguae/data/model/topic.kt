@@ -1,8 +1,17 @@
 package com.penguin.linguae.data.model
 
 data class Topic(
-    val id: Int,
+    val id: String,
     val title: String,
-    val wordCount: Int,
-    val progressPercent: Int? = null
+    val description: String? = null,
+    val level: String,
+    val displayOrder: Int = 0,
+    val isActive: Boolean = true,
+    val createdAt: String,
+    val updatedAt: String,
+    val _count: Count
+)
+
+data class Count(
+    val Vocabulary: Int
 )

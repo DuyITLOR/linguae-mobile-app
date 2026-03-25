@@ -36,10 +36,16 @@ fun AppNavigation() {
         }
 
 
-        composable(route = Screen.Vocabulary.route, arguments = listOf(navArgument("topicId") { type =
-            NavType.IntType })) {
-            backStackEntry ->
-                val topicId = backStackEntry.arguments?.getInt("topicId") ?: 0
+        composable(
+            route = Screen.Vocabulary.route,
+            arguments = listOf(
+                navArgument("topicId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
 
             VocabularyScreen(
                 topicId = topicId,

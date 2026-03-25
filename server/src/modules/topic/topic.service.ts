@@ -6,6 +6,14 @@ export class TopicService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllTopic() {
-    return await this.prisma.topic.findMany();
+    return await this.prisma.topic.findMany({
+      include: {
+        _count: {
+          select: {
+            Vocabulary: true,
+          },
+        },
+      },
+    });
   }
 }
