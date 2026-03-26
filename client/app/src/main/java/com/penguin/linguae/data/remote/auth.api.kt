@@ -1,5 +1,6 @@
 package com.penguin.linguae.data.remote
 
+import com.penguin.linguae.data.model.User
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -16,16 +17,8 @@ data class LoginResponse(
 
 data class LoginData(
     val accessToken: String,
-    val user: UserData? = null
+    val user: User
 )
-
-data class UserData(
-    val id: String,
-    val email: String,
-    val fullName: String,
-    val avatarUrl: String?
-)
-
 
 data class RegisterRequest(
     val fullName: String,
@@ -41,7 +34,7 @@ data class RegisterResponse(
 
 data class RegisterData(
     val accessToken: String,
-    val user: UserData
+    val user: User
 )
 
 data class LoginWithGoogleResponse(
@@ -52,7 +45,7 @@ data class LoginWithGoogleResponse(
 
 data class LoginWithGoogleData(
     val accessToken: String,
-    val user: UserData
+    val user: User
 )
 
 data class LoginWithGoogleRequest(

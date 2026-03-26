@@ -43,7 +43,7 @@ fun AppNavigation(
             LoginScreen(
                 viewModel = viewModel(),
                 onNavigateHome = {
-                    navController.navigate(Screen.Topic.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },

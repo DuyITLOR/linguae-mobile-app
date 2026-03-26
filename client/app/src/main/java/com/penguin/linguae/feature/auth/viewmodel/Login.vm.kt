@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.penguin.linguae.core.network.TokenManager
+import com.penguin.linguae.core.network.UserManager
+import com.penguin.linguae.data.remote.LoginData
 import com.penguin.linguae.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +30,9 @@ class LoginViewModel (
             error = null
 
             try {
-                val token = repo.login(email, password)
-                TokenManager.saveToken(token)
+                val result: LoginData = repo.login(email, password)
+                TokenManager.saveToken(result.accessToken)
+                UserManager.saveUser(result.user)
                 _navigateHome.value = true
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()

@@ -16,7 +16,7 @@ export class PrismaService
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const pool = new Pool({ connectionString });
-    const adapter = new PrismaPg(pool);
+    const adapter = new PrismaPg(pool as any);
 
     super({ adapter });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
