@@ -5,10 +5,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val localPropertiesFile = rootProject.file("local.properties")
 
 val localProperties = Properties().apply {
-    load(rootProject.file("local.properties").inputStream())
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
 }
+
 val googleClientId = localProperties.getProperty("GOOGLE_CLIENT_ID")
     ?: throw GradleException("GOOGLE_CLIENT_ID not found in local.properties")
 
@@ -52,6 +56,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
 }
@@ -91,5 +96,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.material3)
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.compose.runtime:runtime")
 
 }

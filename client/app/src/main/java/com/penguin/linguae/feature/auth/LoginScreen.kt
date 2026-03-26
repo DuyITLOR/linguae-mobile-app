@@ -1,5 +1,8 @@
 package com.penguin.linguae.feature.auth
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,15 +50,22 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.penguin.linguae.BuildConfig
 import com.penguin.linguae.core.ui.theme.BorderGray
 import com.penguin.linguae.feature.auth.component.AuthHeader
 import com.penguin.linguae.feature.auth.viewmodel.LoginViewModel
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
@@ -67,15 +77,19 @@ fun LoginScreen(
 ) {
     val navigateHome by viewModel.navigateHome.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    // Debug: Kiểm tra xem Client ID có load được không
+    LaunchedEffect(Unit) {
+        Log.d("GOOGLE_CONFIG", "Client ID: ${BuildConfig.GOOGLE_CLIENT_ID}")
+    }
 
     LaunchedEffect(navigateHome) {
         if (navigateHome) {
             launch {
                 snackbarHostState.showSnackbar("Đăng nhập thành công!")
             }
-
             onNavigateHome()
             viewModel.resetNavigation()
         }
@@ -87,9 +101,61 @@ fun LoginScreen(
         }
     }
 
-    var email by remember { mutableStateOf("")}
-    var password by remember { mutableStateOf("")}
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val googleSignInClient = remember {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestIdToken(BuildConfig.GOOGLE_CLIENT_ID)
+            .build()
+        GoogleSignIn.getClient(context, gso)
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        Log.d(
+            "GOOGLE_LOGIN",
+            "ActivityResult resultCode=${result.resultCode}, hasData=${result.data != null}"
+        )
+
+        val data = result.data
+        if (data == null) {
+            viewModel.error = "Google trả về dữ liệu rỗng (intent null)"
+            Log.e("GOOGLE_LOGIN", "Result OK but intent data is null")
+            return@rememberLauncherForActivityResult
+        }
+
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+
+            if (!idToken.isNullOrBlank()) {
+                viewModel.loginWithGoogle(idToken)
+            } else {
+                viewModel.error = "Không lấy được ID Token. Kiểm tra Web Client ID trong BuildConfig."
+                Log.e("GOOGLE_LOGIN", "idToken is null or blank")
+            }
+        } catch (e: ApiException) {
+            val code = e.statusCode
+            Log.e("GOOGLE_LOGIN", "ApiException code=$code, message=${e.localizedMessage}", e)
+            viewModel.error = when (code) {
+                10 -> "Lỗi 10: Sai cấu hình (SHA-1/SHA-256 + Web Client ID)"
+                12500 -> "Lỗi 12500: Cấu hình OAuth chưa đúng hoặc thiếu SHA"
+                7 -> "Lỗi 7: Không có mạng"
+                8 -> "Lỗi 8: Google services tạm thời lỗi, thử lại"
+                12501 -> "Bạn đã hủy đăng nhập Google"
+                12502 -> "Đăng nhập đang chạy, vui lòng thử lại sau vài giây"
+                else -> "Lỗi Google ($code): ${e.localizedMessage ?: "Unknown"}"
+            }
+        } catch (t: Throwable) {
+            Log.e("GOOGLE_LOGIN", "Unexpected error during Google sign-in", t)
+            viewModel.error = "Lỗi không xác định: ${t.localizedMessage ?: "Unknown"}"
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -207,7 +273,22 @@ fun LoginScreen(
 
 
             OutlinedButton(
-                onClick = {},
+                onClick = {
+                    if (viewModel.isLoading) return@OutlinedButton
+
+                    val playServiceStatus = GoogleApiAvailability.getInstance()
+                        .isGooglePlayServicesAvailable(context)
+                    if (playServiceStatus != ConnectionResult.SUCCESS) {
+                        viewModel.error = "Google Play Services chưa sẵn sàng trên thiết bị"
+                        return@OutlinedButton
+                    }
+
+                    // Use signOut to ensure account picker appears without revoking the whole grant.
+                    googleSignInClient.signOut().addOnCompleteListener {
+                        launcher.launch(googleSignInClient.signInIntent)
+                    }
+                },
+                enabled = !viewModel.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(55.dp),
