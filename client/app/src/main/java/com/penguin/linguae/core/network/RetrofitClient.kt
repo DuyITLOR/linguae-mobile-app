@@ -9,8 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-//    private const val BASE_URL = "http://10.0.2.2:5050/"
-    private  const val BASE_URL = "http://192.168.1.21:5050/"
+    private const val BASE_URL = "http://10.0.2.2:5050/"
+//    private  const val BASE_URL = "http://192.168.1.21:5050/"
     private const val API_KEY = "dev-local-key"
 
 
