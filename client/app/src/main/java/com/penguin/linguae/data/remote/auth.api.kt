@@ -44,6 +44,23 @@ data class RegisterData(
     val user: UserData
 )
 
+data class LoginWithGoogleResponse(
+    val success: Boolean,
+    val message: String,
+    val data: LoginWithGoogleData?
+)
+
+data class LoginWithGoogleData(
+    val accessToken: String,
+    val user: UserData
+)
+
+data class LoginWithGoogleRequest(
+    val idToken: String
+)
+
+
+
 
 interface AuthApi {
     @POST("auth/sign-in")
@@ -55,6 +72,11 @@ interface AuthApi {
     suspend fun register(
         @Body request: RegisterRequest
     ): RegisterResponse
+
+    @POST("auth/google")
+    suspend fun loginWithGoogle(
+        @Body request: LoginWithGoogleRequest
+    ) : LoginWithGoogleResponse
 }
 
 

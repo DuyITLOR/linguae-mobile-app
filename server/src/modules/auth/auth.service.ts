@@ -9,6 +9,8 @@ import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { OAuth2Client, TokenPayload } from 'google-auth-library';
+import { GoogleAuthDto } from './dto/google-auth.dto';
 
 interface PublicUser {
   id: string;
@@ -26,11 +28,19 @@ type SignUpUserRow = PublicUser;
 
 interface SignInUserRow extends SignUpUserRow {
   passwordHash: string | null;
+  provider: string;
 }
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly googleClient: OAuth2Client;
+  private readonly googleClientId: string;
+  constructor(private readonly prisma: PrismaService) {
+    this.googleClientId = process.env.GOOGLE_CLIENT_ID ?? '';
+    this.googleClient = new OAuth2Client({
+      clientId: this.googleClientId,
+    });
+  }
 
   async signUp(body: SignUpDto): Promise<AuthResult> {
     const email = body.email?.trim().toLowerCase();
@@ -55,6 +65,7 @@ export class AuthService {
         email,
         fullName,
         passwordHash,
+        provider: 'local',
       },
       select: {
         id: true,
@@ -92,6 +103,7 @@ export class AuthService {
         fullName: true,
         avatarUrl: true,
         passwordHash: true,
+        provider: true,
       },
     });
 
@@ -104,6 +116,12 @@ export class AuthService {
     }
 
     const user = foundUser;
+
+    if (user.provider !== 'local') {
+      throw new UnauthorizedException(
+        'Tài khoản này không đăng nhập bằng mật khẩu',
+      );
+    }
 
     if (
       !user?.passwordHash ||
@@ -216,8 +234,144 @@ export class AuthService {
     }
 
     return (
+      'provider' in value &&
+      typeof value.provider === 'string' &&
       'passwordHash' in value &&
       (typeof value.passwordHash === 'string' || value.passwordHash === null)
     );
+  }
+
+  async signInWithGoogle(body: GoogleAuthDto): Promise<AuthResult> {
+    const idToken = body.idToken?.trim();
+
+    if (!idToken) {
+      throw new BadRequestException('Vui lòng cung cấp idToken');
+    }
+
+    const payload = await this.verifyGoogleIdToken(idToken);
+    const email = payload.email?.trim().toLowerCase();
+    const avatarUrl = payload.picture || null;
+
+    if (!email) {
+      throw new UnauthorizedException('Google token không chứa email hợp lệ');
+    }
+
+    const fullName = payload.name?.trim() || email.split('@')[0];
+
+    const existingUser: unknown = await this.prisma.user.findFirst({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        avatarUrl: true,
+        provider: true,
+      },
+    });
+
+    if (existingUser) {
+      if (!this.isGoogleLookupUserRow(existingUser)) {
+        throw new InternalServerErrorException(
+          'Dữ liệu người dùng không hợp lệ',
+        );
+      }
+
+      if (existingUser.provider !== 'google') {
+        throw new ConflictException(
+          'Email này đã được đăng ký bằng phương thức khác',
+        );
+      }
+
+      const updatedUser: unknown = await this.prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          fullName,
+          avatarUrl,
+        },
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+          avatarUrl: true,
+        },
+      });
+
+      if (!this.isGoogleUserRow(updatedUser)) {
+        throw new InternalServerErrorException(
+          'Dữ liệu người dùng không hợp lệ',
+        );
+      }
+
+      return {
+        user: updatedUser,
+        accessToken: this.generateAccessToken(
+          updatedUser.id,
+          updatedUser.email,
+        ),
+      };
+    }
+
+    const createdUser: unknown = await this.prisma.user.create({
+      data: {
+        email,
+        fullName,
+        avatarUrl,
+        provider: 'google',
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        avatarUrl: true,
+      },
+    });
+
+    if (!this.isGoogleUserRow(createdUser)) {
+      throw new InternalServerErrorException(
+        'Đã xảy ra lỗi khi tạo người dùng',
+      );
+    }
+
+    return {
+      user: createdUser,
+      accessToken: this.generateAccessToken(createdUser.id, createdUser.email),
+    };
+  }
+
+  private async verifyGoogleIdToken(idToken: string): Promise<TokenPayload> {
+    if (!this.googleClientId) {
+      throw new InternalServerErrorException('Missing GOOGLE_CLIENT_ID');
+    }
+
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: this.googleClientId,
+      });
+
+      const payload = ticket.getPayload();
+
+      if (!payload || !payload.email_verified) {
+        throw new UnauthorizedException('Google token không hợp lệ');
+      }
+
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Google token không hợp lệ');
+    }
+  }
+
+  private isGoogleUserRow(value: unknown): value is PublicUser {
+    return this.isSignUpUserRow(value);
+  }
+
+  private isGoogleLookupUserRow(
+    value: unknown,
+  ): value is PublicUser & { provider: string } {
+    if (!this.isGoogleUserRow(value)) {
+      return false;
+    }
+
+    return 'provider' in value && typeof value.provider === 'string';
   }
 }

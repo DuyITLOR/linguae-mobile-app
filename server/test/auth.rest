@@ -20,9 +20,18 @@ Content-Type: application/json
 ### Sign in
 POST {{baseUrl}}/auth/sign-in
 Content-Type: application/json
+
 {
 	"email": "test.user+2@gmail.com",
 	"password": "123456"
+}
+
+### Sign in with Google
+POST {{baseUrl}}/auth/google
+Content-Type: application/json
+
+{
+	"idToken": "paste-google-id-token-here"
 }
 
 ### ===========================================
@@ -62,3 +71,4 @@ Authorization: Bearer {{token}}
 # 3. Thiếu hoặc sai headers → 401 Unauthorized
 # 4. Thay @token bằng token thực từ sign-in response
 # 5. AUTH_REQUIRED=false trong .env để disable authentication
+# 6. Với Google login, Android cần gửi idToken thật lên /auth/google
