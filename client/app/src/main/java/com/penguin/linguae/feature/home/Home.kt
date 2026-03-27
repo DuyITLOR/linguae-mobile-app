@@ -1,30 +1,43 @@
 package com.penguin.linguae.feature.home
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.penguin.linguae.R
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.feature.home.components.*
 import com.penguin.linguae.feature.home.shapes.CurvedBottomShape
+import com.penguin.linguae.feature.home.viewmodel.HomeViewModel
+import androidx.compose.runtime.getValue
 
-@Preview
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = HomeViewModel()
+) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+
+    val uiState by viewModel.homeState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { route ->
+            navController.navigate(route)
+        }
+    }
 
     Surface(
         color = AppBackground,
@@ -33,8 +46,6 @@ fun HomeScreen() {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f)
         ) {
-
-            // ── 1. Header ──────────────────────────────────────────────
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -50,19 +61,15 @@ fun HomeScreen() {
                                 .wrapContentWidth(Alignment.CenterHorizontally)
                                 .padding(vertical = 32.dp)
                         ) {
-                            Greetings("Yunetrea")
-                            StreakCard(7, 120)
+                            Greetings(uiState.user?.fullName ?: "")
+                            StreakCard(uiState.streak, uiState.wordLearned)
                         }
                     }
                 }
             }
-
-            // ── 2. Tiến độ hôm nay ────────────────────────────────────
             item {
-                TodayProgress(0.65f)
+                TodayProgress(uiState.todayProgress)
             }
-
-            // ── 3. Tiêu đề "Học nhanh" ────────────────────────────────
             item {
                 Column (
                     verticalArrangement = Arrangement.spacedBy(screenHeight * 0.01f)
@@ -92,10 +99,9 @@ fun HomeScreen() {
                             }
                         }
                     }
-                    QuickLearn(screenHeight)
+                    QuickLearn(screenHeight, viewModel)
                 }
             }
-
         }
     }
 }
