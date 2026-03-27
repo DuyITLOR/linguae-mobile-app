@@ -8,6 +8,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.media.MediaPlayer
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
 val GradientTop = Color(0xFF6E68D1)
@@ -31,12 +34,15 @@ val PrimaryPurple = Color(0xFF7B61FF)
 val TextGrayTitle = Color(0xFF8A8A99)
 val TextDarkMain = Color(0xFF2D2D3A)
 
+
+
 @Composable
 fun VocabularyScreen(
     vocabId: String,
     onNavigateBack: () -> Unit = {},
     viewModel: VocabularyViewModel = viewModel()
 ) {
+    val mediaPlayer = remember { MediaPlayer() }
     val vocabulary by viewModel.selectedVocabulary.collectAsState()
 
     LaunchedEffect(vocabId) {
@@ -61,8 +67,25 @@ fun VocabularyScreen(
         HeaderSection(
             word = vocab.word,
             pronunciation = vocab.pronunciationText,
-            partOfSpeech = vocab.partOfSpeech?: "",
-            onNavigateBack = onNavigateBack
+            partOfSpeech = vocab.partOfSpeech ?: "",
+            onNavigateBack = onNavigateBack,
+            onPlayAudio = {
+
+                val audioUrl = vocab.pronunciationAudio
+
+                if (!audioUrl.isNullOrEmpty()) {
+                    try {
+                        mediaPlayer.reset()
+                        mediaPlayer.setDataSource(audioUrl)
+                        mediaPlayer.prepareAsync()
+                        mediaPlayer.setOnPreparedListener { player ->
+                            player.start()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
         )
 
         Column(
@@ -109,7 +132,8 @@ fun HeaderSection(
     word: String,
     pronunciation: String,
     partOfSpeech: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onPlayAudio: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -165,10 +189,15 @@ fun HeaderSection(
                     .size(64.dp)
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.2f))
-                    .clickable { },
+                    .clickable { onPlayAudio() },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "")
+                Icon(
+                    imageVector = Icons.Default.VolumeUp,
+                    contentDescription = "Phát âm thanh",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
             }
         }
     }
