@@ -5,8 +5,18 @@ import { PrismaService } from '../prisma/prisma.service';
 export class VocabularyService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllVocabulary() {
-    return await this.prisma.vocabulary.findMany();
+  async getVocabularies(keyword?: string) {
+    const cleanWord = keyword?.trim();
+
+    if (!cleanWord) {
+      return this.prisma.vocabulary.findMany();
+    }
+
+    return this.prisma.$queryRaw`
+      select * from "Vocabulary"
+      where word ILIKE ${'%' + cleanWord + '%'} or 
+            meaning ILIKE ${'%' + cleanWord + '%'}
+    `;
   }
 
   async getVocabularyById(id: string) {

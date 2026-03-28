@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
 
 @Controller('vocabulary')
@@ -6,8 +6,8 @@ export class VocabularyController {
   constructor(private readonly VocabularyService: VocabularyService) {}
 
   @Get()
-  async getAllVocabularies() {
-    return await this.VocabularyService.getAllVocabulary();
+  async getAllVocabularies(@Query('q') query: string) {  
+    return await this.VocabularyService.getVocabularies(query);
   }
 
   @Get(':id')
