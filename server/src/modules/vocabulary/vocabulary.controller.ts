@@ -6,7 +6,7 @@ export class VocabularyController {
   constructor(private readonly VocabularyService: VocabularyService) {}
 
   @Get()
-  async getAllVocabularies(@Query('q') query: string) {  
+  async getAllVocabularies(@Query('q') query: string) {
     return await this.VocabularyService.getVocabularies(query);
   }
 
@@ -16,8 +16,11 @@ export class VocabularyController {
   }
 
   @Get('topic/:id')
-  async getVocabulariesByTopicId(@Param('id') id: string) {
-    return await this.VocabularyService.getVocabularyByTopic(id);
+  async getVocabulariesByTopicId(
+    @Param('id') id: string,
+    @Query('q') query: string,
+  ) {
+    return await this.VocabularyService.getVocabularyByTopic(id, query);
   }
 
   @Get('difficulty/:level')

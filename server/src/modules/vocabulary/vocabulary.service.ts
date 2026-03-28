@@ -14,8 +14,8 @@ export class VocabularyService {
 
     return this.prisma.$queryRaw`
       select * from "Vocabulary"
-      where word ILIKE ${'%' + cleanWord + '%'} or 
-            meaning ILIKE ${'%' + cleanWord + '%'}
+      where "word" ILIKE ${'%' + cleanWord + '%'} or 
+            "meaning" ILIKE ${'%' + cleanWord + '%'}
     `;
   }
 
@@ -34,11 +34,22 @@ export class VocabularyService {
     return vocabulary;
   }
 
-  async getVocabularyByTopic(topicId: string) {
-    return await this.prisma.vocabulary.findMany({
-      where: { topicId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async getVocabularyByTopic(topicId: string, keyword?: string) {
+    const cleanWord = keyword?.trim();
+
+    if (!cleanWord)
+      return await this.prisma.vocabulary.findMany({
+        where: { topicId },
+        orderBy: { createdAt: 'desc' },
+      });
+
+    return this.prisma.$queryRaw`
+      select * from "Vocabulary"
+      where ("topicId" = ${topicId}) And (
+        "meaning" ilike ${'%' + cleanWord + '%'} or 
+        "word" ilike ${'%' + cleanWord + '%'}
+      ) 
+    `;
   }
 
   async getVocabularyByDifficulty(level: number) {
