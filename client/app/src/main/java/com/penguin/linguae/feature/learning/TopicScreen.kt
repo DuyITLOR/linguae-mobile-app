@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.ripple.rememberRipple
@@ -46,6 +47,8 @@ fun TopicScreen(
 ) {
     val topics by viewModel.topics.collectAsState()
 
+    val querySearch by viewModel.querySearch.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.fetchTopic()
     }
@@ -58,7 +61,12 @@ fun TopicScreen(
 
             item { TopicHeader(totalTopics = topics.size) }
 
-            item { SearchingBar() }
+            item { SearchingBar(
+                query = querySearch,
+                onQueryChange = {
+                    newQuery -> viewModel.onSearchQueryChange(newQuery)
+                }
+            ) }
 
             item {
                 SectionLabel(
@@ -153,33 +161,44 @@ private fun StatPill(label: String) {
 }
 
 @Composable
-private fun SearchingBar() {
+private fun SearchingBar(query: String, onQueryChange: (String) -> Unit) {
     Box(
         modifier = Modifier
             .padding(horizontal = 20.dp)
             .offset(y = (-20).dp)
     ) {
-        Row(
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = {
+                Text(
+                    text = "Tìm kiếm chủ đề...",
+                    color = PurpleMid.copy(alpha = 0.6f),
+                    fontSize = 14.sp
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = PurpleMid,
+                    modifier = Modifier.size(18.dp)
+                )
+            },
+            singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Icon(
-                imageVector = androidx.compose.material.icons.Icons.Default.Search,
-                contentDescription = null,
-                tint = PurpleMid,
-                modifier = Modifier.size(18.dp)
+                .clip(RoundedCornerShape(16.dp)),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = PurpleMid,
+                focusedTextColor = TextDark,
+                unfocusedTextColor = TextDark
             )
-            Text(
-                text = "Tìm kiếm chủ đề...",
-                color = PurpleMid,
-                fontSize = 14.sp
-            )
-        }
+        )
     }
 }
 

@@ -27,9 +27,9 @@ class VocabularyRepository {
         }
     }
 
-    suspend fun getVocabularyByTopic(topicId: String): Result<List<Vocabulary>> {
+    suspend fun getVocabularyByTopic(topicId: String, query: String): Result<List<Vocabulary>> {
         return try {
-            val data = api.getVocabularyByTopic(topicId)
+            val data = api.getVocabularyByTopic(topicId, query)
             Result.success(data)
         } catch(e: Exception) {
             Result.failure(e)

@@ -38,9 +38,10 @@ import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 @Composable
 fun VocabularyListScreen(topicId: String, navController: NavHostController, onNavigateBack: () -> Unit, viewModel: VocabularyViewModel = viewModel()) {
     val vocabularies = viewModel.vocabulary.collectAsState()
+    val querySearch = viewModel.querySearch.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchVocabularyByTopic(topicId)
+        viewModel.fetchVocabularyByTopic(topicId, "")
     }
 
     Scaffold(
@@ -53,7 +54,12 @@ fun VocabularyListScreen(topicId: String, navController: NavHostController, onNa
                 .padding(paddingValues)
         ) {
             TopHeader(onNavigateBack = onNavigateBack)
-            SearchBar()
+            SearchBar(
+                query = querySearch.value,
+                onQueryChange = {
+                    newQuery -> viewModel.onSearchQueryChange(newQuery, topicId)
+                }
+            )
             VocabularyList(vocabularyList = vocabularies.value, onItemClick = {vocabId ->
                 navController.navigate(Screen.Vocabulary.createRoute(vocabId))
             })
@@ -93,10 +99,10 @@ fun TopHeader(onNavigateBack: () -> Unit) {
 }
 
 @Composable
-fun SearchBar() {
+fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
     TextField(
-        value = "",
-        onValueChange = {},
+        value = query,
+        onValueChange = onQueryChange,
         placeholder = { Text("Tìm từ vựng...", color = PurpleBlueTheme.copy(alpha = 0.6f)) },
         leadingIcon = {
             Icon(Icons.Default.Search, contentDescription = "Search", tint = PurpleBlueTheme)

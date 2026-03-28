@@ -9,9 +9,9 @@ class TopicRepository {
 
     private val api = RetrofitClient.create(TopicApi::class.java)
 
-    suspend fun getAllTopic(): Result<List<Topic>> {
+    suspend fun getAllTopic(query: String): Result<List<Topic>> {
         return try {
-            val data = api.getAllTopic()
+            val data = api.getAllTopic(query)
 
             Log.i("API_TEST", data.toString())
             Result.success(data)

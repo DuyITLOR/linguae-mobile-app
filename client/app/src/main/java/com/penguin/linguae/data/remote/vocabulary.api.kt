@@ -18,6 +18,7 @@ interface VocabularyApi {
 
     @GET("vocabulary/topic/{id}")
     suspend fun getVocabularyByTopic(
-        @Path("id") topicId: String
+        @Path("id") topicId: String,
+        @Query("q") query: String
     ): List<Vocabulary>
 }
