@@ -9,9 +9,9 @@ class VocabularyRepository {
 
     private val api = RetrofitClient.create(VocabularyApi::class.java)
 
-    suspend fun getAllVocabulary(): Result<List<Vocabulary>> {
+    suspend fun getAllVocabulary(query: String): Result<List<Vocabulary>> {
         return try {
-            val data = api.getAllVocabulary()
+            val data = api.getAllVocabulary(query)
             Result.success(data)
         } catch (e: Exception) {
             Result.failure(e)

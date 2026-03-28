@@ -7,7 +7,9 @@ import retrofit2.http.Query
 
 interface VocabularyApi {
     @GET("vocabulary")
-    suspend fun getAllVocabulary(): List<Vocabulary>
+    suspend fun getAllVocabulary(
+        @Query("q") query: String
+    ): List<Vocabulary>
 
     @GET("vocabulary/{id}")
     suspend fun getVocabularyById(
