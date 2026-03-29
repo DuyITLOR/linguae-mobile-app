@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
+import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
@@ -60,6 +61,10 @@ fun AppNavigation(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(Screen.FavoriteVocabulary.route) {
+            FavoriteScreen()
         }
 
         composable(
