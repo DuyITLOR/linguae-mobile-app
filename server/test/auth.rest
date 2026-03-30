@@ -13,8 +13,8 @@ Content-Type: application/json
 
 {
 	"fullName": "Truong Thanh Dat",
-	"email": "truongthanhdathaha@gmail.com",
-	"password": "Thdat@123"
+	"email": "dn156162@gmail.com",
+	"password": "123456"
 }
 
 ### Sign in
@@ -22,7 +22,7 @@ POST {{baseUrl}}/auth/sign-in
 Content-Type: application/json
 
 {
-	"email": "test.user+2@gmail.com",
+	"email": "dn156162@gmail.com",
 	"password": "123456"
 }
 
