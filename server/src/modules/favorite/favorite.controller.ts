@@ -1,12 +1,13 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
+import { UserId } from '../../common';
 
 @Controller('favorite')
 export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
-  @Get('user/:id')
-  async getFavoriteByUserId(@Param('id') id: string) {
-    return await this.favoriteService.getFavoriteByUserId(id);
+  @Get()
+  async getFavoriteByUserId(@UserId() userId: string) {
+    return await this.favoriteService.getFavoriteByUserId(userId);
   }
 }
