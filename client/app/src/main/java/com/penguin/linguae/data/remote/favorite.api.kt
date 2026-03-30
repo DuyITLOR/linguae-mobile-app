@@ -5,8 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface FavoriteApi {
-    @GET("favourite/user/{id}")
-    suspend fun getFavoriteByUserId(
-        @Path("id") id: String
-    ): Favorite
+    @GET("favourite")
+    suspend fun getFavoriteByUserId(): Favorite
 }

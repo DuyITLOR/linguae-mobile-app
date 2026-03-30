@@ -12,9 +12,9 @@ class FavoriteRepository {
 
     private val api = RetrofitClient.create(FavoriteApi::class.java)
 
-    suspend fun getFavoriteByUserId(userId: String): Result<Favorite> {
+    suspend fun getFavoriteByUserId(): Result<Favorite> {
         return try {
-            val data = api.getFavoriteByUserId(userId)
+            val data = api.getFavoriteByUserId()
 
             Log.i("API_TEST", data.toString())
             Result.success(data)
