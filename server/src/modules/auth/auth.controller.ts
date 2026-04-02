@@ -6,6 +6,8 @@ import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
 import { AuthService } from './auth.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 interface AuthPayload {
   user: {
@@ -51,5 +53,28 @@ export class AuthController {
   ): Promise<HttpResponseBody<AuthPayload>> {
     const result = await this.authService.signInWithGoogle(body);
     return this.httpResponse.ok(result, 'Đăng nhập bằng Google thành công');
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(
+    @Body() body: ForgotPasswordDto,
+  ): Promise<HttpResponseBody<{ email: string }>> {
+    const result = await this.authService.forgotPassword(body);
+    return this.httpResponse.ok(
+      result,
+      'Nếu email tồn tại, hệ thống đã gửi mã OTP đặt lại mật khẩu',
+    );
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(
+    @Body() body: ResetPasswordDto,
+  ): Promise<HttpResponseBody<null>> {
+    await this.authService.resetPassword(body);
+    return this.httpResponse.ok(null, 'Đặt lại mật khẩu thành công');
   }
 }

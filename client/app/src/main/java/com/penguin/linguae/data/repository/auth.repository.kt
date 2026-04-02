@@ -2,10 +2,10 @@ package com.penguin.linguae.data.repository
 
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.remote.AuthApi
-import com.penguin.linguae.data.remote.LoginData
-import com.penguin.linguae.data.remote.LoginRequest
-import com.penguin.linguae.data.remote.LoginWithGoogleRequest
-import com.penguin.linguae.data.remote.RegisterRequest
+import com.penguin.linguae.data.model.LoginData
+import com.penguin.linguae.data.model.LoginRequest
+import com.penguin.linguae.data.model.LoginWithGoogleRequest
+import com.penguin.linguae.data.model.RegisterRequest
 
 class AuthRepository {
     private val api = RetrofitClient.create(AuthApi::class.java)

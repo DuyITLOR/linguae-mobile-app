@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
-import com.penguin.linguae.data.remote.LoginData
+import com.penguin.linguae.data.model.LoginData
 import com.penguin.linguae.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
