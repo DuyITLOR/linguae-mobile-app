@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
@@ -50,6 +51,9 @@ fun AppNavigation(
                 },
                 onNavigateRegister = {
                     navController.navigate(Screen.Register.route)
+                },
+                onNavigateForgotPassword = {
+                    navController.navigate(Screen.forogtPassword.route)
                 }
             )
         }
@@ -59,6 +63,15 @@ fun AppNavigation(
                 viewModel = viewModel(),
                 onNavigateLogin = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.forogtPassword.route) {
+            ForgotPasswordScreen(
+                viewModel = viewModel(),
+                onNavigateLogin = {
+                    navController.navigate(Screen.Login.route)
                 }
             )
         }
