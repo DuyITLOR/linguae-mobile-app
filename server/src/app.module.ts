@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { TopicModule } from './modules/topic/topic.module';
+import { FavoriteModule } from './modules/favorite/favorite.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TopicModule } from './modules/topic/topic.module';
     AuthModule,
     VocabularyModule,
     TopicModule,
+    FavoriteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

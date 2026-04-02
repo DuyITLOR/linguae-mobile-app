@@ -11,6 +11,7 @@ sealed class Screen(val route: String) {
     object Register: Screen("register_screen")
 
     object Flashcard : Screen("flashcard_screen")
+    object FavoriteVocabulary: Screen("favorite")
 
     object VocabularyList: Screen("vocabulary_screen/{topicId}") {
         fun createRoute(topicId: String): String {

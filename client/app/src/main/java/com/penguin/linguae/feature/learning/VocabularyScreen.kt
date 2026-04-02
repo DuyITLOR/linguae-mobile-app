@@ -34,8 +34,6 @@ val PrimaryPurple = Color(0xFF7B61FF)
 val TextGrayTitle = Color(0xFF8A8A99)
 val TextDarkMain = Color(0xFF2D2D3A)
 
-
-
 @Composable
 fun VocabularyScreen(
     vocabId: String,
