@@ -22,13 +22,13 @@ import com.penguin.linguae.core.ui.theme.TextGray
 @Composable
 fun OptionItem(
     text: String = "",
-    isSelected: Boolean = false,
+    isSelected: Boolean? = false,
     isCorrect: Boolean? = null,       // null = not yet answered
     onClick: () -> Unit = {},
 ) {
     val backgroundColor = when (isCorrect) {
-        true if isSelected -> Green
-        false if isSelected -> Red
+        true if isSelected == true -> Green
+        false if isSelected == false -> Red
         else -> SurfaceColor
     }
 
@@ -42,6 +42,6 @@ fun OptionItem(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = text, color = if (isSelected) SurfaceColor else Black)
+        Text(text = text, color = if (isSelected == true) SurfaceColor else Black)
     }
 }

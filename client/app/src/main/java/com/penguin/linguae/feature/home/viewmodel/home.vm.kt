@@ -37,7 +37,7 @@ class HomeViewModel(): ViewModel() {
     fun onPracticeCardClick(){
         viewModelScope.launch {
 //            Đợi có route chính thức
-//            _navigationEvent.emit("")
+            _navigationEvent.emit("cloze_screen")
         }
     }
 

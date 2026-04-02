@@ -16,29 +16,21 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.feature.cloze.component.*
-import com.penguin.linguae.feature.cloze.viewmodel.ClozeViewModel
+import com.penguin.linguae.feature.cloze.viewmodel.*
 
 @Preview
 @Composable
 fun ClozeScreen(
     viewModel: ClozeViewModel = ClozeViewModel()
 ){
-    val options = remember {
-        listOf(
-            Option(questionID = 1, answer = "Paris", isCorrect = true) { viewModel.onOptionSelected(0) },
-            Option(questionID = 1, answer = "London", isCorrect = false) { viewModel.onOptionSelected(1) },
-            Option(questionID = 1, answer = "Berlin", isCorrect = false) { viewModel.onOptionSelected(2) },
-            Option(questionID = 1, answer = "Madrid", isCorrect = false) { viewModel.onOptionSelected(3) },
-        )
-    }
-    val question = remember {
-        Question(
-            questionID = 1,
-            question = "ABC is in ___ of France!"
-        )
-    }
+    val questionsWithOptions by viewModel.questionsWithOptions.collectAsStateWithLifecycle()
+    val currentIndex by viewModel.currentIndex.collectAsStateWithLifecycle()
+
+    val current = questionsWithOptions[currentIndex]
+
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
@@ -51,10 +43,10 @@ fun ClozeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                Header(question.questionID)
+                Header(current.question.questionID)
             }
             item {
-                QuestionHolder(question)
+                QuestionHolder(current.question)
             }
             item {
                 Text(
@@ -66,7 +58,7 @@ fun ClozeScreen(
             item {
                 ClozeOptions(
                     screenHeight,
-                    options,
+                    current.options,
                     viewModel
                 )
             }
@@ -77,14 +69,3 @@ fun ClozeScreen(
 
 
 
-data class Question(
-    val questionID: Int = -1,
-    val question: String = "",
-)
-
-data class Option(
-    val questionID: Int = -1,
-    val answer: String = "",
-    val isCorrect: Boolean? = null,
-    val onClick: () -> Unit = {}
-)

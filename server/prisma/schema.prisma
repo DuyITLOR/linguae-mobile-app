@@ -271,6 +271,25 @@ model VocabularyExample {
   @@index([vocabularyId])
 }
 
+model ClozeQuestion {
+  id  Int @id @default(autoincrement())
+  sentence String
+  createdAt DateTime @default(now())
+  
+  ClozeOptions ClozeOptions[]
+}
+
+model ClozeOptions {
+  id Int @id @default(autoincrement())
+  questionId Int
+  optionText String
+  isCorrect Boolean
+  createdAt DateTime @default(now())
+  blankIndex  Int
+
+  ClozeQuestion ClozeQuestion @relation(fields: [questionId], references: [id])
+}
+
 enum ActivityType {
   FLASHCARD_REVIEW
   PRACTICE_TEST

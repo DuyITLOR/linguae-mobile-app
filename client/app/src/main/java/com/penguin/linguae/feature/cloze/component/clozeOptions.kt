@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.penguin.linguae.feature.cloze.Option
+import com.penguin.linguae.data.model.ClozeOption
 import com.penguin.linguae.feature.cloze.viewmodel.ClozeViewModel
 import kotlin.collections.forEach
 
@@ -17,7 +17,7 @@ import kotlin.collections.forEach
 @Composable
 fun ClozeOptions(
     screenHeight: Dp,
-    options: List<Option>,   // your options from DB
+    options: List<ClozeOption>,   // your options from DB
     viewModel: ClozeViewModel
 ) {
     val selectedId by viewModel.selectedOptionId.collectAsState()
@@ -35,6 +35,14 @@ fun ClozeOptions(
                 isSelected = selectedId == option.questionID,
                 isCorrect = if (isAnswered) option.isCorrect else null,
                 onClick = { viewModel.onOptionSelected(option.questionID) }
+            )
+        }
+        if (isAnswered){
+            OptionItem(
+                text = "Next Question",
+                isSelected = null,
+                isCorrect = null,
+                onClick = { viewModel.onNextQuestionClicked() }
             )
         }
     }

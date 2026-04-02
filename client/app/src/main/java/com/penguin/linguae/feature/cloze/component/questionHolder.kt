@@ -10,10 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.SurfaceColor
-import com.penguin.linguae.feature.cloze.Question
+import com.penguin.linguae.data.model.ClozeQuestion
 
 @Composable
-fun QuestionHolder(sentence: Question){
+fun QuestionHolder(sentence: ClozeQuestion){
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f),

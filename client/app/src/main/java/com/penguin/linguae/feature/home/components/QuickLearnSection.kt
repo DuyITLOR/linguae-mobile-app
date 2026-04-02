@@ -77,7 +77,7 @@ fun QuickLearn(screenHeight: Dp, viewModel: HomeViewModel) {
                 "Flashcard",
                 "Ôn tập nhanh",
                 Blue)
-            { viewModel.onWordCardClick() },
+            { viewModel.onPracticeCardClick() },
             MenuItem(
                 R.drawable.pencil,
                 "Luyện tập",
