@@ -1,74 +1,41 @@
-### Variables
-@baseUrl = http://localhost:5050
-@apiKey = dev-local-key
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4iLCJpYXQiOjE2NDcwODAwMDB9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+@baseUrl = http://localhost:3000
+@apiKey = your-api-key
+@token = your-bearer-token
 
-### ===========================================
-### PUBLIC ENDPOINTS (không cần authentication)
-### ===========================================
+### PUBLIC ENDPOINTS
 
-### Sign up
 POST {{baseUrl}}/auth/sign-up
 Content-Type: application/json
 
 {
-	"fullName": "Truong Thanh Dat",
-	"email": "truongthanhdathaha@gmail.com",
-	"password": "Thdat@123"
+  "fullName": "Test User",
+  "email": "test.user@gmail.com",
+  "password": "123456"
 }
 
-### Sign in
+###
+
 POST {{baseUrl}}/auth/sign-in
 Content-Type: application/json
 
 {
-	"email": "test.user+2@gmail.com",
-	"password": "123456"
+  "email": "test.user@gmail.com",
+  "password": "123456"
 }
 
-### Sign in with Google
+###
+
 POST {{baseUrl}}/auth/google
 Content-Type: application/json
 
 {
-	"idToken": "paste-google-id-token-here"
+  "idToken": "paste-google-id-token-here"
 }
 
-### ===========================================
-### PROTECTED ENDPOINTS (cần x-api-key + Bearer token)
-### ===========================================
+###
 
-### Example: Logout (với full authentication)
+### PROTECTED ENDPOINTS
+
 POST {{baseUrl}}/auth/logout
 x-api-key: {{apiKey}}
 Authorization: Bearer {{token}}
-
-### Example: Refresh Token
-POST {{baseUrl}}/auth/refresh-token
-x-api-key: {{apiKey}}
-Authorization: Bearer {{token}}
-
-### Example: Get User Profile
-GET {{baseUrl}}/users/me
-x-api-key: {{apiKey}}
-Authorization: Bearer {{token}}
-
-### Example: Update User Profile
-PUT {{baseUrl}}/users/me
-Content-Type: application/json
-x-api-key: {{apiKey}}
-Authorization: Bearer {{token}}
-
-{
-	"fullName": "Updated User"
-}
-
-### ===========================================
-### NOTES
-### ===========================================
-# 1. @apiKey = x-api-key header value từ .env (INTERNAL_API_KEY)
-# 2. @token = Bearer token (JWT) - lấy từ login response
-# 3. Thiếu hoặc sai headers → 401 Unauthorized
-# 4. Thay @token bằng token thực từ sign-in response
-# 5. AUTH_REQUIRED=false trong .env để disable authentication
-# 6. Với Google login, Android cần gửi idToken thật lên /auth/google

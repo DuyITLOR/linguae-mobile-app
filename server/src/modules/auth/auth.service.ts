@@ -1,16 +1,27 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   InternalServerErrorException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'crypto';
+import {
+  createHash,
+  createHmac,
+  randomBytes,
+  randomInt,
+  scryptSync,
+  timingSafeEqual,
+} from 'crypto';
+import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import { PrismaService } from '../prisma/prisma.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { GoogleAuthDto } from './dto/google-auth.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { OAuth2Client, TokenPayload } from 'google-auth-library';
-import { GoogleAuthDto } from './dto/google-auth.dto';
+import { MailService } from '../mail/mail.service';
 
 interface PublicUser {
   id: string;
@@ -31,11 +42,27 @@ interface SignInUserRow extends SignUpUserRow {
   provider: string;
 }
 
+interface ForgotPasswordUserRow {
+  id: string;
+  email: string;
+  fullName: string;
+  provider: string;
+}
+
+interface ResetPasswordUserRow extends ForgotPasswordUserRow {
+  resetPasswordOtpHash: string | null;
+  resetPasswordExpiresAt: Date | null;
+}
+
 @Injectable()
 export class AuthService {
   private readonly googleClient: OAuth2Client;
   private readonly googleClientId: string;
-  constructor(private readonly prisma: PrismaService) {
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {
     this.googleClientId = process.env.GOOGLE_CLIENT_ID ?? '';
     this.googleClient = new OAuth2Client({
       clientId: this.googleClientId,
@@ -115,130 +142,28 @@ export class AuthService {
       throw new InternalServerErrorException('Dữ liệu người dùng không hợp lệ');
     }
 
-    const user = foundUser;
-
-    if (user.provider !== 'local') {
+    if (foundUser.provider !== 'local') {
       throw new UnauthorizedException(
         'Tài khoản này không đăng nhập bằng mật khẩu',
       );
     }
 
     if (
-      !user?.passwordHash ||
-      !this.verifyPassword(password, user.passwordHash)
+      !foundUser.passwordHash ||
+      !this.verifyPassword(password, foundUser.passwordHash)
     ) {
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
     return {
       user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        avatarUrl: user.avatarUrl,
+        id: foundUser.id,
+        email: foundUser.email,
+        fullName: foundUser.fullName,
+        avatarUrl: foundUser.avatarUrl,
       },
-      accessToken: this.generateAccessToken(user.id, user.email),
+      accessToken: this.generateAccessToken(foundUser.id, foundUser.email),
     };
-  }
-
-  private validateSignUpInput(input: {
-    email?: string;
-    fullName?: string;
-    password?: string;
-  }): void {
-    if (!input.email || !input.fullName || !input.password) {
-      throw new BadRequestException(
-        'Vui lòng cung cấp họ tên, email và mật khẩu',
-      );
-    }
-
-    if (!this.isValidEmail(input.email)) {
-      throw new BadRequestException('Định dạng email không hợp lệ');
-    }
-
-    if (input.password.length < 6) {
-      throw new BadRequestException('Mật khẩu phải có ít nhất 6 ký tự');
-    }
-  }
-
-  private isValidEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  private hashPassword(password: string): string {
-    const salt = randomBytes(16).toString('hex');
-    const hash = scryptSync(password, salt, 64).toString('hex');
-    return `${salt}:${hash}`;
-  }
-
-  private verifyPassword(password: string, passwordHash: string): boolean {
-    const [salt, originalHash] = passwordHash.split(':');
-
-    if (!salt || !originalHash) {
-      return false;
-    }
-
-    const hashBuffer = scryptSync(password, salt, 64);
-    const originalHashBuffer = Buffer.from(originalHash, 'hex');
-
-    if (hashBuffer.length !== originalHashBuffer.length) {
-      return false;
-    }
-
-    return timingSafeEqual(hashBuffer, originalHashBuffer);
-  }
-
-  private generateAccessToken(userId: string, email: string): string {
-    const secret = process.env.AUTH_TOKEN_SECRET ?? 'dev-auth-secret';
-    const now = Math.floor(Date.now() / 1000);
-    const exp = now + 60 * 60 * 24;
-
-    const header = this.toBase64Url(
-      JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
-    );
-    const payload = this.toBase64Url(
-      JSON.stringify({ sub: userId, email, iat: now, exp }),
-    );
-
-    const signature = createHmac('sha256', secret)
-      .update(`${header}.${payload}`)
-      .digest('base64url');
-
-    return `${header}.${payload}.${signature}`;
-  }
-
-  private toBase64Url(value: string): string {
-    return Buffer.from(value).toString('base64url');
-  }
-
-  private isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === 'object' && value !== null;
-  }
-
-  private isSignUpUserRow(value: unknown): value is SignUpUserRow {
-    if (!this.isRecord(value)) {
-      return false;
-    }
-
-    return (
-      typeof value.id === 'string' &&
-      typeof value.email === 'string' &&
-      typeof value.fullName === 'string' &&
-      (typeof value.avatarUrl === 'string' || value.avatarUrl === null)
-    );
-  }
-
-  private isSignInUserRow(value: unknown): value is SignInUserRow {
-    if (!this.isSignUpUserRow(value)) {
-      return false;
-    }
-
-    return (
-      'provider' in value &&
-      typeof value.provider === 'string' &&
-      'passwordHash' in value &&
-      (typeof value.passwordHash === 'string' || value.passwordHash === null)
-    );
   }
 
   async signInWithGoogle(body: GoogleAuthDto): Promise<AuthResult> {
@@ -338,6 +263,205 @@ export class AuthService {
     };
   }
 
+  async forgotPassword(
+    body: ForgotPasswordDto,
+  ): Promise<{ email: string }> {
+    const email = body.email?.trim().toLowerCase();
+
+    if (!email) {
+      throw new BadRequestException('Vui lòng cung cấp email');
+    }
+
+    if (!this.isValidEmail(email)) {
+      throw new BadRequestException('Định dạng email không hợp lệ');
+    }
+
+    const foundUser: unknown = await this.prisma.user.findFirst({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        provider: true,
+      },
+    });
+
+    if (!foundUser) {
+      return { email };
+    }
+
+    if (!this.isForgotPasswordUserRow(foundUser)) {
+      throw new InternalServerErrorException('Dữ liệu người dùng không hợp lệ');
+    }
+
+    if (foundUser.provider !== 'local') {
+      return { email };
+    }
+
+    const otp = this.generateResetPasswordOtp();
+    const resetPasswordOtpHash = this.hashResetPasswordOtp(otp);
+    const resetPasswordExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await this.prisma.user.update({
+      where: { id: foundUser.id },
+      data: {
+        resetPasswordOtpHash,
+        resetPasswordExpiresAt,
+      },
+    });
+
+    await this.mailService.sendResetPasswordEmail({
+      email: foundUser.email,
+      fullName: foundUser.fullName,
+      otp,
+    });
+
+    return { email };
+  }
+
+  async resetPassword(body: ResetPasswordDto): Promise<void> {
+    const email = body.email?.trim().toLowerCase();
+    const otp = body.otp?.trim();
+    const newPassword = body.newPassword;
+
+    if (!email || !otp || !newPassword) {
+      throw new BadRequestException(
+        'Vui lòng cung cấp email, otp và mật khẩu mới',
+      );
+    }
+
+    if (!this.isValidEmail(email)) {
+      throw new BadRequestException('Định dạng email không hợp lệ');
+    }
+
+    if (newPassword.length < 6) {
+      throw new BadRequestException('Mật khẩu phải có ít nhất 6 ký tự');
+    }
+
+    if (!/^\d{6}$/.test(otp)) {
+      throw new BadRequestException('OTP phải gồm đúng 6 chữ số');
+    }
+
+    const resetPasswordOtpHash = this.hashResetPasswordOtp(otp);
+
+    const foundUser: unknown = await this.prisma.user.findFirst({
+      where: {
+        email,
+        resetPasswordOtpHash,
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        provider: true,
+        resetPasswordOtpHash: true,
+        resetPasswordExpiresAt: true,
+      },
+    });
+
+    if (!foundUser || !this.isResetPasswordUserRow(foundUser)) {
+      throw new ForbiddenException('OTP đặt lại mật khẩu không hợp lệ');
+    }
+
+    if (foundUser.provider !== 'local') {
+      throw new ForbiddenException('Tài khoản này không hỗ trợ đổi mật khẩu');
+    }
+
+    if (
+      !foundUser.resetPasswordExpiresAt ||
+      foundUser.resetPasswordExpiresAt.getTime() < Date.now()
+    ) {
+      throw new ForbiddenException('OTP đặt lại mật khẩu đã hết hạn');
+    }
+
+    await this.prisma.user.update({
+      where: { id: foundUser.id },
+      data: {
+        passwordHash: this.hashPassword(newPassword),
+        resetPasswordOtpHash: null,
+        resetPasswordExpiresAt: null,
+      },
+    });
+  }
+
+  private validateSignUpInput(input: {
+    email?: string;
+    fullName?: string;
+    password?: string;
+  }): void {
+    if (!input.email || !input.fullName || !input.password) {
+      throw new BadRequestException(
+        'Vui lòng cung cấp họ tên, email và mật khẩu',
+      );
+    }
+
+    if (!this.isValidEmail(input.email)) {
+      throw new BadRequestException('Định dạng email không hợp lệ');
+    }
+
+    if (input.password.length < 6) {
+      throw new BadRequestException('Mật khẩu phải có ít nhất 6 ký tự');
+    }
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private hashPassword(password: string): string {
+    const salt = randomBytes(16).toString('hex');
+    const hash = scryptSync(password, salt, 64).toString('hex');
+    return `${salt}:${hash}`;
+  }
+
+  private verifyPassword(password: string, passwordHash: string): boolean {
+    const [salt, originalHash] = passwordHash.split(':');
+
+    if (!salt || !originalHash) {
+      return false;
+    }
+
+    const hashBuffer = scryptSync(password, salt, 64);
+    const originalHashBuffer = Buffer.from(originalHash, 'hex');
+
+    if (hashBuffer.length !== originalHashBuffer.length) {
+      return false;
+    }
+
+    return timingSafeEqual(hashBuffer, originalHashBuffer);
+  }
+
+  private generateAccessToken(userId: string, email: string): string {
+    const secret = process.env.AUTH_TOKEN_SECRET ?? 'dev-auth-secret';
+    const now = Math.floor(Date.now() / 1000);
+    const exp = now + 60 * 60 * 24;
+
+    const header = this.toBase64Url(
+      JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+    );
+    const payload = this.toBase64Url(
+      JSON.stringify({ sub: userId, email, iat: now, exp }),
+    );
+
+    const signature = createHmac('sha256', secret)
+      .update(`${header}.${payload}`)
+      .digest('base64url');
+
+    return `${header}.${payload}.${signature}`;
+  }
+
+  private generateResetPasswordOtp(): string {
+    return randomInt(100000, 1000000).toString();
+  }
+
+  private hashResetPasswordOtp(otp: string): string {
+    return createHash('sha256').update(otp).digest('hex');
+  }
+
+  private toBase64Url(value: string): string {
+    return Buffer.from(value).toString('base64url');
+  }
+
   private async verifyGoogleIdToken(idToken: string): Promise<TokenPayload> {
     if (!this.googleClientId) {
       throw new InternalServerErrorException('Missing GOOGLE_CLIENT_ID');
@@ -361,6 +485,36 @@ export class AuthService {
     }
   }
 
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
+  }
+
+  private isSignUpUserRow(value: unknown): value is SignUpUserRow {
+    if (!this.isRecord(value)) {
+      return false;
+    }
+
+    return (
+      typeof value.id === 'string' &&
+      typeof value.email === 'string' &&
+      typeof value.fullName === 'string' &&
+      (typeof value.avatarUrl === 'string' || value.avatarUrl === null)
+    );
+  }
+
+  private isSignInUserRow(value: unknown): value is SignInUserRow {
+    if (!this.isSignUpUserRow(value)) {
+      return false;
+    }
+
+    return (
+      'provider' in value &&
+      typeof value.provider === 'string' &&
+      'passwordHash' in value &&
+      (typeof value.passwordHash === 'string' || value.passwordHash === null)
+    );
+  }
+
   private isGoogleUserRow(value: unknown): value is PublicUser {
     return this.isSignUpUserRow(value);
   }
@@ -373,5 +527,35 @@ export class AuthService {
     }
 
     return 'provider' in value && typeof value.provider === 'string';
+  }
+
+  private isForgotPasswordUserRow(
+    value: unknown,
+  ): value is ForgotPasswordUserRow {
+    if (!this.isRecord(value)) {
+      return false;
+    }
+
+    return (
+      typeof value.id === 'string' &&
+      typeof value.email === 'string' &&
+      typeof value.fullName === 'string' &&
+      typeof value.provider === 'string'
+    );
+  }
+
+  private isResetPasswordUserRow(
+    value: unknown,
+  ): value is ResetPasswordUserRow {
+    if (!this.isForgotPasswordUserRow(value) || !this.isRecord(value)) {
+      return false;
+    }
+
+    return (
+      (typeof value.resetPasswordOtpHash === 'string' ||
+        value.resetPasswordOtpHash === null) &&
+      (value.resetPasswordExpiresAt instanceof Date ||
+        value.resetPasswordExpiresAt === null)
+    );
   }
 }
