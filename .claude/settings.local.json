@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/dn156/source/Mobile/final-project/linguae-mobile-app/client/app/src/main/java/com/penguin/linguae -type f -name \"*.kt\" -exec echo {} \\\\;)"
+    ]
+  }
+}
