@@ -7,6 +7,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { TopicModule } from './modules/topic/topic.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
+import { DailyMissionModule } from './modules/daily-mission/daily-mission.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FavoriteModule } from './modules/favorite/favorite.module';
     VocabularyModule,
     TopicModule,
     FavoriteModule,
+    DailyMissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

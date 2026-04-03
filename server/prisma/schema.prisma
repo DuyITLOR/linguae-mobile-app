@@ -181,6 +181,7 @@ model User {
   UserLearningPlan       UserLearningPlan[]
   UserSetting            UserSetting[]
   UserVocabularyProgress UserVocabularyProgress[]
+  DailyMission           DailyMission[]
 }
 
 model UserDailyGoal {
@@ -252,6 +253,7 @@ model Vocabulary {
   UserVocabularyProgress UserVocabularyProgress[]
   Topic                  Topic                    @relation(fields: [topicId], references: [id])
   VocabularyExample      VocabularyExample[]
+  DailyTaskCompletion    DailyTaskCompletion[]
 
   @@index([topicId])
   @@index([word])
@@ -267,6 +269,61 @@ model VocabularyExample {
   Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
 
   @@index([vocabularyId])
+}
+
+model DailyMission {
+  id         String        @id @default(uuid())
+  userId     String
+  date       DateTime
+  status     MissionStatus @default(IN_PROGRESS)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  User       User          @relation(fields: [userId], references: [id])
+  DailyTask  DailyTask[]
+
+  @@unique([userId, date])
+  @@index([userId])
+}
+
+model DailyTask {
+  id                  String                @id @default(uuid())
+  dailyMissionId      String
+  taskType            DailyTaskType
+  targetCount         Int                   @default(5)
+  completedCount      Int                   @default(0)
+  status              TaskStatus            @default(IN_PROGRESS)
+  vocabularyIds       Json
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  DailyMission        DailyMission          @relation(fields: [dailyMissionId], references: [id])
+  DailyTaskCompletion DailyTaskCompletion[]
+
+  @@index([dailyMissionId])
+}
+
+model DailyTaskCompletion {
+  dailyTaskId  String
+  vocabularyId String
+  completedAt  DateTime   @default(now())
+  DailyTask    DailyTask  @relation(fields: [dailyTaskId], references: [id])
+  Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
+
+  @@id([dailyTaskId, vocabularyId])
+}
+
+enum DailyTaskType {
+  VOCABULARY_LEARN
+  FLASHCARD_LEARN
+}
+
+enum MissionStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskStatus {
+  IN_PROGRESS
+  COMPLETED
 }
 
 enum ActivityType {
