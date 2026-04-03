@@ -78,15 +78,18 @@ fun FlashcardScreen(
     )
 
     fun advanceCard() {
-        if (current < cards.size) {
-            // Mark current word as complete before advancing
-            if (taskId != null && index < vocabIds.size) {
-                scope.launch {
-                    dailyMissionRepository?.completeWord(taskId, vocabIds[index])
-                }
+        // Always mark current word as complete (including last card)
+        if (taskId != null && index < vocabIds.size) {
+            scope.launch {
+                dailyMissionRepository?.completeWord(taskId, vocabIds[index])
             }
+        }
+        if (current < cards.size) {
             current++
             showMeaning = false
+        } else {
+            // Last card — navigate back so DailyMissionScreen refreshes via ON_RESUME
+            onBack()
         }
     }
 
