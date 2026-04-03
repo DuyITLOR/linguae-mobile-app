@@ -37,7 +37,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
     val authScreen = listOf(
         Screen.Login.route,
-        Screen.Register.route
+        Screen.Register.route,
+        Screen.forogtPassword.route
     )
 
     Scaffold(
