@@ -195,7 +195,7 @@ model UserDailyGoal {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime
   User                 User      @relation(fields: [userId], references: [id])
-}
+} 
 
 model UserLearningPlan {
   id        String   @id @default(uuid())
@@ -225,8 +225,6 @@ model UserVocabularyProgress {
   userId         String
   vocabularyId   String
   exposureCount  Int        @default(0)
-  correctCount   Int        @default(0)
-  masteryScore   Float      @default(0)
   lastReviewedAt DateTime?
   nextReviewAt   DateTime?
   updatedAt      DateTime

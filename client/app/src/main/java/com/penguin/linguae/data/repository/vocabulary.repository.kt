@@ -4,7 +4,6 @@ import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.data.remote.VocabularyApi
 
-
 class VocabularyRepository {
 
     private val api = RetrofitClient.create(VocabularyApi::class.java)

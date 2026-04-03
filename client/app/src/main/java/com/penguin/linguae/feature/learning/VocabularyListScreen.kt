@@ -234,7 +234,8 @@ fun PracticeButton() {
             .padding(20.dp)
             .background(Color.Transparent),
         contentAlignment = Alignment.BottomCenter
-    ) {
+    )
+    {
         Button(
             onClick = { },
             modifier = Modifier
