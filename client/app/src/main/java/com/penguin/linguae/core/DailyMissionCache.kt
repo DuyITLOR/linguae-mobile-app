@@ -3,9 +3,7 @@ package com.penguin.linguae.core
 import com.penguin.linguae.data.model.TaskWordsResponse
 
 object DailyMissionCache {
-    // vocabId -> taskId — populated when daily mission loads task words
     private val vocabToTaskMap = mutableMapOf<String, String>()
-    // taskId -> full words response
     private val taskWordsMap = mutableMapOf<String, TaskWordsResponse>()
 
     fun setTaskData(taskId: String, response: TaskWordsResponse) {
