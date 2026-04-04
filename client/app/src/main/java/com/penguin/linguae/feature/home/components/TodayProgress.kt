@@ -16,11 +16,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,9 +40,7 @@ import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.core.ui.theme.Yellow
 
 @Composable
-fun TodayProgress(progress: Float) {
-    val animatedProgress = animateFloatAsState(targetValue = progress, label = "todayProgress").value
-
+fun TodayProgress(progress: Float, onViewMission: () -> Unit = {}) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()

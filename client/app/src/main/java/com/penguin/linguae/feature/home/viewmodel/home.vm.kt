@@ -3,13 +3,11 @@ package com.penguin.linguae.feature.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguin.linguae.core.network.UserManager
-import com.penguin.linguae.data.model.Destination
 import com.penguin.linguae.data.model.User
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.penguin.linguae.data.repository.DailyMissionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -17,8 +15,22 @@ class HomeViewModel(): ViewModel() {
     private val _homeState = MutableStateFlow(HomeState())
     val homeState = _homeState.asStateFlow()
 
-    private val _navigationEvent = MutableSharedFlow<String>()
-    val navigationEvent: SharedFlow<String> = _navigationEvent.asSharedFlow()
+    private val dailyMissionRepository = DailyMissionRepository()
+
+    init {
+        refreshProgress()
+    }
+
+    fun refreshProgress() {
+        viewModelScope.launch {
+            // getTodayMission creates the mission if it doesn't exist yet
+            dailyMissionRepository.getTodayMission()
+            dailyMissionRepository.getTodaySummary()
+                .onSuccess { summary ->
+                    _homeState.update { it.copy(todayProgress = summary.overallProgress / 100f) }
+                }
+        }
+    }
 
     fun onWordCardClick(){
         viewModelScope.launch {

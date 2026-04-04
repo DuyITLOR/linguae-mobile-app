@@ -49,4 +49,12 @@ data class LoginWithGoogleRequest(
 )
 
 
+data class ForgotPasswordRequest(
+    val email: String
+)
 
+data class ForgotPasswordResponse(
+    val success: Boolean,
+    val message: String,
+    val data: ForgotPasswordRequest
+)

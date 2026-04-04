@@ -1,5 +1,7 @@
 package com.penguin.linguae.data.remote
 
+import com.penguin.linguae.data.model.ForgotPasswordRequest
+import com.penguin.linguae.data.model.ForgotPasswordResponse
 import com.penguin.linguae.data.model.LoginRequest
 import com.penguin.linguae.data.model.LoginResponse
 import com.penguin.linguae.data.model.LoginWithGoogleRequest
@@ -24,6 +26,11 @@ interface AuthApi {
     suspend fun loginWithGoogle(
         @Body request: LoginWithGoogleRequest
     ) : LoginWithGoogleResponse
+
+    @POST("auth/forgot-password")
+    suspend fun forgotPassword(
+        @Body request: ForgotPasswordRequest
+    ) : ForgotPasswordResponse
 }
 
 
