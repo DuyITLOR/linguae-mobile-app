@@ -1,6 +1,5 @@
 package com.penguin.linguae.feature.learning
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
@@ -17,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,7 +56,6 @@ fun VocabularyListScreen(
     }
 
     Scaffold(
-        bottomBar = { PracticeButton() },
         containerColor = AppBackground
     ) { paddingValues ->
         Column(
@@ -226,27 +222,3 @@ fun VocabularyCard(
     }
 }
 
-@Composable
-fun PracticeButton() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-            .background(Color.Transparent),
-        contentAlignment = Alignment.BottomCenter
-    )
-    {
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = PurpleBlueTheme)
-        ) {
-            Icon(Icons.Default.Edit, contentDescription = "Practice", tint = Color.White)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Luyện tập chủ đề này", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        }
-    }
-}
