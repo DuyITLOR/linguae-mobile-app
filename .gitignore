@@ -28,3 +28,7 @@ captures/
 .DS_Store
 Thumbs.db
 server/package-lock.json
+
+# Claude
+.claude/
+CLAUDE.md

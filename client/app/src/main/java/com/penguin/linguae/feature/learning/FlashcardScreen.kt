@@ -79,7 +79,7 @@ fun FlashcardScreen(
 
     fun advanceCard() {
         // Always mark current word as complete (including last card)
-        if (taskId != null && index < vocabIds.size) {
+        if (taskId != null && index <= vocabIds.size) {
             scope.launch {
                 dailyMissionRepository?.completeWord(taskId, vocabIds[index])
             }
@@ -202,7 +202,6 @@ fun FlashcardScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔹 Buttons
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()

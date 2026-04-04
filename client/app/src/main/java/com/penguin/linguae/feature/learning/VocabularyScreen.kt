@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.media.MediaPlayer
+import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
 val GradientTop = Color(0xFF6E68D1)
@@ -38,10 +39,12 @@ val TextDarkMain = Color(0xFF2D2D3A)
 fun VocabularyScreen(
     vocabId: String,
     onNavigateBack: () -> Unit = {},
-    viewModel: VocabularyViewModel = viewModel()
+    viewModel: VocabularyViewModel = viewModel(),
+    favoriteViewModel: FavoriteViewModel = viewModel()
 ) {
     val mediaPlayer = remember { MediaPlayer() }
     val vocabulary by viewModel.selectedVocabulary.collectAsState()
+    val favoriteIds by favoriteViewModel.favoriteIds.collectAsState()
 
     LaunchedEffect(vocabId) {
         viewModel.fetchVocabularyById(vocabId)
@@ -118,7 +121,16 @@ fun VocabularyScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            FavoriteButton()
+            FavoriteButton(
+                isFavorite = vocab.id in favoriteIds,
+                onToggle = {
+                    if (vocab.id in favoriteIds) {
+                        favoriteViewModel.removeFavorite(vocab.id)
+                    } else {
+                        favoriteViewModel.addFavorite(vocab.id)
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(16.dp))
             FlashcardButton()
         }
@@ -280,21 +292,26 @@ fun ExampleCard(fullSentence: String, targetWord: String, translation: String) {
 }
 
 @Composable
-fun FavoriteButton() {
+fun FavoriteButton(isFavorite: Boolean, onToggle: () -> Unit) {
+    val borderColor = if (isFavorite) PrimaryPurple else Color(0xFFE5E5EA)
+    val bgColor = if (isFavorite) Color(0xFFF0EDFF) else Color(0xFFFAFAFC)
+    val textColor = if (isFavorite) PrimaryPurple else TextDarkMain
+    val label = if (isFavorite) "Đã lưu vào yêu thích" else "Lưu vào yêu thích"
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .border(width = 1.dp, color = Color(0xFFE5E5EA), shape = RoundedCornerShape(16.dp))
-            .background(Color(0xFFFAFAFC), shape = RoundedCornerShape(16.dp))
-            .clickable { }
+            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(16.dp))
+            .background(bgColor, shape = RoundedCornerShape(16.dp))
+            .clickable { onToggle() }
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Đã lưu vào yêu thích",
+            text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            color = TextDarkMain
+            color = textColor
         )
     }
 }
