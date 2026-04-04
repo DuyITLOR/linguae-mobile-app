@@ -18,7 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.*
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +41,8 @@ import com.penguin.linguae.core.ui.theme.Yellow
 
 @Composable
 fun TodayProgress(progress: Float, onViewMission: () -> Unit = {}) {
+    val animatedProgress = animateFloatAsState(targetValue = progress, label = "todayProgress").value
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,6 +128,25 @@ fun TodayProgress(progress: Float, onViewMission: () -> Unit = {}) {
                 fontSize = 13.sp,
                 lineHeight = 18.sp
             )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onViewMission) {
+                    Text(
+                        text = "Xem nhiệm vụ",
+                        color = PrimaryPurple,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = PrimaryPurple,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }
