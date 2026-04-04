@@ -1,8 +1,21 @@
 package com.penguin.linguae.feature.home.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
@@ -18,85 +31,101 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.R
-import com.penguin.linguae.core.ui.theme.*
+import com.penguin.linguae.core.ui.theme.HomeSurfaceTint
+import com.penguin.linguae.core.ui.theme.LightPurple
+import com.penguin.linguae.core.ui.theme.PrimaryPurple
+import com.penguin.linguae.core.ui.theme.SurfaceColor
+import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.core.ui.theme.TextGray
+import com.penguin.linguae.core.ui.theme.Yellow
 
 @Composable
 fun TodayProgress(progress: Float, onViewMission: () -> Unit = {}) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentSize()
-            .shadow(4.dp, shape = RoundedCornerShape(20.dp)),
-        color = SurfaceColor
-    ){
-        Box(
-            modifier = Modifier.fillMaxSize(0.95f),
-            contentAlignment = Alignment.Center
+            .shadow(10.dp, shape = RoundedCornerShape(24.dp)),
+        color = SurfaceColor,
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-                modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .padding(vertical = 24.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(HomeSurfaceTint),
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.book),
                         contentDescription = null,
                         tint = Yellow,
-                        modifier = Modifier.size(36.dp)
-                    )
-                    Text(
-                        text = "Tiến độ hôm nay",
-                        color = TextGray,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "${(progress * 100).toInt()}%",
-                        color = PrimaryPurple,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                LinearProgressIndicator(
-                    progress = { progress },
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Tiến độ hôm nay",
+                        color = TextDark,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Theo dõi nhịp học trong ngày",
+                        color = TextGray,
+                        fontSize = 13.sp
+                    )
+                }
+
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    color = Green,
-                    trackColor = LightPurple,
-                    gapSize = 0.dp,
-                    drawStopIndicator = {},
-                    strokeCap = StrokeCap.Butt
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Button(
-                    onClick = onViewMission,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PurpleBlueTheme)
+                        .clip(RoundedCornerShape(50))
+                        .background(LightPurple)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = "Xem nhiệm vụ hôm nay",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
+                        text = "${(animatedProgress * 100).toInt()}%",
+                        color = PrimaryPurple,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
                     )
                 }
             }
+
+            LinearProgressIndicator(
+                progress = { animatedProgress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(14.dp)
+                    .clip(RoundedCornerShape(999.dp)),
+                color = PrimaryPurple,
+                trackColor = LightPurple,
+                gapSize = 0.dp,
+                drawStopIndicator = {},
+                strokeCap = StrokeCap.Butt
+            )
+
+            Text(
+                text = when {
+                    animatedProgress <= 0f -> "Bắt đầu một phiên học ngắn để khởi động ngày mới."
+                    animatedProgress < 1f -> "Bạn đang đi đúng hướng, cứ giữ nhịp này thêm một chút."
+                    else -> "Hoàn thành mục tiêu hôm nay rồi."
+                },
+                color = TextGray,
+                fontSize = 13.sp,
+                lineHeight = 18.sp
+            )
         }
     }
 }

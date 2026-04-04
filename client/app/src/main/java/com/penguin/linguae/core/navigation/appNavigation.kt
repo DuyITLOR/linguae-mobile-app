@@ -78,7 +78,9 @@ fun AppNavigation(
         }
 
         composable(Screen.FavoriteVocabulary.route) {
-            FavoriteScreen()
+            FavoriteScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(
