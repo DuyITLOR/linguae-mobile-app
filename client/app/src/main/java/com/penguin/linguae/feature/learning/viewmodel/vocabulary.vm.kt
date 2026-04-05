@@ -60,8 +60,8 @@ class VocabularyViewModel: ViewModel() {
             Log.i("API_TEST_VOCA_ID", result.toString())
             result.onSuccess {
                 _selectedVocabulary.value = it
-                // Auto-mark as learned if this vocab belongs to today's daily mission task
-                DailyMissionCache.getTaskIdForVocab(id)?.let { taskId ->
+                // Auto-mark as learned if this vocab belongs to today's VOCABULARY_LEARN task
+                DailyMissionCache.getTaskIdForVocab(id, "VOCABULARY_LEARN")?.let { taskId ->
                     launch { dailyMissionRepository.completeWord(taskId, id) }
                 }
             }.onFailure {

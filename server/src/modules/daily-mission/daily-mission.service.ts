@@ -220,6 +220,7 @@ export class DailyMissionService {
   }
 
   async completeWord(userId: string, taskId: string, vocabularyId: string) {
+    console.log(1);
     const task = await this.prismaService.dailyTask.findFirst({
       where: {
         id: taskId,
@@ -238,6 +239,8 @@ export class DailyMissionService {
       throw new BadRequestException('Vocabulary not in the task');
     }
 
+    console.log(2); 
+
     const alreadyCounted =
       await this.prismaService.dailyTaskCompletion.findUnique({
         where: {
@@ -252,6 +255,7 @@ export class DailyMissionService {
       return { alreadyCounted: true, task };
     }
 
+    console.log(3); 
     const updatedTask = await this.prismaService.$transaction(async (tx) => {
       await tx.dailyTaskCompletion.create({
         data: {
