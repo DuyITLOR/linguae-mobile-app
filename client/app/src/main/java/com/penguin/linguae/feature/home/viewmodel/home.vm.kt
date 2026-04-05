@@ -27,7 +27,16 @@ class HomeViewModel(): ViewModel() {
             dailyMissionRepository.getTodayMission()
             dailyMissionRepository.getTodaySummary()
                 .onSuccess { summary ->
-                    _homeState.update { it.copy(todayProgress = summary.overallProgress / 100f) }
+                    val wordsLearned = summary.tasks
+                        ?.firstOrNull { it.taskType == "VOCABULARY_LEARN" }
+                        ?.completedCount ?: 0
+                    _homeState.update {
+                        it.copy(
+                            todayProgress = summary.overallProgress / 100f,
+                            streak = summary.streak?.currentStreak ?: 0,
+                            wordLearned = wordsLearned,
+                        )
+                    }
                 }
         }
     }
