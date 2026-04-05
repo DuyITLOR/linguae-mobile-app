@@ -186,7 +186,7 @@ model User {
 
 model UserDailyGoal {
   id                   String    @id @default(uuid())
-  userId               String
+  userId               String    @unique
   targetWordsPerDay    Int       @default(10)
   targetPracticePerDay Int       @default(1)
   targetMinutesPerDay  Int       @default(15)

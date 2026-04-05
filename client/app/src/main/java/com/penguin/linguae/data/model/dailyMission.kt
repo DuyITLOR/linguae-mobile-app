@@ -16,13 +16,20 @@ data class DailyTask(
     val completedVocabularyIds: List<String>
 )
 
+data class StreakSummary(
+    val currentStreak: Int,
+    val bestStreak: Int,
+    val lastLearnedDate: String?
+)
+
 data class DailyMissionSummary(
     val hasMission: Boolean,
     val missionStatus: String?,
     val totalTasks: Int,
     val completedTasks: Int,
     val overallProgress: Int,
-    val tasks: List<DailyTaskSummary>?
+    val tasks: List<DailyTaskSummary>?,
+    val streak: StreakSummary?
 )
 
 data class DailyTaskSummary(

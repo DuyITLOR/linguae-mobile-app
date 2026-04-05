@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   BadRequestException,
@@ -43,6 +44,50 @@ export class DailyMissionService {
 	`;
 
     return result.map((r) => r.id);
+  }
+
+  private async updateStreak(userId: string) {
+    const today = this.todayOnly(new Date());
+    const yesterday = new Date(today);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+
+    const goal = await this.prismaService.userDailyGoal.upsert({
+      where: { userId: userId },
+      create: {
+        userId,
+        currentStreak: 1,
+        bestStreak: 1,
+        lastLearnedDate: today,
+        updatedAt: new Date(),
+      },
+      update: {},
+    });
+
+    const lastDate = goal.lastLearnedDate
+      ? this.todayOnly(goal.lastLearnedDate)
+      : null;
+
+    if (lastDate?.getTime() === today.getTime()) return goal;
+
+    let newStreak: number;
+
+    if (lastDate?.getTime() === yesterday.getTime()) {
+      newStreak = goal.currentStreak + 1;
+    } else {
+      newStreak = 1;
+    }
+
+    const newBest = goal.bestStreak < newStreak ? newStreak : goal.bestStreak;
+
+    return this.prismaService.userDailyGoal.update({
+      where: { userId },
+      data: {
+        currentStreak: newStreak,
+        bestStreak: newBest,
+        lastLearnedDate: today,
+        updatedAt: new Date(),
+      },
+    });
   }
 
   async getTodayMission(userId: string) {
@@ -110,20 +155,31 @@ export class DailyMissionService {
     );
 
     if (allDone) {
-      await tx.dailyMission.update({
+      const mission = await tx.dailyMission.update({
         where: { id: dailyMissionId },
         data: { status: MissionStatus.COMPLETED, updatedAt: new Date() },
       });
+
+      setImmediate(() => this.updateStreak(mission.userId));
     }
   }
 
   async getTodaySummary(userId: string) {
     const today = this.todayOnly(new Date());
 
-    const mission = await this.prismaService.dailyMission.findUnique({
-      where: { userId_date: { userId, date: today } },
-      include: { DailyTask: true },
-    });
+    const [mission, goal] = await Promise.all([
+      this.prismaService.dailyMission.findUnique({
+        where: { userId_date: { userId, date: today } },
+        include: { DailyTask: true },
+      }),
+      this.prismaService.userDailyGoal.findFirst({ where: { userId } }),
+    ]);
+
+    const streak = {
+      currentStreak: goal?.currentStreak ?? 0,
+      bestStreak: goal?.bestStreak ?? 0,
+      lastLearnedDate: goal?.lastLearnedDate ?? null,
+    };
 
     if (!mission) {
       return {
@@ -131,6 +187,7 @@ export class DailyMissionService {
         totalTasks: 0,
         completedTasks: 0,
         overallProgress: 0,
+        streak,
       };
     }
 
@@ -158,6 +215,7 @@ export class DailyMissionService {
         targetCount: t.targetCount,
         status: t.status,
       })),
+      streak,
     };
   }
 
