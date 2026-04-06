@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
@@ -24,10 +25,16 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+
+    val startRoute = if (TokenManager.getToken() != null) {
+        Screen.Home.route
+    } else {
+        Screen.Login.route
+    }
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Screen.Login.route
+        startDestination = startRoute
     ) {
 
         composable(Screen.Home.route) {
