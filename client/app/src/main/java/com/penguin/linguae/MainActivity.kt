@@ -18,11 +18,13 @@ import androidx.navigation.compose.rememberNavController
 import com.penguin.linguae.data.model.Destination
 import com.penguin.linguae.core.navigation.AppNavigation
 import com.penguin.linguae.core.navigation.Screen
+import com.penguin.linguae.core.network.TokenManager
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TokenManager.init(this)
         setContent{
             MainScreen()
         }
