@@ -54,6 +54,13 @@ class ForgotPasswordViewModel (
             try {
                 repo.resetPassword(saveEmail, otp, newPass)
                 _navigateLogin.value = true
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                error.value = try {
+                    JSONObject(errorBody).getString("message")
+                } catch (ex: Exception) {
+                    "Lỗi quên mật khẩu, vui lòng thử lại"
+                }
             } catch(e: Exception) {
                 error.value = e.message ?: "Đã xảy ra lỗi"
             } finally {
