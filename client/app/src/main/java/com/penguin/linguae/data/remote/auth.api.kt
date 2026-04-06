@@ -8,7 +8,8 @@ import com.penguin.linguae.data.model.LoginWithGoogleRequest
 import com.penguin.linguae.data.model.LoginWithGoogleResponse
 import com.penguin.linguae.data.model.RegisterRequest
 import com.penguin.linguae.data.model.RegisterResponse
-import com.penguin.linguae.data.model.User
+import com.penguin.linguae.data.model.ResetPasswordRequest
+import com.penguin.linguae.data.model.ResetPasswordResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 interface AuthApi {
@@ -31,6 +32,12 @@ interface AuthApi {
     suspend fun forgotPassword(
         @Body request: ForgotPasswordRequest
     ) : ForgotPasswordResponse
+
+
+    @POST("auth/reset-password")
+    suspend fun resetPassword(
+        @Body request: ResetPasswordRequest
+    ): ResetPasswordResponse
 }
 
 

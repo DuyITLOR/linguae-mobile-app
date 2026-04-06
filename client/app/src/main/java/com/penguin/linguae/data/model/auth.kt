@@ -58,3 +58,17 @@ data class ForgotPasswordResponse(
     val message: String,
     val data: ForgotPasswordRequest
 )
+
+data class ResetPasswordRequest(
+    val email: String,
+    val otp: String,
+    val newPassword: String
+)
+
+
+data class ResetPasswordResponse(
+    val success: Boolean,
+    val statusCode: Int,
+    val message: String,
+    val data: Any
+)

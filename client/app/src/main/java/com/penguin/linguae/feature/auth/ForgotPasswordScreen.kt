@@ -1,5 +1,6 @@
 package com.penguin.linguae.feature.auth
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +39,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.BorderGray
 import com.penguin.linguae.core.ui.theme.PrimaryPurple
 import com.penguin.linguae.feature.auth.component.AuthHeader
+import com.penguin.linguae.feature.auth.component.EmailStepContent
+import com.penguin.linguae.feature.auth.component.ResetPasswordStepContent
 import com.penguin.linguae.feature.auth.viewmodel.ForgotPasswordViewModel
+import com.penguin.linguae.feature.auth.viewmodel.RecoveryStep
 import kotlinx.coroutines.launch
 
 
@@ -56,6 +60,7 @@ fun ForgotPasswordScreen(
     val navigateLogin by viewModel.navigateLogin.collectAsState()
     val error by viewModel.error
     val isLoading by viewModel.isLoading
+    val currentStep by viewModel.step
 
     // Lắng nghe sự kiện chuyển hướng khi thành công
     LaunchedEffect(navigateLogin) {
@@ -73,6 +78,10 @@ fun ForgotPasswordScreen(
         }
     }
 
+    BackHandler(enabled = currentStep == RecoveryStep.RESET_PASSWORD) {
+        viewModel.step.value = RecoveryStep.ENTER_EMAIL
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         containerColor = Color.White
@@ -85,80 +94,37 @@ fun ForgotPasswordScreen(
 
             AuthHeader(
                 title = "Quên mật khẩu",
-                subtitle = "Nhập email để nhận mã OTP",
+                subtitle = if (currentStep == RecoveryStep.ENTER_EMAIL) "Nhập email của bạn" else "Nhập mã OTP và mật khẩu mới",
                 height = 250.dp
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(30.dp)
-                    .padding(bottom = padding.calculateBottomPadding())
-            ) {
-                Text("EMAIL")
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 5.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryPurple,
-                        unfocusedBorderColor = BorderGray,
-                    ),
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    onClick = {
-                        if (email.isEmpty()) {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Vui lòng nhập email")
+            when (currentStep) {
+                RecoveryStep.ENTER_EMAIL -> {
+                    EmailStepContent(
+                        email = email,
+                        onEmailChange = { email = it },
+                        isLoading = isLoading,
+                        onSendOtp = {
+                            if (email.isEmpty()) {
+                                scope.launch { snackbarHostState.showSnackbar("Vui lòng nhập email") }
+                            } else {
+                                viewModel.forgotPassword(email)
                             }
-                            return@Button
-                        }
-                        viewModel.forgotPassword(email)
-                    },
-                    enabled = !isLoading,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryPurple,
-                        contentColor = Color.White,
-                        disabledContainerColor = PrimaryPurple.copy(alpha = 0.5f)
+                        },
+                        onNavigateLogin = onNavigateLogin
                     )
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(24.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(
-                            "Gửi mã OTP",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
-                    }
                 }
 
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = "Quay lại đăng nhập",
-                    color = PrimaryPurple,
-                    modifier = Modifier
-                        .align(androidx.compose.ui.Alignment.CenterHorizontally)
-                        .padding(top = 8.dp)
-                        .clickable { onNavigateLogin() }
-                )
+                RecoveryStep.RESET_PASSWORD -> {
+                    ResetPasswordStepContent(
+                        email = viewModel.saveEmail, // Nhớ lấy email đã lưu từ VM
+                        isLoading = isLoading,
+                        onReset = { otp, newPass ->
+                            viewModel.resetPassword(otp, newPass)
+                        },
+                        onBack = { viewModel.step.value = RecoveryStep.ENTER_EMAIL }
+                    )
+                }
             }
 
         }
