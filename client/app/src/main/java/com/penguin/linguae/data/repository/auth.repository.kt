@@ -7,6 +7,7 @@ import com.penguin.linguae.data.model.LoginData
 import com.penguin.linguae.data.model.LoginRequest
 import com.penguin.linguae.data.model.LoginWithGoogleRequest
 import com.penguin.linguae.data.model.RegisterRequest
+import com.penguin.linguae.data.model.ResetPasswordRequest
 
 class AuthRepository {
     private val api = RetrofitClient.create(AuthApi::class.java)
@@ -49,6 +50,16 @@ class AuthRepository {
         )
 
         if(!response.success) {
+            throw Exception(response.message)
+        }
+    }
+
+    suspend fun resetPassword(email: String, otp: String, newPass: String) {
+        val response = api.resetPassword(
+            ResetPasswordRequest(email, otp, newPass)
+        )
+
+        if (!response.success){
             throw Exception(response.message)
         }
     }
