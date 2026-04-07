@@ -7,11 +7,17 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile_screen")
 
     object Login: Screen("login_screen")
-
     object Register: Screen("register_screen")
+
+    object forogtPassword: Screen("forgot_password_screen")
 
     object Flashcard : Screen("flashcard_screen")
     object FavoriteVocabulary: Screen("favorite")
+    object DailyMission : Screen("daily_mission_screen")
+
+    object DailyFlashcard : Screen("daily_flashcard_screen/{taskId}") {
+        fun createRoute(taskId: String) = "daily_flashcard_screen/$taskId"
+    }
 
     object VocabularyList: Screen("vocabulary_screen/{topicId}") {
         fun createRoute(topicId: String): String {

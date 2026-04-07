@@ -1,6 +1,7 @@
 package com.penguin.linguae.data.repository
 
 import com.penguin.linguae.core.network.RetrofitClient
+import com.penguin.linguae.data.model.ForgotPasswordRequest
 import com.penguin.linguae.data.remote.AuthApi
 import com.penguin.linguae.data.model.LoginData
 import com.penguin.linguae.data.model.LoginRequest
@@ -22,7 +23,6 @@ class AuthRepository {
         }
     }
 
-
     suspend fun register(fullName: String, email: String, password: String) {
         val response = api.register(
             RegisterRequest(fullName, email, password)
@@ -39,6 +39,16 @@ class AuthRepository {
         if(response.success && response.data != null) {
             return response.data.accessToken
         } else {
+            throw Exception(response.message)
+        }
+    }
+
+    suspend fun forgotPassword(email: String) {
+        val response = api.forgotPassword(
+            ForgotPasswordRequest(email)
+        )
+
+        if(!response.success) {
             throw Exception(response.message)
         }
     }

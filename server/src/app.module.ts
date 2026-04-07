@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule } from './common';
@@ -7,15 +8,18 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { TopicModule } from './modules/topic/topic.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
+import { DailyMissionModule } from './modules/daily-mission/daily-mission.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     CommonModule,
     PrismaModule,
     AuthModule,
     VocabularyModule,
     TopicModule,
     FavoriteModule,
+    DailyMissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -73,7 +73,8 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
     onNavigateHome: () -> Unit = {},
-    onNavigateRegister: () -> Unit = {}
+    onNavigateRegister: () -> Unit = {},
+    onNavigateForgotPassword: () -> Unit = {}
 ) {
     val navigateHome by viewModel.navigateHome.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -225,7 +226,7 @@ fun LoginScreen(
             Text(
                 "Quên mật khẩu ?",
                 color =  PrimaryPurple,
-                modifier = Modifier.align(Alignment.End),
+                modifier = Modifier.align(Alignment.End).clickable{ onNavigateForgotPassword() },
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )

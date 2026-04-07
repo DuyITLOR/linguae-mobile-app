@@ -1,5 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
+import { UserId } from '../../common';
 
 @Controller('vocabulary')
 export class VocabularyController {
@@ -11,8 +12,8 @@ export class VocabularyController {
   }
 
   @Get(':id')
-  async getVocabularyById(@Param('id') id: string) {
-    return await this.VocabularyService.getVocabularyById(id);
+  async getVocabularyById(@Param('id') id: string, @UserId() userId: string) {
+    return await this.VocabularyService.getVocabularyById(id, userId);
   }
 
   @Get('topic/:id')

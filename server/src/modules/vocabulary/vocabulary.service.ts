@@ -19,7 +19,7 @@ export class VocabularyService {
     `;
   }
 
-  async getVocabularyById(id: string) {
+  async getVocabularyById(id: string, userId: string) {
     const vocabulary = await this.prisma.vocabulary.findUnique({
       where: { id: id },
       include: {
@@ -30,6 +30,25 @@ export class VocabularyService {
     if (!vocabulary) {
       throw new NotFoundException('Vocabulary not found');
     }
+
+    await this.prisma.userVocabularyProgress.upsert({
+      where: {
+        userId_vocabularyId: { userId, vocabularyId: id },
+      },
+      create: {
+        userId,
+        vocabularyId: id,
+        exposureCount: 1,
+        lastReviewedAt: new Date(),
+        updatedAt: new Date(),
+        nextReviewAt: new Date(),
+      },
+      update: {
+        exposureCount: { increment: 1 },
+        lastReviewedAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
 
     return vocabulary;
   }

@@ -8,9 +8,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.cloze.ClozeScreen
+import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
@@ -51,6 +53,9 @@ fun AppNavigation(
                 },
                 onNavigateRegister = {
                     navController.navigate(Screen.Register.route)
+                },
+                onNavigateForgotPassword = {
+                    navController.navigate(Screen.forogtPassword.route)
                 }
             )
         }
@@ -64,8 +69,19 @@ fun AppNavigation(
             )
         }
 
+        composable(Screen.forogtPassword.route) {
+            ForgotPasswordScreen(
+                viewModel = viewModel(),
+                onNavigateLogin = {
+                    navController.navigate(Screen.Login.route)
+                }
+            )
+        }
+
         composable(Screen.FavoriteVocabulary.route) {
-            FavoriteScreen()
+            FavoriteScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(
@@ -108,6 +124,28 @@ fun AppNavigation(
 
         composable (Screen.Cloze.route){
             ClozeScreen()
+        }
+        composable(Screen.DailyMission.route) {
+            DailyMissionScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToVocabulary = { vocabId ->
+                    navController.navigate(Screen.Vocabulary.createRoute(vocabId))
+                },
+                onNavigateToFlashcard = { taskId ->
+                    navController.navigate(Screen.DailyFlashcard.createRoute(taskId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.DailyFlashcard.route,
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            FlashcardScreen(
+                onBack = { navController.popBackStack() },
+                taskId = taskId
+            )
         }
     }
 }
