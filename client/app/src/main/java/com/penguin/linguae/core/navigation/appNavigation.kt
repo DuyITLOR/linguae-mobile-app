@@ -9,11 +9,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.penguin.linguae.core.network.TokenManager
+import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.cloze.ClozeScreen
-import com.penguin.linguae.feature.cloze.viewmodel.ClozeViewModel
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
@@ -21,6 +21,8 @@ import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
+import com.penguin.linguae.feature.profile.ProfilePreviewData
+import com.penguin.linguae.feature.profile.ProfileScreen
 
 @Composable
 fun AppNavigation(
@@ -82,6 +84,22 @@ fun AppNavigation(
                 viewModel = viewModel(),
                 onNavigateLogin = {
                     navController.navigate(Screen.Login.route)
+                }
+            )
+        }
+
+        composable(Screen.Profile.route) {
+            ProfileScreen(
+                uiState = ProfilePreviewData.sample,
+                onLogout = {
+                    TokenManager.clear()
+                    UserManager.clearUser()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
