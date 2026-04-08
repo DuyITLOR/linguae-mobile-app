@@ -1,8 +1,10 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,8 +23,8 @@ import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
-import com.penguin.linguae.feature.profile.ProfilePreviewData
 import com.penguin.linguae.feature.profile.ProfileScreen
+import com.penguin.linguae.feature.profile.ProfileUiState
 
 @Composable
 fun AppNavigation(
@@ -35,6 +37,7 @@ fun AppNavigation(
     } else {
         Screen.Login.route
     }
+
     NavHost(
         navController = navController,
         modifier = modifier,
@@ -89,8 +92,12 @@ fun AppNavigation(
         }
 
         composable(Screen.Profile.route) {
+            val currentUser = UserManager.getUser()
             ProfileScreen(
-                uiState = ProfilePreviewData.sample,
+                uiState = ProfileUiState(
+                    fullName = currentUser?.fullName?.ifBlank { "Penguin Learner" } ?: "Penguin Learner",
+                    email = currentUser?.email?.ifBlank { "learner@linguae.app" } ?: "learner@linguae.app",
+                ),
                 onLogout = {
                     TokenManager.clear()
                     UserManager.clearUser()
@@ -184,6 +191,18 @@ fun AppNavigation(
                 onBack = { navController.popBackStack() },
                 taskId = taskId
             )
+        }
+    }
+
+    LaunchedEffect(startRoute) {
+        val currentRoute = navController.currentDestination?.route
+        if (currentRoute != startRoute) {
+            navController.navigate(startRoute) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    inclusive = false
+                }
+                launchSingleTop = true
+            }
         }
     }
 }
