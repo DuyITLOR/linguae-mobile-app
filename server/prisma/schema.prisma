@@ -280,15 +280,18 @@ model ClozeQuestion {
 }
 
 model ClozeOptions {
-  id Int @id @default(autoincrement())
+  id Int
   questionId Int
   optionText String
   isCorrect Boolean
   createdAt DateTime @default(now())
-  blankIndex  Int
+  blankIndex Int
 
   ClozeQuestion ClozeQuestion @relation(fields: [questionId], references: [id])
+
+  @@id([questionId, id])
 }
+
 model DailyMission {
   id         String        @id @default(uuid())
   userId     String

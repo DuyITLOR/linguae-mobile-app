@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Post, Query, Body } from "@nestjs/common";
 
 import { ClozeService } from "./cloze.service";
 
@@ -11,7 +11,7 @@ export class ClozeController {
     return this.clozeService.getClozeQuestions();
   }
   
-  @Get("options-with-ids")
+  @Post("options-with-ids")
   getClozeOptionsWithIds(@Body() body: { ids: number[] }) {
     return this.clozeService.getClozeOptionsWithIds(body.ids);
   }

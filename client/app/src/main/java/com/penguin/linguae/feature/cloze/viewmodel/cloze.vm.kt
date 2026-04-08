@@ -2,6 +2,7 @@
 
     import androidx.lifecycle.ViewModel
     import androidx.lifecycle.viewModelScope
+    import androidx.navigation.NavController
     import com.penguin.linguae.data.model.ClozeQuestionWithOptions
     import com.penguin.linguae.data.repository.ClozeRepository
     import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,13 +47,12 @@
         fun onNextQuestionClicked() {
             if (!_isAnswered.value) return
 
-            if (_currentIndex.value < _questionsWithOptions.value.lastIndex) {
-                _currentIndex.value++
-                _selectedOptionId.value = null
-                _isAnswered.value = false
-            } else {
+            if (_currentIndex.value >= _questionsWithOptions.value.lastIndex - 1)
                 _isFinished.value = true
-            }
+
+            _currentIndex.value++
+            _selectedOptionId.value = null
+            _isAnswered.value = false
         }
 
         private fun fetchQuestionsWithOptions() {

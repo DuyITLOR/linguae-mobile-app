@@ -1,15 +1,15 @@
 package com.penguin.linguae.feature.cloze
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -24,12 +24,13 @@ import com.penguin.linguae.feature.cloze.viewmodel.*
 @Preview
 @Composable
 fun ClozeScreen(
+    onReturn: () -> Unit = {},
     viewModel: ClozeViewModel = ClozeViewModel()
 ){
     val questionsWithOptions by viewModel.questionsWithOptions.collectAsStateWithLifecycle()
     val currentIndex by viewModel.currentIndex.collectAsStateWithLifecycle()
-
-    val current = questionsWithOptions[currentIndex]
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -38,34 +39,67 @@ fun ClozeScreen(
         modifier = Modifier.fillMaxSize(),
         color = AppBackground
     ){
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            item {
-                Header(current.question.questionID)
+        when {
+            // Đang load
+            isLoading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-            item {
-                QuestionHolder(current.question)
+
+            // Có lỗi
+            error != null -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Lỗi: $error")
+                }
             }
-            item {
-                Text(
-                    text = "Chọn từ phù hợp để hoàn thành câu:",
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth(0.95f)
-                )
+
+            // List rỗng sau khi load xong
+            questionsWithOptions.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Không có câu hỏi nào")
+                }
             }
-            item {
-                ClozeOptions(
-                    screenHeight,
-                    current.options,
-                    viewModel
-                )
+
+            // Có data
+            else -> {
+                val current = questionsWithOptions[currentIndex]
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    item { Header(current.question.questionID, onClick = onReturn)}
+                    item { QuestionHolder(current.question) }
+                    item {
+                        Text(
+                            text = "Chọn từ phù hợp để hoàn thành câu:",
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth(0.95f)
+                        )
+                    }
+                    item {
+                        ClozeOptions(
+                            screenHeight,
+                            current.options,
+                            viewModel,
+                            onReturn = onReturn
+                        )
+                    }
+                }
             }
         }
     }
 }
-
 
 
 

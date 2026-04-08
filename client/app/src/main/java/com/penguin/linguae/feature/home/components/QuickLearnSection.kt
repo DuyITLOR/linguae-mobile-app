@@ -94,6 +94,7 @@ data class MenuItem(
 @Composable
 fun QuickLearn(
     onVocabularyClick: () -> Unit,
+    onFlashcardClick: () -> Unit,
     onPracticeClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     viewModel: HomeViewModel
@@ -111,7 +112,7 @@ fun QuickLearn(
                 "Flashcard",
                 "Ôn tập nhanh",
                 Blue
-            ) { onPracticeClick() },
+            ) { onFlashcardClick() },
             MenuItem(
                 R.drawable.pencil,
                 "Luyện tập",

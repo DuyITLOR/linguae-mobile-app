@@ -123,7 +123,9 @@ fun AppNavigation(
         }
 
         composable (Screen.Cloze.route){
-            ClozeScreen()
+            ClozeScreen(
+                onReturn = { navController.popBackStack() }
+            )
         }
         composable(Screen.DailyMission.route) {
             DailyMissionScreen(
