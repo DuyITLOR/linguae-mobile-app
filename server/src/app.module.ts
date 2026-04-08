@@ -10,6 +10,7 @@ import { TopicModule } from './modules/topic/topic.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { DailyMissionModule } from './modules/daily-mission/daily-mission.module';
 import { ClozeModule } from './modules/cloze/cloze.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ClozeModule } from './modules/cloze/cloze.module';
     VocabularyModule,
     TopicModule,
     FavoriteModule,
+    UserModule,
     DailyMissionModule,
     ClozeModule
   ],
