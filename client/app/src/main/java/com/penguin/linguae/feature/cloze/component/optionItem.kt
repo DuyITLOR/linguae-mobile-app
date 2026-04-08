@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.penguin.linguae.core.ui.theme.Black
 import com.penguin.linguae.core.ui.theme.Green
@@ -22,14 +23,20 @@ import com.penguin.linguae.core.ui.theme.TextGray
 @Composable
 fun OptionItem(
     text: String = "",
-    isSelected: Boolean = false,
-    isCorrect: Boolean? = null,       // null = not yet answered
+    isSelected: Boolean? = false,
+    isCorrect: Boolean? = null, // null = not yet answered
     onClick: () -> Unit = {},
 ) {
-    val backgroundColor = when (isCorrect) {
-        true if isSelected -> Green
-        false if isSelected -> Red
+    val backgroundColor = when {
+        isCorrect == null -> SurfaceColor              // chưa trả lời
+        isCorrect -> Green
+        !isCorrect && isSelected == true -> Red
         else -> SurfaceColor
+    }
+
+    val fontWeight = when {
+        isSelected == true || isCorrect == true -> FontWeight.Bold
+        else -> FontWeight.Black
     }
 
     Row(
@@ -42,6 +49,6 @@ fun OptionItem(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = text, color = if (isSelected) SurfaceColor else Black)
+        Text(text = text, color = Black, fontWeight = fontWeight)
     }
 }

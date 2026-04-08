@@ -9,6 +9,7 @@ import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { TopicModule } from './modules/topic/topic.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { DailyMissionModule } from './modules/daily-mission/daily-mission.module';
+import { ClozeModule } from './modules/cloze/cloze.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DailyMissionModule } from './modules/daily-mission/daily-mission.module
     TopicModule,
     FavoriteModule,
     DailyMissionModule,
+    ClozeModule
   ],
   controllers: [AppController],
   providers: [AppService],

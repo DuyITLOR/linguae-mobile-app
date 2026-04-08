@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.data.model.User
 import com.penguin.linguae.data.repository.DailyMissionRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -14,6 +17,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(): ViewModel() {
     private val _homeState = MutableStateFlow(HomeState())
     val homeState = _homeState.asStateFlow()
+    private val _navigationEvent = MutableSharedFlow<String>()
+    val navigationEvent: SharedFlow<String> = _navigationEvent.asSharedFlow()
 
     private val dailyMissionRepository = DailyMissionRepository()
 
@@ -58,7 +63,7 @@ class HomeViewModel(): ViewModel() {
     fun onPracticeCardClick(){
         viewModelScope.launch {
 //            Đợi có route chính thức
-//            _navigationEvent.emit("")
+            _navigationEvent.emit("cloze_screen")
         }
     }
 

@@ -30,4 +30,6 @@ sealed class Screen(val route: String) {
             return "vocabulary/$id"
         }
     }
+
+    object Cloze: Screen("cloze_screen")
 }

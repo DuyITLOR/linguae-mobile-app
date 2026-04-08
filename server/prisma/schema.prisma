@@ -271,6 +271,27 @@ model VocabularyExample {
   @@index([vocabularyId])
 }
 
+model ClozeQuestion {
+  id  Int @id @default(autoincrement())
+  sentence String
+  createdAt DateTime @default(now())
+  
+  ClozeOptions ClozeOptions[]
+}
+
+model ClozeOptions {
+  id Int
+  questionId Int
+  optionText String
+  isCorrect Boolean
+  createdAt DateTime @default(now())
+  blankIndex Int
+
+  ClozeQuestion ClozeQuestion @relation(fields: [questionId], references: [id])
+
+  @@id([questionId, id])
+}
+
 model DailyMission {
   id         String        @id @default(uuid())
   userId     String

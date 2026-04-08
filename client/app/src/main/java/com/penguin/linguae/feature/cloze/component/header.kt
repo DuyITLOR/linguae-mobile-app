@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,12 +19,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.penguin.linguae.R
 import com.penguin.linguae.core.ui.theme.SurfaceColor
 import com.penguin.linguae.core.ui.theme.TextGray
+import com.penguin.linguae.feature.cloze.viewmodel.ClozeViewModel
 
 @Composable
-fun Header(questionNo: Int){
+fun Header(
+    questionNo: Int,
+    onClick: () -> Unit = {}
+){
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(SurfaceColor)
@@ -37,11 +43,14 @@ fun Header(questionNo: Int){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Icon(
-                painter = painterResource(R.drawable.return_arrow),
-                modifier = Modifier.size(36.dp),
-                contentDescription = null,
-            )
+            IconButton(onClick = onClick) {
+                Icon (
+                    painter = painterResource(R.drawable.return_arrow),
+                    modifier = Modifier.size(36.dp),
+                    contentDescription = null,
+                )
+            }
+
             Column () {
                 Text(
                     text = "Điền vào chỗ trống",

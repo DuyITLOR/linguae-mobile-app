@@ -1,8 +1,8 @@
 package com.penguin.linguae.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class ClozeQuestion(
-    val questionNo: Int = 0,
-    val sentence: String = "",
-    val keyword: String = "",
-    val wrongWord: List<String>
+    @SerializedName("id") val questionID: Int = -1,
+    @SerializedName("sentence") val question: String = "",
 )

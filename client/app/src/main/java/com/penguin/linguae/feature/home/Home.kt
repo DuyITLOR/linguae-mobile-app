@@ -30,7 +30,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = HomeViewModel()
 ) {
     val uiState by viewModel.homeState.collectAsStateWithLifecycle()
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     // Refresh progress bar whenever the user returns to HomeScreen
     DisposableEffect(lifecycleOwner) {
@@ -77,13 +77,16 @@ fun HomeScreen(
                         onVocabularyClick = {
                             navController.navigate(Screen.Topic.route)
                         },
-                        onPracticeClick = {
+                        onFlashcardClick = {
                             navController.navigate(Screen.Flashcard.route)
                         },
                         onFavoriteClick = {
                             navController.navigate(Screen.FavoriteVocabulary.route) {
                                 launchSingleTop = true
                             }
+                        },
+                        onPracticeClick = {
+                            navController.navigate((Screen.Cloze.route))
                         },
                         viewModel = viewModel
                     )

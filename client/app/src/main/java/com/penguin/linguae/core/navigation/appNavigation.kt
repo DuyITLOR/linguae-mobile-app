@@ -12,6 +12,7 @@ import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
+import com.penguin.linguae.feature.cloze.ClozeScreen
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
@@ -128,6 +129,11 @@ fun AppNavigation(
             )
         }
 
+        composable (Screen.Cloze.route){
+            ClozeScreen(
+                onReturn = { navController.popBackStack() }
+            )
+        }
         composable(Screen.DailyMission.route) {
             DailyMissionScreen(
                 onNavigateBack = { navController.popBackStack() },
