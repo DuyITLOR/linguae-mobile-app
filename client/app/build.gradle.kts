@@ -16,6 +16,17 @@ val localProperties = Properties().apply {
 val googleClientId = localProperties.getProperty("GOOGLE_CLIENT_ID")
     ?: throw GradleException("GOOGLE_CLIENT_ID not found in local.properties")
 
+val baseUrl = localProperties.getProperty("BASE_URL")
+    ?.trim()
+    ?.ifEmpty { "http://10.0.2.2:5050/" }
+    ?: "http://10.0.2.2:5050/"
+
+val normalizedBaseUrl = if (baseUrl.endsWith("/")) {
+    baseUrl
+} else {
+    "$baseUrl/"
+}
+
 android {
     namespace = "com.penguin.linguae"
     compileSdk {
@@ -37,6 +48,12 @@ android {
             "String",
             "GOOGLE_CLIENT_ID",
             "\"$googleClientId\""
+        )
+
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"$normalizedBaseUrl\""
         )
     }
 
