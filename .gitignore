@@ -27,6 +27,10 @@ captures/
 # OS
 .DS_Store
 Thumbs.db
+
+# Screenshots
+screen/
+
 server/package-lock.json
 
 # Claude
