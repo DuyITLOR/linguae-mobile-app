@@ -95,8 +95,8 @@ fun AppNavigation(
             val currentUser = UserManager.getUser()
             ProfileScreen(
                 uiState = ProfileUiState(
-                    fullName = currentUser?.fullName?.ifBlank { "Penguin Learner" } ?: "Penguin Learner",
-                    email = currentUser?.email?.ifBlank { "learner@linguae.app" } ?: "learner@linguae.app",
+                    fullName = currentUser?.fullName ?: "No name",
+                    email = currentUser?.email ?: "No email",
                 ),
                 onLogout = {
                     TokenManager.clear()

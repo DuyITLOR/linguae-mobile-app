@@ -5,6 +5,7 @@ import com.penguin.linguae.data.model.ForgotPasswordRequest
 import com.penguin.linguae.data.remote.AuthApi
 import com.penguin.linguae.data.model.LoginData
 import com.penguin.linguae.data.model.LoginRequest
+import com.penguin.linguae.data.model.LoginWithGoogleData
 import com.penguin.linguae.data.model.LoginWithGoogleRequest
 import com.penguin.linguae.data.model.RegisterRequest
 import com.penguin.linguae.data.model.ResetPasswordRequest
@@ -33,12 +34,12 @@ class AuthRepository {
         }
     }
 
-    suspend fun loginWithGoogle(idToken: String) : String {
+    suspend fun loginWithGoogle(idToken: String) : LoginWithGoogleData {
         val response = api.loginWithGoogle(
             LoginWithGoogleRequest(idToken)
         )
         if(response.success && response.data != null) {
-            return response.data.accessToken
+            return response.data
         } else {
             throw Exception(response.message)
         }

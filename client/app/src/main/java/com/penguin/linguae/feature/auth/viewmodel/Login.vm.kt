@@ -61,8 +61,9 @@ class LoginViewModel (
             error = null
 
             try {
-                val token = repo.loginWithGoogle(idToken)
-                TokenManager.saveToken(token)
+                val result = repo.loginWithGoogle(idToken)
+                TokenManager.saveToken(result.accessToken)
+                UserManager.saveUser(result.user)
                 _navigateHome.value = true
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
