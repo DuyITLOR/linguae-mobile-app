@@ -117,5 +117,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.runtime:runtime")
-
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }

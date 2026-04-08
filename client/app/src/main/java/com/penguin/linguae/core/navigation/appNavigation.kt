@@ -1,19 +1,21 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.penguin.linguae.core.network.TokenManager
+import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.cloze.ClozeScreen
-import com.penguin.linguae.feature.cloze.viewmodel.ClozeViewModel
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
@@ -21,6 +23,8 @@ import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
+import com.penguin.linguae.feature.profile.ProfileScreen
+import com.penguin.linguae.data.model.ProfileUiState
 
 @Composable
 fun AppNavigation(
@@ -33,6 +37,7 @@ fun AppNavigation(
     } else {
         Screen.Login.route
     }
+
     NavHost(
         navController = navController,
         modifier = modifier,
@@ -82,6 +87,27 @@ fun AppNavigation(
                 viewModel = viewModel(),
                 onNavigateLogin = {
                     navController.navigate(Screen.Login.route)
+                }
+            )
+        }
+
+        composable(Screen.Profile.route) {
+            val currentUser = UserManager.getUser()
+            ProfileScreen(
+                uiState = ProfileUiState(
+                    fullName = currentUser?.fullName ?: "No name",
+                    email = currentUser?.email ?: "No email",
+                    avatarUrl = currentUser?.avatarUrl
+                ),
+                onLogout = {
+                    TokenManager.clear()
+                    UserManager.clearUser()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -166,6 +192,18 @@ fun AppNavigation(
                 onBack = { navController.popBackStack() },
                 taskId = taskId
             )
+        }
+    }
+
+    LaunchedEffect(startRoute) {
+        val currentRoute = navController.currentDestination?.route
+        if (currentRoute != startRoute) {
+            navController.navigate(startRoute) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    inclusive = false
+                }
+                launchSingleTop = true
+            }
         }
     }
 }

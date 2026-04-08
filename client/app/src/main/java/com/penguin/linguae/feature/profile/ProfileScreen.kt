@@ -14,14 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.PageBg
 import com.penguin.linguae.core.ui.theme.PurpleLight
 import com.penguin.linguae.core.ui.theme.PurplePrimary
-import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.data.model.ProfilePreviewData
+import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.feature.profile.component.ProfileActionCard
 import com.penguin.linguae.feature.profile.component.ProfileHeroHeader
 import com.penguin.linguae.feature.profile.component.ProfileLogoutDialog
@@ -96,23 +93,28 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = Color(0xFFE9D7DF)
+                    ),
 
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = TextDark,
-                        containerColor = Color.Red.copy(alpha = 0.5f)
+                        contentColor = Color(0xFF8A4B63),
+                        containerColor = Color.Red.copy(alpha = 0.4f)
                     )
 
                 ) {
                     Icon(
                         imageVector = Icons.Default.ExitToApp,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFF8A4B63)
                     )
                     Spacer(modifier = Modifier.size(10.dp))
                     Text(
                         text = "Đăng xuất",
                         fontSize = 16.sp,
-                        color = TextDark,
+                        color = Color(0xFF8A4B63),
                     )
                 }
             }
