@@ -24,7 +24,7 @@ import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
-import com.penguin.linguae.feature.profile.ProfileUiState
+import com.penguin.linguae.data.model.ProfileUiState
 
 @Composable
 fun AppNavigation(
@@ -97,6 +97,7 @@ fun AppNavigation(
                 uiState = ProfileUiState(
                     fullName = currentUser?.fullName ?: "No name",
                     email = currentUser?.email ?: "No email",
+                    avatarUrl = currentUser?.avatarUrl
                 ),
                 onLogout = {
                     TokenManager.clear()

@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.profile
+package com.penguin.linguae.data.model
 
 data class ProfileStats(
     val learnedWords: Int = 342,
@@ -10,6 +10,7 @@ data class ProfileUiState(
     val fullName: String,
     val email: String,
     val avatarEmoji: String = "\uD83D\uDC27",
+    val avatarUrl: String? = null,
     val dailyGoal: Int = 12,
     val reminderTime: String = "20:00",
     val reminderEnabled: Boolean = true,

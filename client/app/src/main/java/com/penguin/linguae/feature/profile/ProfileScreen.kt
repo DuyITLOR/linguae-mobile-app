@@ -34,7 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.PageBg
 import com.penguin.linguae.core.ui.theme.PurpleLight
 import com.penguin.linguae.core.ui.theme.PurplePrimary
-import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.data.model.ProfilePreviewData
+import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.feature.profile.component.ProfileActionCard
 import com.penguin.linguae.feature.profile.component.ProfileHeroHeader
 import com.penguin.linguae.feature.profile.component.ProfileLogoutDialog
