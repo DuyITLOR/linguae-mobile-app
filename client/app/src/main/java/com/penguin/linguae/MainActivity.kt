@@ -54,12 +54,21 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         NavigationBarItem(
                             selected = currentRoute == destination.route,
                             onClick = {
-                                navController.navigate(destination.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
+                                if (destination == Destination.Home) {
+                                    navController.navigate(destination.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            inclusive = false
+                                        }
+                                        launchSingleTop = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
+                                } else {
+                                    navController.navigate(destination.route) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
                             },
                             icon = {
