@@ -1,5 +1,6 @@
 import {
     Injectable,
+    Logger,
 } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -16,18 +17,11 @@ export class ClozeService {
     }
 
     async getClozeOptionsWithIds(ids: number[]) {
+        Logger.log("IDs received in service:", ids);
         const options = await this.prismaService.clozeOptions.findMany({
-            where: { id: { in: ids } },
+            where: { questionId: { in: ids } },
         });
-
-        const grouped = options.reduce((acc, option) => {
-        const key = option.questionId;
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(option);
-        return acc;
-        }, {} as Record<number, typeof options>);
-
-    return Object.values(grouped);
+        return options;
     }
 
     async getClozeOptionsWithId(id: number) {
@@ -35,5 +29,12 @@ export class ClozeService {
             where: { id }
         });
         return options;
+    }
+
+    async getClozeQuestionByTopicId(topicId: string) {
+        const question = await this.prismaService.clozeQuestion.findMany({
+            where: { topicId }
+        });
+        return question;
     }
 }

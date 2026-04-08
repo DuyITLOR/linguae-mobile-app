@@ -58,7 +58,7 @@ fun Header(
                     fontSize = 24.sp,
                 )
                 Text(
-                    text = "Câu $questionNo / 10",
+                    text = "Câu ${questionNo + 1} / 10",
                     color = TextGray,
                     fontSize = 16.sp,
                 )

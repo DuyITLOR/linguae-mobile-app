@@ -10,7 +10,9 @@
     import kotlinx.coroutines.launch
 
 
-    class ClozeViewModel : ViewModel() {
+    class ClozeViewModel (
+        val topicId: String
+    ) : ViewModel() {
         private val _repository = ClozeRepository()
 
         private val _selectedOptionId = MutableStateFlow<Int?>(null)
@@ -35,7 +37,7 @@
         val error = _error.asStateFlow()
 
         init {
-            fetchQuestionsWithOptions()
+            fetchQuestionsWithOptionsByTopic(topicId)
         }
 
         fun onOptionSelected(optionId: Int) {
@@ -55,17 +57,18 @@
             _isAnswered.value = false
         }
 
-        private fun fetchQuestionsWithOptions() {
+        private fun fetchQuestionsWithOptionsByTopic(topicId: String) {
             viewModelScope.launch {
                 try {
                     _isLoading.value = true
-                    val questions = _repository.getClozeQuestions()
+                    val questions = _repository.getClozeQuestionWithTopicId(topicId)
                     val ids = questions.map { it.questionID }
                     val options = _repository.getClozeOptionsForQuestions(ids)
-                    _questionsWithOptions.value = questions.zip(options).map { (question, optionList) ->
+                    val groupedOptions = options.groupBy { it.questionId }
+                    _questionsWithOptions.value = questions.map { question ->
                         ClozeQuestionWithOptions(
                             question = question,
-                            options = optionList
+                            options = groupedOptions[question.questionID] ?: emptyList()
                         )
                     }
                 } catch (e: Exception) {

@@ -12,12 +12,17 @@ export class ClozeController {
   }
   
   @Post("options-with-ids")
-  getClozeOptionsWithIds(@Body() body: { ids: number[] }) {
-    return this.clozeService.getClozeOptionsWithIds(body.ids);
+  getClozeOptionsWithIds(@Body() ids: number[] ) {
+    return this.clozeService.getClozeOptionsWithIds(ids);
   }
 
   @Get("options-with-id")
   getClozeOptionsWithId(@Query('id') id: number){
     return this.clozeService.getClozeOptionsWithId(id);
   }
+
+ @Get('questions-by-topic-id')
+ getClozeQuestionByTopicId(@Query('topicId') topicId: string){
+  return this.clozeService.getClozeQuestionByTopicId(topicId);
+ }
 }

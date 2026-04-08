@@ -157,6 +157,7 @@ model Topic {
   LearningHistory  LearningHistory[]
   PracticeSession  PracticeSession[]
   Vocabulary       Vocabulary[]
+  ClozeQuestion    ClozeQuestion[]
 }
 
 model User {
@@ -273,9 +274,11 @@ model VocabularyExample {
 
 model ClozeQuestion {
   id  Int @id @default(autoincrement())
+  topicId String
   sentence String
   createdAt DateTime @default(now())
-  
+
+  Topic   Topic   @relation(fields: [topicId], references: [id])
   ClozeOptions ClozeOptions[]
 }
 

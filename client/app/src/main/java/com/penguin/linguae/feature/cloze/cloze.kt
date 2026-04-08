@@ -25,7 +25,8 @@ import com.penguin.linguae.feature.cloze.viewmodel.*
 @Composable
 fun ClozeScreen(
     onReturn: () -> Unit = {},
-    viewModel: ClozeViewModel = ClozeViewModel()
+    topicId: String = "",
+    viewModel: ClozeViewModel = ClozeViewModel(topicId),
 ){
     val questionsWithOptions by viewModel.questionsWithOptions.collectAsStateWithLifecycle()
     val currentIndex by viewModel.currentIndex.collectAsStateWithLifecycle()
@@ -78,7 +79,7 @@ fun ClozeScreen(
                     verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    item { Header(current.question.questionID, onClick = onReturn)}
+                    item { Header(currentIndex, onClick = onReturn)}
                     item { QuestionHolder(current.question) }
                     item {
                         Text(

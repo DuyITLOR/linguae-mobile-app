@@ -86,7 +86,7 @@ fun HomeScreen(
                             }
                         },
                         onPracticeClick = {
-                            navController.navigate((Screen.Cloze.route))
+                            navController.navigate(Screen.Cloze.createRoute("t4"))
                         },
                         viewModel = viewModel
                     )

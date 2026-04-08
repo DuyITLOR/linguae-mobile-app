@@ -19,6 +19,12 @@ interface ClozeApi {
 
     @POST("cloze/options-with-ids")
     suspend fun optionsWithIds(
-        @Body request: List<Int>
-    ): List<List<ClozeOption>>
+        @Body ids: List<Int>
+    ): List<ClozeOption>
+
+    @GET("cloze/questions-by-topic-id")
+    suspend fun questionWithTopicId(
+        @Query("topicId") topicId: String
+    ): List<ClozeQuestion>
+
 }

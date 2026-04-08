@@ -31,5 +31,9 @@ sealed class Screen(val route: String) {
         }
     }
 
-    object Cloze: Screen("cloze_screen")
+    object Cloze: Screen("cloze_screen/{topicId}") {
+        fun createRoute(topicId: String): String {
+            return "cloze_screen/$topicId"
+        }
+    }
 }

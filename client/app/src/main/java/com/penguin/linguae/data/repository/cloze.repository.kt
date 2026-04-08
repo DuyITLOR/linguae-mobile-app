@@ -25,13 +25,18 @@ class ClozeRepository {
         return options
     }
 
-    suspend fun getClozeOptionsForQuestions(ids: List<Int>): List<List<ClozeOption>> {
+    suspend fun getClozeOptionsForQuestions(ids: List<Int>): List<ClozeOption> {
         val options = api.optionsWithIds(ids)
         if (options.isEmpty())
             throw Exception("No options found for questions $ids")
-        if (options.any { it.isEmpty() })
-            throw Exception("Some questions have no options")
         Log.d("ClozeVM", "questionsID: $ids, options: $options")
         return options
+    }
+
+    suspend fun getClozeQuestionWithTopicId(topicId: String): List<ClozeQuestion> {
+        val questions = api.questionWithTopicId(topicId)
+        if (questions.isEmpty())
+            throw Exception("No cloze questions found")
+        return questions
     }
 }
