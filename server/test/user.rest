@@ -1,0 +1,57 @@
+@baseUrl = http://localhost:5050
+@apiKey = your-api-key
+@token = your-bearer-token
+
+### 1. Lấy thông tin user hiện tại
+GET {{baseUrl}}/users/me
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+
+### 2. Cập nhật tên hiển thị
+PATCH {{baseUrl}}/users/me
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "fullName": "Quách Châu Hạo Kiệt"
+}
+
+### 3. Cập nhật avatar URL
+PATCH {{baseUrl}}/users/me
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "avatarUrl": "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d"
+}
+
+### 4. Cập nhật cả tên và avatar
+PATCH {{baseUrl}}/users/info
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "fullName": "Kiet Penguin",
+  "avatarUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9"
+}
+
+### 5. Xóa avatar
+PATCH {{baseUrl}}/users/info
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "avatarUrl": null
+}
+
+### 6. Test body rỗng
+PATCH {{baseUrl}}/users/me
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
