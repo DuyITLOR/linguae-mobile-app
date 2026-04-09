@@ -78,7 +78,7 @@ fun HomeScreen(
                             navController.navigate(Screen.Topic.route)
                         },
                         onFlashcardClick = {
-                            navController.navigate(Screen.Flashcard.route)
+                            navController.navigate(Screen.FlashcardList.route)
                         },
                         onFavoriteClick = {
                             navController.navigate(Screen.FavoriteVocabulary.route) {
