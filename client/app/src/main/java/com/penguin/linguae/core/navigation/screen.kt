@@ -10,6 +10,8 @@ sealed class Screen(val route: String) {
     object Register: Screen("register_screen")
     object forogtPassword: Screen("forgot_password_screen")
 
+    object FlashcardList : Screen("flashcard/list")
+
     object Flashcard : Screen("flashcard_screen")
     object FavoriteVocabulary: Screen("favorite")
     object DailyMission : Screen("daily_mission_screen")

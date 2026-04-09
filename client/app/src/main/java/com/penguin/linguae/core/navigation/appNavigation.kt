@@ -19,6 +19,7 @@ import com.penguin.linguae.feature.cloze.ClozeScreen
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
+import com.penguin.linguae.feature.learning.FlashcardListScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
@@ -109,6 +110,12 @@ fun AppNavigation(
                         launchSingleTop = true
                     }
                 }
+            )
+        }
+
+        composable(Screen.FlashcardList.route) {
+            FlashcardListScreen(
+                onBack = { navController.popBackStack() }
             )
         }
 
