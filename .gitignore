@@ -5,6 +5,10 @@ build/
 # Local config
 local.properties
 
+.github/
+
+client/rule.md
+
 # IDE (Android Studio / IntelliJ)
 .idea/
 *.iml
