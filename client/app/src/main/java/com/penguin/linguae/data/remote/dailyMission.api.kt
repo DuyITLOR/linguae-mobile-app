@@ -4,6 +4,7 @@ import com.penguin.linguae.data.model.CompleteWordRequest
 import com.penguin.linguae.data.model.CompleteWordResponse
 import com.penguin.linguae.data.model.DailyMission
 import com.penguin.linguae.data.model.DailyMissionSummary
+import com.penguin.linguae.data.model.StatisticsResponse
 import com.penguin.linguae.data.model.TaskWordsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -20,6 +21,9 @@ interface DailyMissionApi {
 
     @GET("daily-mission/task/{taskId}/words")
     suspend fun getTaskWords(@Path("taskId") taskId: String): TaskWordsResponse
+
+    @GET("daily-mission/statistics")
+    suspend fun getStatistics(): StatisticsResponse
 
     @POST("daily-mission/task/{taskId}/complete")
     suspend fun completeWord(

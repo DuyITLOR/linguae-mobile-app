@@ -39,6 +39,11 @@ export class DailyMissionController {
     );
   }
 
+  @Get('statistics')
+  async getStatistics(@UserId() userId: string) {
+    return this.dailyMissionService.getStatistics(userId);
+  }
+
   @Get('task/:taskId/words')
   async getTaskWords(
     @UserId() userId: string,
