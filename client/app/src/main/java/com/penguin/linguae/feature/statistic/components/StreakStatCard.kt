@@ -35,10 +35,11 @@ import com.penguin.linguae.core.ui.theme.TextGray
 fun StreakStatCard(
     currentStreak: Int,
     bestStreak: Int,
-    totalVocabLearned: Int
+    totalVocabLearned: Int,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .shadow(6.dp, shape = RoundedCornerShape(24.dp)),
         color = SurfaceColor,
@@ -86,7 +87,6 @@ fun StreakStatCard(
                 )
             }
 
-            // Divider
             Box(
                 modifier = Modifier
                     .width(1.dp)
@@ -94,7 +94,6 @@ fun StreakStatCard(
                     .background(BorderGray)
             )
 
-            // Right: vocab learned
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(4.dp),
