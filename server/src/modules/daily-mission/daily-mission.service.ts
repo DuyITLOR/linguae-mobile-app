@@ -289,6 +289,97 @@ export class DailyMissionService {
     };
   }
 
+  async getStatistics(userId: string) {
+    const today = this.todayOnly(new Date());
+    const sixDaysAgo = new Date(today);
+    sixDaysAgo.setUTCDate(sixDaysAgo.getUTCDate() - 6);
+
+    const [goal, totalVocabularyLearned, todayMission, weeklyMissions, historyMissions] =
+      await Promise.all([
+        this.prismaService.userDailyGoal.findFirst({ where: { userId } }),
+        this.prismaService.userVocabularyProgress.count({ where: { userId } }),
+        this.prismaService.dailyMission.findUnique({
+          where: { userId_date: { userId, date: today } },
+          include: { DailyTask: true },
+        }),
+        this.prismaService.dailyMission.findMany({
+          where: { userId, date: { gte: sixDaysAgo, lte: today } },
+          include: { DailyTask: true },
+          orderBy: { date: 'asc' },
+        }),
+        this.prismaService.dailyMission.findMany({
+          where: { userId },
+          include: { DailyTask: true },
+          orderBy: { date: 'desc' },
+          take: 10,
+        }),
+      ]);
+
+    const streak = {
+      currentStreak: goal?.currentStreak ?? 0,
+      bestStreak: goal?.bestStreak ?? 0,
+    };
+
+    let todayProgress: {
+      overallProgress: number;
+      completedTasks: number;
+      totalTasks: number;
+      tasks: { id: string; taskType: string; completedCount: number; targetCount: number; status: string }[];
+    } = { overallProgress: 0, completedTasks: 0, totalTasks: 0, tasks: [] };
+
+    if (todayMission) {
+      const completedTasks = todayMission.DailyTask.filter(
+        (t) => t.status === TaskStatus.COMPLETED,
+      ).length;
+      const totalProgress = todayMission.DailyTask.reduce(
+        (sum, t) => sum + t.completedCount / t.targetCount,
+        0,
+      );
+      todayProgress = {
+        overallProgress:
+          todayMission.DailyTask.length > 0
+            ? Math.round((totalProgress / todayMission.DailyTask.length) * 100)
+            : 0,
+        completedTasks,
+        totalTasks: todayMission.DailyTask.length,
+        tasks: todayMission.DailyTask.map((t) => ({
+          id: t.id,
+          taskType: t.taskType,
+          completedCount: t.completedCount,
+          targetCount: t.targetCount,
+          status: t.status,
+        })),
+      };
+    }
+
+    const missionMap = new Map(
+      weeklyMissions.map((m) => [m.date.toISOString().split('T')[0], m]),
+    );
+
+    const weeklyActivity = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(sixDaysAgo);
+      d.setUTCDate(d.getUTCDate() + i);
+      const key = d.toISOString().split('T')[0];
+      const m = missionMap.get(key);
+      return {
+        date: key,
+        completedTasks: m
+          ? m.DailyTask.filter((t) => t.status === TaskStatus.COMPLETED).length
+          : 0,
+        totalTasks: m ? m.DailyTask.length : 0,
+      };
+    });
+
+    const missionHistory = historyMissions.map((m) => ({
+      date: m.date.toISOString().split('T')[0],
+      status: m.status,
+      completedTasks: m.DailyTask.filter((t) => t.status === TaskStatus.COMPLETED).length,
+      totalTasks: m.DailyTask.length,
+    }));
+
+    return { streak, totalVocabularyLearned, todayProgress, weeklyActivity, missionHistory };
+  }
+
   async getTaskWords(userId: string, taskId: string) {
     const task = await this.prismaService.dailyTask.findFirst({
       where: {
