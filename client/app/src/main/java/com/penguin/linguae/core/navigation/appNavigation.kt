@@ -25,6 +25,7 @@ import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
+import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.data.model.ProfileUiState
 
 @Composable
@@ -55,6 +56,10 @@ fun AppNavigation(
                     navController.navigate(Screen.VocabularyList.createRoute(topicId))
                 }
             )
+        }
+
+        composable(Screen.Progress.route) {
+            StatisticScreen()
         }
 
         composable(Screen.Login.route) {

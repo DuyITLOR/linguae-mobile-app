@@ -5,6 +5,7 @@ import com.penguin.linguae.data.model.CompleteWordRequest
 import com.penguin.linguae.data.model.CompleteWordResponse
 import com.penguin.linguae.data.model.DailyMission
 import com.penguin.linguae.data.model.DailyMissionSummary
+import com.penguin.linguae.data.model.StatisticsResponse
 import com.penguin.linguae.data.model.TaskWordsResponse
 import com.penguin.linguae.data.remote.DailyMissionApi
 
@@ -31,6 +32,14 @@ class DailyMissionRepository {
     suspend fun getTaskWords(taskId: String): Result<TaskWordsResponse> {
         return try {
             Result.success(api.getTaskWords(taskId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getStatistics(): Result<StatisticsResponse> {
+        return try {
+            Result.success(api.getStatistics())
         } catch (e: Exception) {
             Result.failure(e)
         }
