@@ -33,14 +33,14 @@ import com.penguin.linguae.core.ui.theme.Yellow
 import com.penguin.linguae.data.model.TodayProgressStats
 
 @Composable
-fun MissionProgressCard(todayProgress: TodayProgressStats) {
+fun MissionProgressCard(todayProgress: TodayProgressStats, modifier: Modifier = Modifier) {
     val animatedOverall by animateFloatAsState(
         targetValue = todayProgress.overallProgress / 100f,
         label = "overallProgress"
     )
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .shadow(6.dp, shape = RoundedCornerShape(24.dp)),
         color = SurfaceColor,

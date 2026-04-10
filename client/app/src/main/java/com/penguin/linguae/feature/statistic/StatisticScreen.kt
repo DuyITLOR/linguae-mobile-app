@@ -27,8 +27,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.core.ui.theme.PrimaryPurple
 import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.feature.statistic.components.MissionHistoryRow
 import com.penguin.linguae.feature.statistic.components.MissionProgressCard
+import com.penguin.linguae.feature.statistic.components.StatisticHeader
 import com.penguin.linguae.feature.statistic.components.StreakStatCard
 import com.penguin.linguae.feature.statistic.components.WeeklyActivityChart
 import com.penguin.linguae.feature.statistic.viewmodel.StatisticViewModel
@@ -60,7 +62,7 @@ fun StatisticScreen(viewModel: StatisticViewModel = StatisticViewModel()) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Không tải được dữ liệu",
+                        text = "Could not load data",
                         color = TextDark,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
@@ -70,7 +72,7 @@ fun StatisticScreen(viewModel: StatisticViewModel = StatisticViewModel()) {
                         onClick = { viewModel.loadStatistics() },
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
                     ) {
-                        Text("Thử lại")
+                        Text("Retry")
                     }
                 }
             }
@@ -80,49 +82,65 @@ fun StatisticScreen(viewModel: StatisticViewModel = StatisticViewModel()) {
                 LazyColumn(
                     contentPadding = PaddingValues(bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 20.dp)
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    item { Spacer(modifier = Modifier.height(8.dp)) }
-
                     item {
-                        StreakStatCard(
+                        StatisticHeader(
                             currentStreak = data.streak.currentStreak,
-                            bestStreak = data.streak.bestStreak,
                             totalVocabLearned = data.totalVocabularyLearned
                         )
                     }
 
                     item {
-                        WeeklyActivityChart(activity = data.weeklyActivity)
+                        StreakStatCard(
+                            currentStreak = data.streak.currentStreak,
+                            bestStreak = data.streak.bestStreak,
+                            totalVocabLearned = data.totalVocabularyLearned,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
                     }
 
                     item {
-                        MissionProgressCard(todayProgress = data.todayProgress)
+                        WeeklyActivityChart(
+                            activity = data.weeklyActivity,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+
+                    item {
+                        MissionProgressCard(
+                            todayProgress = data.todayProgress,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
                     }
 
                     item {
                         Text(
-                            text = "Lịch sử nhiệm vụ",
+                            text = "Mission History",
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = TextDark,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
                         )
                     }
 
                     if (data.missionHistory.isEmpty()) {
                         item {
                             Text(
-                                text = "Chưa có lịch sử nhiệm vụ.",
-                                color = com.penguin.linguae.core.ui.theme.TextGray,
-                                fontSize = 13.sp
+                                text = "No mission history yet.",
+                                color = TextGray,
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(horizontal = 20.dp)
                             )
                         }
                     } else {
                         items(data.missionHistory) { historyItem ->
-                            MissionHistoryRow(item = historyItem)
+                            MissionHistoryRow(
+                                item = historyItem,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
                         }
                     }
 

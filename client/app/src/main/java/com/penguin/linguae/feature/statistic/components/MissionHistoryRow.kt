@@ -25,7 +25,7 @@ import com.penguin.linguae.core.ui.theme.Yellow
 import com.penguin.linguae.data.model.MissionHistoryStat
 
 @Composable
-fun MissionHistoryRow(item: MissionHistoryStat) {
+fun MissionHistoryRow(item: MissionHistoryStat, modifier: Modifier = Modifier) {
     val isCompleted = item.status == "COMPLETED"
     val displayDate = try {
         val parts = item.date.split("-")
@@ -35,7 +35,7 @@ fun MissionHistoryRow(item: MissionHistoryStat) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = SurfaceColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

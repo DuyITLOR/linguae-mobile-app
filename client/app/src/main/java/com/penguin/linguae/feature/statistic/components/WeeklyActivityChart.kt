@@ -30,9 +30,9 @@ import com.penguin.linguae.data.model.DailyActivityStats
 import java.util.Calendar
 
 @Composable
-fun WeeklyActivityChart(activity: List<DailyActivityStats>) {
+fun WeeklyActivityChart(activity: List<DailyActivityStats>, modifier: Modifier = Modifier) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .shadow(6.dp, shape = RoundedCornerShape(24.dp)),
         color = SurfaceColor,
