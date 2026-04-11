@@ -21,8 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.DailyMissionCache
 import com.penguin.linguae.data.repository.DailyMissionRepository
+import com.penguin.linguae.feature.learning.viewmodel.FlashcardDetailViewModel
 import kotlinx.coroutines.launch
 
 // ✅ data class
@@ -31,34 +33,34 @@ data class Card(
     val meaning: String
 )
 
-// ✅ data mẫu
-val data = listOf(
-    Card("Coffee", "Cà phê"),
-    Card("Apple", "Táo"),
-    Card("Book", "Cuốn sách"),
-    Card("Dog", "Con chó"),
-    Card("Cat", "Con mèo"),
-    Card("Water", "Nước"),
-    Card("House", "Ngôi nhà"),
-    Card("Car", "Xe hơi"),
-    Card("School", "Trường học"),
-    Card("Teacher", "Giáo viên"),
-    Card("Student", "Học sinh"),
-    Card("Food", "Thức ăn")
-)
-
 @Composable
 fun FlashcardScreen(
+    topicId: String,
     onBack: () -> Unit,
+    viewModel: FlashcardDetailViewModel = viewModel(),
     taskId: String? = null
 ) {
-    // If opened from daily mission, use cached task words; otherwise use mock data
+    val topic by viewModel.topic.collectAsState()
+
+    LaunchedEffect(topicId, taskId) {
+        if (taskId == null && topicId.isNotBlank()) {
+            viewModel.init(topicId)
+        }
+    }
+
+    // If opened from daily mission, use cached task words; otherwise use topic vocabulary from API.
     val taskWords = remember(taskId) {
         taskId?.let { DailyMissionCache.getTaskWords(it) }
     }
-    val cards = remember(taskWords) {
-        taskWords?.words?.map { Card(it.word, it.meaning) } ?: data
+
+    val apiCards = remember(topic) {
+        topic?.Vocabulary?.map { vocab -> Card(vocab.word, vocab.meaning) } ?: emptyList()
     }
+
+    val cards = remember(taskWords, apiCards) {
+        taskWords?.words?.map { Card(it.word, it.meaning) } ?: apiCards
+    }
+
     val vocabIds = remember(taskWords) {
         taskWords?.words?.map { it.id } ?: emptyList()
     }
@@ -69,7 +71,13 @@ fun FlashcardScreen(
     var showMeaning by remember { mutableStateOf(false) }
     var current by remember { mutableStateOf(1) }
 
-    val index = (current - 1).coerceIn(0, cards.lastIndex)
+    val hasCards = cards.isNotEmpty()
+    val index = if (hasCards) (current - 1).coerceIn(0, cards.lastIndex) else 0
+    val headerTitle = if (taskId != null) {
+        "Flashcard - Nhiệm vụ hôm nay"
+    } else {
+        topic?.title ?: "Flashcard"
+    }
 
     val rotation by animateFloatAsState(
         targetValue = if (showMeaning) 180f else 0f,
@@ -78,8 +86,10 @@ fun FlashcardScreen(
     )
 
     fun advanceCard() {
+        if (!hasCards) return
+
         // Always mark current word as complete (including last card)
-        if (taskId != null && index <= vocabIds.size) {
+        if (taskId != null && index < vocabIds.size) {
             scope.launch {
                 dailyMissionRepository?.completeWord(taskId, vocabIds[index])
             }
@@ -109,7 +119,7 @@ fun FlashcardScreen(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = if (taskId != null) "Flashcard - Nhiệm vụ hôm nay" else "Flashcard",
+                text = headerTitle,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -118,7 +128,7 @@ fun FlashcardScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         // 🔹 Progress
-        Text(text = "$current / ${cards.size} từ", color = Color.Gray)
+        Text(text = "${if (hasCards) current else 0} / ${cards.size} từ", color = Color.Gray)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -131,7 +141,7 @@ fun FlashcardScreen(
                 .background(Color(0xFFD6D3E0))
         ) {
             LinearProgressIndicator(
-                progress = current.toFloat() / cards.size.toFloat(),
+                progress = if (hasCards) current.toFloat() / cards.size.toFloat() else 0f,
                 color = Color(0xFFFF8A65),
                 trackColor = Color.Transparent,
                 modifier = Modifier.fillMaxSize()
@@ -168,7 +178,11 @@ fun FlashcardScreen(
                     }
                 ) {
                     Text(
-                        text = if (isFront) cards[index].word else cards[index].meaning,
+                        text = when {
+                            !hasCards -> "Chưa có từ vựng"
+                            isFront -> cards[index].word
+                            else -> cards[index].meaning
+                        },
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF6C63FF)
@@ -177,7 +191,11 @@ fun FlashcardScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = if (isFront) "Nhấn để xem nghĩa" else "Nhấn để ẩn nghĩa",
+                        text = when {
+                            !hasCards -> "Vui lòng thêm từ vựng cho chủ đề này"
+                            isFront -> "Nhấn để xem nghĩa"
+                            else -> "Nhấn để ẩn nghĩa"
+                        },
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
@@ -194,7 +212,7 @@ fun FlashcardScreen(
                 .background(
                     Brush.horizontalGradient(listOf(Color(0xFF6C63FF), Color(0xFF7B6DFF)))
                 )
-                .clickable { showMeaning = true },
+                .clickable(enabled = hasCards) { showMeaning = true },
             contentAlignment = Alignment.Center
         ) {
             Text("👁 Xem nghĩa", color = Color.White, fontWeight = FontWeight.Bold)
@@ -208,6 +226,7 @@ fun FlashcardScreen(
         ) {
             Button(
                 onClick = { advanceCard() },
+                enabled = hasCards,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF8D7DA)),
                 shape = RoundedCornerShape(16.dp)
@@ -217,6 +236,7 @@ fun FlashcardScreen(
 
             Button(
                 onClick = { advanceCard() },
+                enabled = hasCards,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD4EDDA)),
                 shape = RoundedCornerShape(16.dp)
@@ -227,8 +247,3 @@ fun FlashcardScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun FlashcardPreview() {
-    FlashcardScreen(onBack = {})
-}

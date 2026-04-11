@@ -2,6 +2,7 @@ package com.penguin.linguae.data.repository
 import android.util.Log
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.Topic
+import com.penguin.linguae.data.model.TopicIncludeVocab
 import com.penguin.linguae.data.remote.TopicApi
 
 
@@ -12,6 +13,17 @@ class TopicRepository {
     suspend fun getAllTopic(query: String): Result<List<Topic>> {
         return try {
             val data = api.getAllTopic(query)
+
+            Log.i("API_TEST", data.toString())
+            Result.success(data)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTopicById(topicId: String): Result<TopicIncludeVocab> {
+        return try {
+            val data = api.getTopicById(topicId = topicId)
 
             Log.i("API_TEST", data.toString())
             Result.success(data)

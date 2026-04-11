@@ -12,7 +12,9 @@ sealed class Screen(val route: String) {
 
     object FlashcardList : Screen("flashcard/list")
 
-    object Flashcard : Screen("flashcard_screen")
+    object Flashcard : Screen("flashcard/{topicId}/practice") {
+        fun createRoute(topicId: String) = "flashcard/${topicId}/practice"
+    }
     object FavoriteVocabulary: Screen("favorite")
     object DailyMission : Screen("daily_mission_screen")
 

@@ -27,6 +27,7 @@ import com.penguin.linguae.feature.learning.VocabularyScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.data.model.ProfileUiState
+import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
 
 @Composable
 fun AppNavigation(
@@ -120,6 +121,9 @@ fun AppNavigation(
 
         composable(Screen.FlashcardList.route) {
             FlashcardListScreen(
+                onTopicClick = { topicId ->
+                    navController.navigate(Screen.Flashcard.createRoute(topicId))
+                },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -162,10 +166,22 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.Flashcard.route) {
-            FlashcardScreen (
+        composable(
+            route = Screen.Flashcard.route,
+            arguments = listOf(
+                navArgument("topicId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+
+            FlashcardScreen(
+                topicId = topicId,
                 onBack = { navController.popBackStack() }
             )
+
         }
 
         composable(
@@ -201,6 +217,7 @@ fun AppNavigation(
         ) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
             FlashcardScreen(
+                topicId = "",
                 onBack = { navController.popBackStack() },
                 taskId = taskId
             )

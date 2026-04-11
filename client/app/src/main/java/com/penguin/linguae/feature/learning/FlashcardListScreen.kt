@@ -1,6 +1,8 @@
 package com.penguin.linguae.feature.learning
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -20,10 +22,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -32,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,71 +47,94 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.PageBg
 import com.penguin.linguae.core.ui.theme.PurpleDark
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.SearchBg
-import com.penguin.linguae.core.ui.theme.SurfaceColor
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
+import com.penguin.linguae.feature.learning.viewmodel.FlashcardViewModel
+import kotlin.math.abs
 
 private data class FlashcardTopicUi(
+    val id: String,
     val title: String,
     val level: String,
     val learnedWords: Int,
     val totalWords: Int,
     val progress: Float,
-    val accent: Color
+    val accent: Color,
+    val icon: ImageVector
 )
+
+private val TopicAccentPalette = listOf(
+    Color(0xFF5A67D8),
+    Color(0xFF5468FF),
+    Color(0xFF6A5AE0),
+    Color(0xFF4F7EF7),
+    Color(0xFF3E8ED0),
+    Color(0xFF5D79E6),
+    Color(0xFF7A63EC),
+    Color(0xFF4D8BFF)
+)
+
+private val TopicIconPalette = listOf(
+    Icons.Default.MenuBook,
+    Icons.Default.AutoStories,
+    Icons.Default.LocalLibrary,
+    Icons.Default.School
+)
+
+private fun topicColorFor(seed: String): Color {
+    val index = abs(seed.hashCode()) % TopicAccentPalette.size
+    return TopicAccentPalette[index]
+}
+
+private fun topicIconFor(seed: String): ImageVector {
+    val index = abs(seed.hashCode() / 31) % TopicIconPalette.size
+    return TopicIconPalette[index]
+}
 
 @Composable
 fun FlashcardListScreen(
+    flashcardViewModel: FlashcardViewModel = viewModel(),
+    onTopicClick: (String) -> Unit = {},
     onBack: () -> Unit
 ) {
     var query by remember { mutableStateOf("") }
 
-    val topics = remember {
-        listOf(
-            FlashcardTopicUi(
-                title = "Basic Words",
-                level = "Beginner",
-                learnedWords = 58,
-                totalWords = 82,
-                progress = 0.71f,
-                accent = Color(0xFF5A67D8)
-            ),
-            FlashcardTopicUi(
-                title = "Travel",
-                level = "Intermediate",
-                learnedWords = 41,
-                totalWords = 70,
-                progress = 0.58f,
-                accent = Color(0xFF2F80ED)
-            ),
-            FlashcardTopicUi(
-                title = "Food and Drinks",
-                level = "Beginner",
-                learnedWords = 66,
-                totalWords = 90,
-                progress = 0.73f,
-                accent = Color(0xFF56CC9D)
-            )
+    val topics by flashcardViewModel.topics.collectAsState()
+
+    val uiTopics = topics.map {
+        val seed = "${it.id}_${it.title}_${it.level}"
+        val accentColor = topicColorFor(seed)
+        FlashcardTopicUi(
+            id = it.id,
+            title = it.title,
+            level = it.level,
+            learnedWords = 0, // TODO: từ API nếu có
+            totalWords = it._count.Vocabulary,
+            progress = 0f,
+            accent = accentColor,
+            icon = topicIconFor(seed)
         )
     }
 
-    val filteredTopics = remember(query, topics) {
+    val filteredTopics = remember(query, uiTopics) {
         val keyword = query.trim()
         if (keyword.isEmpty()) {
-            topics
+            uiTopics
         } else {
-            topics.filter {
+            uiTopics.filter {
                 it.title.contains(keyword, ignoreCase = true) ||
-                    it.level.contains(keyword, ignoreCase = true)
+                        it.level.contains(keyword, ignoreCase = true)
             }
         }
     }
@@ -141,7 +170,7 @@ fun FlashcardListScreen(
 
                 item {
                     Text(
-                        text = "CHU DE PHO BIEN",
+                        text = "CHỦ ĐỀ PHỔ BIẾN",
                         color = PurplePrimary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.ExtraBold,
@@ -157,7 +186,8 @@ fun FlashcardListScreen(
                     FlashcardCard(
                         topic = topic,
                         compact = compact,
-                        contentMaxWidth = contentMaxWidth
+                        contentMaxWidth = contentMaxWidth,
+                        onClick = { onTopicClick(topic.id) }
                     )
                 }
             }
@@ -264,7 +294,7 @@ private fun SearchInput(
         TextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Tim kiem chu de ...") },
+            placeholder = { Text("Tìm kiếm chủ đề ...") },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -292,15 +322,30 @@ private fun SearchInput(
 private fun FlashcardCard(
     topic: FlashcardTopicUi,
     compact: Boolean,
-    contentMaxWidth: Dp
+    contentMaxWidth: Dp,
+    onClick: () -> Unit
 ) {
+    val cardGradient = Brush.linearGradient(
+        colors = listOf(
+            topic.accent.copy(alpha = 0.22f),
+            topic.accent.copy(alpha = 0.12f),
+            Color.White.copy(alpha = 0.94f)
+        )
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .widthIn(max = contentMaxWidth)
             .padding(horizontal = if (compact) 16.dp else 20.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(SurfaceColor)
+            .background(cardGradient)
+            .border(
+                width = 1.dp,
+                color = topic.accent.copy(alpha = 0.24f),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .clickable(onClick = onClick)
             .padding(if (compact) 14.dp else 16.dp)
     ) {
         Column {
@@ -313,11 +358,11 @@ private fun FlashcardCard(
                     modifier = Modifier
                         .size(if (compact) 44.dp else 48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(topic.accent.copy(alpha = 0.16f)),
+                        .background(topic.accent.copy(alpha = 0.28f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.MenuBook,
+                        imageVector = topic.icon,
                         contentDescription = "Book",
                         tint = topic.accent,
                         modifier = Modifier.size(22.dp)
@@ -348,7 +393,7 @@ private fun FlashcardCard(
                     Icon(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = "next",
-                        tint = TextGray
+                        tint = topic.accent.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -362,23 +407,17 @@ private fun FlashcardCard(
                     .height(8.dp)
                     .clip(RoundedCornerShape(100.dp)),
                 color = topic.accent,
-                trackColor = topic.accent.copy(alpha = 0.18f)
+                trackColor = topic.accent.copy(alpha = 0.24f)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Tien do: ${topic.learnedWords}/${topic.totalWords} tu",
+                text = "Tiến độ: ${topic.learnedWords}/${topic.totalWords} từ",
                 color = TextGray,
                 fontSize = 12.sp,
                 modifier = Modifier.align(Alignment.End)
             )
         }
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun previewFlashcardListScreen() {
-    FlashcardListScreen(onBack = {})
 }
