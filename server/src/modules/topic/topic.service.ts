@@ -29,4 +29,21 @@ export class TopicService {
       group by t.id
     `;
   }
+
+  async getTopicById(topicId: string) {
+    try {
+      const topic = await this.prisma.topic.findUnique({
+        where: {
+          id: topicId,
+        },
+        include: {
+          Vocabulary: true,
+        },
+      });
+      return topic;
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to get topic: ${msg}`);
+    }
+  }
 }
