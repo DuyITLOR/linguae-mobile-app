@@ -1,0 +1,25 @@
+// Fetch all topics
+GET http://localhost:4000/topic
+Authorization: Bearer <token>
+
+###
+GET http://localhost:4000/topic/1d61177e-2b15-4430-b5b3-c719312aa27d
+
+###
+GET http://localhost:4000/favorite
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmN2EwNDg4Yy00YjRlLTRkMzktODZiNC00YTM2NTRlNDU2N2UiLCJlbWFpbCI6InRydW9uZ3RoYW5oZGF0Njg3OUBnbWFpbC5jb20iLCJpYXQiOjE3NzU5ODQ2OTQsImV4cCI6MTc3NjA3MTA5NH0.tqPQhQOl_OMDAWz6PJA5QfQVpOi6YJlNyBWgQHPGzYc
+
+### 
+POST http://localhost:4000/flashcard
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmN2EwNDg4Yy00YjRlLTRkMzktODZiNC00YTM2NTRlNDU2N2UiLCJlbWFpbCI6InRydW9uZ3RoYW5oZGF0Njg3OUBnbWFpbC5jb20iLCJpYXQiOjE3NzU5ODQ2OTQsImV4cCI6MTc3NjA3MTA5NH0.tqPQhQOl_OMDAWz6PJA5QfQVpOi6YJlNyBWgQHPGzYc
+
+{
+    "vocabularyId": "00c3280c-6da9-4feb-a6f7-9929c031f72e",
+    "status": "LEARNING"
+}
+
+###
+GET http://localhost:4000/flashcard/topics
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmN2EwNDg4Yy00YjRlLTRkMzktODZiNC00YTM2NTRlNDU2N2UiLCJlbWFpbCI6InRydW9uZ3RoYW5oZGF0Njg3OUBnbWFpbC5jb20iLCJpYXQiOjE3NzU5ODQ2OTQsImV4cCI6MTc3NjA3MTA5NH0.tqPQhQOl_OMDAWz6PJA5QfQVpOi6YJlNyBWgQHPGzYc
+Content-Type: application/json

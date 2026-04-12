@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UploadedFile, UseInterceptors, } from '@nestjs/common';
 import { HttpResponseBody, HttpResponseService, UserId } from '../../common';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
 import { UserService } from './user.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 interface UserProfilePayload {
   id: string;
@@ -26,11 +28,17 @@ export class UserController {
   }
 
   @Patch('info')
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: memoryStorage(),
+    }),
+  )
   async updateMyProfile(
     @UserId() userId: string,
     @Body() body: UpdateMyProfileDto,
+    @UploadedFile() avatar?: Express.Multer.File,
   ): Promise<HttpResponseBody<UserProfilePayload>> {
-    const result = await this.userService.updateMyProfile(userId, body);
+    const result = await this.userService.updateMyProfile(userId, body, avatar);
     return this.httpResponse.ok(
       result,
       'Cập nhật thông tin người dùng thành công',

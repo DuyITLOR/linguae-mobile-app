@@ -16,9 +16,9 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.PageBg
+import com.penguin.linguae.core.ui.theme.PurpleDark
 import com.penguin.linguae.core.ui.theme.PurpleLight
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.data.model.ProfilePreviewData
@@ -54,8 +55,8 @@ fun ProfileScreen(
         modifier = modifier.fillMaxSize()
     ) {
         LazyColumn(
-            contentPadding = PaddingValues(bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.fillMaxSize()
         ) {
             item {
@@ -86,21 +87,20 @@ fun ProfileScreen(
             }
 
             item {
-                OutlinedButton(
+                Button(
                     onClick = { showLogoutDialog = true },
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(58.dp),
                     shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(
                         width = 1.dp,
-                        color = Color(0xFFE9D7DF)
+                        color = Color(0xFFDCCBF4)
                     ),
-
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color(0xFF8A4B63),
-                        containerColor = Color.Red.copy(alpha = 0.4f)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = PurpleDark
                     )
 
                 ) {

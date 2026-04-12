@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
-
+import { SupabaseStorageService } from '../../common/services/supbase-storage.service';
 interface PublicUserProfile {
   id: string;
   email: string;
@@ -16,7 +16,10 @@ interface PublicUserProfile {
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly supabaseStorage: SupabaseStorageService,
+  ) {}
 
   async getMyProfile(userId: string): Promise<PublicUserProfile> {
     const foundUser: unknown = await this.prisma.user.findUnique({
@@ -39,28 +42,46 @@ export class UserService {
   async updateMyProfile(
     userId: string,
     body: UpdateMyProfileDto,
+    avatar?: Express.Multer.File,
   ): Promise<PublicUserProfile> {
-    const fullName =
-      typeof body.fullName === 'string' ? body.fullName.trim() : undefined;
-    const avatarUrl = this.normalizeAvatarUrl(body.avatarUrl);
+    const data: Record<string, unknown> = {
+      updatedAt: new Date(),
+    };
 
-    if (fullName === undefined && body.avatarUrl === undefined) {
-      throw new BadRequestException(
-        'Vui lòng cung cấp thông tin để cập nhật',
-      );
+    if (body.fullName !== undefined) {
+      const fullName = body.fullName.trim();
+      if (!fullName) {
+        throw new BadRequestException('Tên hiển thị không được để trống');
+      }
+      data.fullName = fullName;
     }
 
-    if (fullName !== undefined && fullName.length === 0) {
-      throw new BadRequestException('Tên hiển thị không được để trống');
+    if (avatar) {
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedMimeTypes.includes(avatar.mimetype)) {
+        throw new BadRequestException('Avatar chỉ hỗ trợ JPG, PNG hoặc WEBP');
+      }
+
+      if (avatar.size > 5 * 1024 * 1024) {
+        throw new BadRequestException('Avatar tối đa 5MB');
+      }
+
+      const uploadResult = await this.supabaseStorage.uploadFile({
+        bucket: 'avatar',
+        path: `users/${userId}/avatar`,
+        file: avatar,
+      });
+
+      data.avatarUrl = uploadResult.publicUrl;
     }
 
-    const updatedUser: unknown = await this.prisma.user.update({
+    if (Object.keys(data).length === 1) {
+      throw new BadRequestException('Vui lòng cung cấp thông tin để cập nhật');
+    }
+
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
-      data: {
-        ...(fullName !== undefined ? { fullName } : {}),
-        ...(body.avatarUrl !== undefined ? { avatarUrl } : {}),
-        updatedAt: new Date(),
-      },
+      data,
       select: {
         id: true,
         email: true,
