@@ -23,12 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.DailyMissionCache
+import com.penguin.linguae.data.model.FlashcardReviewStatus
 import com.penguin.linguae.data.repository.DailyMissionRepository
+import com.penguin.linguae.data.repository.FlashcardRepository
 import com.penguin.linguae.feature.learning.viewmodel.FlashcardDetailViewModel
 import kotlinx.coroutines.launch
 
 // ✅ data class
 data class Card(
+    val id: String,
     val word: String,
     val meaning: String
 )
@@ -54,18 +57,15 @@ fun FlashcardScreen(
     }
 
     val apiCards = remember(topic) {
-        topic?.Vocabulary?.map { vocab -> Card(vocab.word, vocab.meaning) } ?: emptyList()
+        topic?.Vocabulary?.map { vocab -> Card(vocab.id, vocab.word, vocab.meaning) } ?: emptyList()
     }
 
     val cards = remember(taskWords, apiCards) {
-        taskWords?.words?.map { Card(it.word, it.meaning) } ?: apiCards
-    }
-
-    val vocabIds = remember(taskWords) {
-        taskWords?.words?.map { it.id } ?: emptyList()
+        taskWords?.words?.map { Card(it.id, it.word, it.meaning) } ?: apiCards
     }
 
     val dailyMissionRepository = remember { if (taskId != null) DailyMissionRepository() else null }
+    val flashcardRepository = remember { FlashcardRepository() }
     val scope = rememberCoroutineScope()
 
     var showMeaning by remember { mutableStateOf(false) }
@@ -89,9 +89,9 @@ fun FlashcardScreen(
         if (!hasCards) return
 
         // Always mark current word as complete (including last card)
-        if (taskId != null && index < vocabIds.size) {
+        if (taskId != null && index < cards.size) {
             scope.launch {
-                dailyMissionRepository?.completeWord(taskId, vocabIds[index])
+                dailyMissionRepository?.completeWord(taskId, cards[index].id)
             }
         }
         if (current < cards.size) {
@@ -101,6 +101,18 @@ fun FlashcardScreen(
             // Last card — navigate back so DailyMissionScreen refreshes via ON_RESUME
             onBack()
         }
+    }
+
+    fun reviewCurrentCard(status: FlashcardReviewStatus) {
+        if (!hasCards) return
+
+        val currentVocabularyId = cards[index].id
+
+        scope.launch {
+            flashcardRepository.reviewFlashcard(currentVocabularyId, status)
+        }
+
+        advanceCard()
     }
 
     Column(
@@ -225,7 +237,7 @@ fun FlashcardScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Button(
-                onClick = { advanceCard() },
+                onClick = { reviewCurrentCard(FlashcardReviewStatus.LEARNING) },
                 enabled = hasCards,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF8D7DA)),
@@ -235,7 +247,7 @@ fun FlashcardScreen(
             }
 
             Button(
-                onClick = { advanceCard() },
+                onClick = { reviewCurrentCard(FlashcardReviewStatus.MASTERED) },
                 enabled = hasCards,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD4EDDA)),

@@ -11,6 +11,7 @@ import { FavoriteModule } from './modules/favorite/favorite.module';
 import { DailyMissionModule } from './modules/daily-mission/daily-mission.module';
 import { ClozeModule } from './modules/cloze/cloze.module';
 import { UserModule } from './modules/user/user.module';
+import { FlashcardModule } from './modules/flashcard/flashcard.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { UserModule } from './modules/user/user.module';
     FavoriteModule,
     UserModule,
     DailyMissionModule,
-    ClozeModule
+    ClozeModule,
+    FlashcardModule
   ],
   controllers: [AppController],
   providers: [AppService],
