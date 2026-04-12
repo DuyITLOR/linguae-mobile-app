@@ -130,7 +130,10 @@ fun AppNavigation(
 
         composable(Screen.FavoriteVocabulary.route) {
             FavoriteScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onVocabularyClick = { vocabId ->
+                    navController.navigate(Screen.Vocabulary.createRoute(vocabId))
+                }
             )
         }
 

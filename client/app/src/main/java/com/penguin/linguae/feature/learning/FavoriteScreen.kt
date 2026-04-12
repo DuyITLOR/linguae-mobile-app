@@ -9,33 +9,41 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
+import androidx.compose.runtime.getValue
 
 // ✅ Data model
 data class FavoriteItem(
+    val id: String,
     val title: String,
     val subtitle: String
 )
 
-// ✅ Fake data
-val favoriteData = listOf(
-    FavoriteItem("Apple", "Quả táo"),
-    FavoriteItem("Coffee", "Cà phê"),
-    FavoriteItem("Beautiful", "Xinh đẹp"),
-    FavoriteItem("Friendship", "Tình bạn")
-)
-
 @Composable
 fun FavoriteScreen(
-    onBack: () -> Unit = {}
+    favoriteViewModel: FavoriteViewModel = viewModel(),
+    onBack: () -> Unit = {},
+    onVocabularyClick: (String) -> Unit = {}
 ) {
+    val favoriteVocab by favoriteViewModel.favorites.collectAsState()
+
+    val favoriteData = favoriteVocab.map { favorite ->
+        FavoriteItem(
+            id = favorite.vocabularyId,
+            title = favorite.Vocabulary.word,
+            subtitle = favorite.Vocabulary.meaning
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +72,10 @@ fun FavoriteScreen(
 
         // 🔹 List items
         favoriteData.forEach {
-            FavoriteCard(item = it)
+            FavoriteCard(
+                item = it,
+                onClick = { onVocabularyClick(it.id) }
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -73,14 +84,17 @@ fun FavoriteScreen(
 
 // 🔥 Item UI
 @Composable
-fun FavoriteCard(item: FavoriteItem) {
+fun FavoriteCard(
+    item: FavoriteItem,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .background(Color(0xFFF3F3F3))
             .padding(16.dp)
-            .clickable { },
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -110,11 +124,4 @@ fun FavoriteCard(item: FavoriteItem) {
             )
         }
     }
-}
-
-// 👀 Preview
-@Preview(showBackground = true)
-@Composable
-fun FavoritePreview() {
-    FavoriteScreen()
 }
