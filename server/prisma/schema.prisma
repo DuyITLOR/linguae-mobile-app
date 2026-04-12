@@ -197,7 +197,7 @@ model UserDailyGoal {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime
   User                 User      @relation(fields: [userId], references: [id])
-} 
+}
 
 model UserLearningPlan {
   id        String   @id @default(uuid())
@@ -226,12 +226,13 @@ model UserSetting {
 model UserVocabularyProgress {
   userId         String
   vocabularyId   String
-  exposureCount  Int        @default(0)
+  exposureCount  Int                  @default(0)
+  status         UserVocabularyStatus @default(LEARNING)
   lastReviewedAt DateTime?
   nextReviewAt   DateTime?
   updatedAt      DateTime
-  User           User       @relation(fields: [userId], references: [id])
-  Vocabulary     Vocabulary @relation(fields: [vocabularyId], references: [id])
+  User           User                 @relation(fields: [userId], references: [id])
+  Vocabulary     Vocabulary           @relation(fields: [vocabularyId], references: [id])
 
   @@id([userId, vocabularyId])
   @@index([nextReviewAt])
@@ -273,21 +274,21 @@ model VocabularyExample {
 }
 
 model ClozeQuestion {
-  id  Int @id @default(autoincrement())
-  topicId String
-  sentence String
+  id        Int      @id @default(autoincrement())
+  topicId   String
+  sentence  String
   createdAt DateTime @default(now())
 
-  Topic   Topic   @relation(fields: [topicId], references: [id])
+  Topic        Topic          @relation(fields: [topicId], references: [id])
   ClozeOptions ClozeOptions[]
 }
 
 model ClozeOptions {
-  id Int
+  id         Int
   questionId Int
   optionText String
-  isCorrect Boolean
-  createdAt DateTime @default(now())
+  isCorrect  Boolean
+  createdAt  DateTime @default(now())
   blankIndex Int
 
   ClozeQuestion ClozeQuestion @relation(fields: [questionId], references: [id])
@@ -296,14 +297,14 @@ model ClozeOptions {
 }
 
 model DailyMission {
-  id         String        @id @default(uuid())
-  userId     String
-  date       DateTime
-  status     MissionStatus @default(IN_PROGRESS)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  User       User          @relation(fields: [userId], references: [id])
-  DailyTask  DailyTask[]
+  id        String        @id @default(uuid())
+  userId    String
+  date      DateTime
+  status    MissionStatus @default(IN_PROGRESS)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  User      User          @relation(fields: [userId], references: [id])
+  DailyTask DailyTask[]
 
   @@unique([userId, date])
   @@index([userId])
@@ -333,6 +334,11 @@ model DailyTaskCompletion {
   Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
 
   @@id([dailyTaskId, vocabularyId])
+}
+
+enum UserVocabularyStatus {
+  LEARNING
+  MASTERED
 }
 
 enum DailyTaskType {
