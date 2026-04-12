@@ -46,6 +46,7 @@ import com.penguin.linguae.feature.profile.component.ProfileSectionLabel
 fun ProfileScreen(
     uiState: ProfileUiState,
     onLogout: () -> Unit,
+    onNavigateEditProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
@@ -74,7 +75,8 @@ fun ProfileScreen(
                         iconTint = Color(0xFFFF8A4C),
                         iconBackground = Color(0xFFFFF1E8),
                         title = "Chỉnh sửa hồ sơ",
-                        subtitle = "Khung UI cho tên hiển thị, avatar và mục tiêu học."
+                        subtitle = "Cập nhật tên hiển thị và ảnh đại diện của bạn.",
+                        onClick = onNavigateEditProfile
                     )
                     ProfileActionCard(
                         icon = Icons.Default.Settings,
@@ -136,6 +138,7 @@ fun ProfileScreen(
 private fun ProfileScreenPreview() {
     ProfileScreen(
         uiState = ProfilePreviewData.sample,
-        onLogout = {}
+        onLogout = {},
+        onNavigateEditProfile = {}
     )
 }

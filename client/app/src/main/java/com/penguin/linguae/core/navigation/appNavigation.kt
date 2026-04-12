@@ -24,6 +24,7 @@ import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
+import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.data.model.ProfileUiState
@@ -106,6 +107,9 @@ fun AppNavigation(
                     email = currentUser?.email ?: "No email",
                     avatarUrl = currentUser?.avatarUrl
                 ),
+                onNavigateEditProfile = {
+                    navController.navigate(Screen.EditProfile.route)
+                },
                 onLogout = {
                     TokenManager.clear()
                     UserManager.clearUser()
@@ -116,6 +120,18 @@ fun AppNavigation(
                         launchSingleTop = true
                     }
                 }
+            )
+        }
+
+        composable(Screen.EditProfile.route) {
+            val currentUser = UserManager.getUser()
+            ProfileEditScreen(
+                uiState = ProfileUiState(
+                    fullName = currentUser?.fullName ?: "No name",
+                    email = currentUser?.email ?: "No email",
+                    avatarUrl = currentUser?.avatarUrl
+                ),
+                onBack = { navController.popBackStack() }
             )
         }
 

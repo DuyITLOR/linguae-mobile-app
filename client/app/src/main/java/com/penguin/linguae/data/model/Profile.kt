@@ -17,6 +17,12 @@ data class ProfileUiState(
     val stats: ProfileStats = ProfileStats(),
 )
 
+data class ProfileResponse(
+    val success: Boolean,
+    val message: String,
+    val data: User,
+)
+
 object ProfilePreviewData {
     val sample = ProfileUiState(
         fullName = "Quách Châu Hạo Kiệt",
