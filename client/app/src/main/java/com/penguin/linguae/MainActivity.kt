@@ -39,16 +39,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val authScreen = listOf(
-        Screen.Login.route,
-        Screen.Register.route,
-        Screen.forogtPassword.route
-    )
+    val bottomBarRoutes = Destination.entries.map { it.route }
 
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            if(currentRoute !in authScreen) {
+            if (currentRoute in bottomBarRoutes) {
                 NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                     Destination.entries.forEach { destination ->
                         NavigationBarItem(
