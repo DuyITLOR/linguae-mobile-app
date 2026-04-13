@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   InternalServerErrorException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -287,7 +288,7 @@ export class AuthService {
     });
 
     if (!foundUser) {
-      return { email };
+      throw new NotFoundException('Tài khoản không tồn tại');
     }
 
     if (!this.isForgotPasswordUserRow(foundUser)) {
@@ -295,7 +296,9 @@ export class AuthService {
     }
 
     if (foundUser.provider !== 'local') {
-      return { email };
+      throw new ForbiddenException(
+        'Tài khoản Google không hỗ trợ quên mật khẩu bằng OTP',
+      );
     }
 
     const otp = this.generateResetPasswordOtp();
@@ -342,13 +345,8 @@ export class AuthService {
       throw new BadRequestException('OTP phải gồm đúng 6 chữ số');
     }
 
-    const resetPasswordOtpHash = this.hashResetPasswordOtp(otp);
-
     const foundUser: unknown = await this.prisma.user.findFirst({
-      where: {
-        email,
-        resetPasswordOtpHash,
-      },
+      where: { email },
       select: {
         id: true,
         email: true,
@@ -364,7 +362,16 @@ export class AuthService {
     }
 
     if (foundUser.provider !== 'local') {
-      throw new ForbiddenException('Tài khoản này không hỗ trợ đổi mật khẩu');
+      throw new ForbiddenException('Tài khoản Google không hỗ trợ đổi mật khẩu');
+    }
+
+    const resetPasswordOtpHash = this.hashResetPasswordOtp(otp);
+
+    if (
+      !foundUser.resetPasswordOtpHash ||
+      foundUser.resetPasswordOtpHash !== resetPasswordOtpHash
+    ) {
+      throw new ForbiddenException('OTP đặt lại mật khẩu không hợp lệ');
     }
 
     if (
