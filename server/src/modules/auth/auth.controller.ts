@@ -62,10 +62,7 @@ export class AuthController {
     @Body() body: ForgotPasswordDto,
   ): Promise<HttpResponseBody<{ email: string }>> {
     const result = await this.authService.forgotPassword(body);
-    return this.httpResponse.ok(
-      result,
-      'Nếu email tồn tại, hệ thống đã gửi mã OTP đặt lại mật khẩu',
-    );
+    return this.httpResponse.ok(result, 'Đã gửi mã OTP đặt lại mật khẩu');
   }
 
   @Public()
