@@ -29,6 +29,7 @@ import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
+import com.penguin.linguae.feature.practiceResult.ResultScreen
 
 @Composable
 fun AppNavigation(
@@ -213,9 +214,14 @@ fun AppNavigation(
         ) { backStackEntry ->
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
             ClozeScreen(
+                navController = navController,
                 topicId = topicId,
                 onReturn = { navController.popBackStack() }
             )
+        }
+
+        composable(Screen.ResultScreen.route) {
+            ResultScreen(navController = navController, onReturn = {navController.popBackStack()})
         }
 
         composable(Screen.DailyMission.route) {

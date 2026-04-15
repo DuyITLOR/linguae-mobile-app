@@ -40,4 +40,6 @@ sealed class Screen(val route: String) {
             return "cloze_screen/$topicId"
         }
     }
+
+    object ResultScreen: Screen("result_screen")
 }

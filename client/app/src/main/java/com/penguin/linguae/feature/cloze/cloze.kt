@@ -9,24 +9,26 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.feature.cloze.component.*
 import com.penguin.linguae.feature.cloze.viewmodel.*
 
-@Preview
 @Composable
 fun ClozeScreen(
-    onReturn: () -> Unit = {},
+    navController: NavController,
     topicId: String = "",
     viewModel: ClozeViewModel = ClozeViewModel(topicId),
+    onReturn: () -> Unit = {}
 ){
     val questionsWithOptions by viewModel.questionsWithOptions.collectAsStateWithLifecycle()
     val currentIndex by viewModel.currentIndex.collectAsStateWithLifecycle()
@@ -35,6 +37,16 @@ fun ClozeScreen(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { route ->
+            navController.navigate(route) {
+                popUpTo(Screen.Cloze.route) {
+                    inclusive = true
+                }
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -93,7 +105,6 @@ fun ClozeScreen(
                             screenHeight,
                             current.options,
                             viewModel,
-                            onReturn = onReturn
                         )
                     }
                 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,13 +46,14 @@ fun OptionItem(
     }
 
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(2.dp, backgroundColor, RoundedCornerShape(12.dp))
-            .background(SurfaceColor)
-            .clickable(enabled = isCorrect == null) { onClick() },
-        verticalAlignment = Alignment.CenterVertically
+            .shadow(3.dp, RoundedCornerShape(12.dp)) // 1. shadow trước
+            .clip(RoundedCornerShape(12.dp))         // 2. clip theo shape
+            .background(SurfaceColor)                // 3. background
+            .border(2.dp, backgroundColor, RoundedCornerShape(12.dp)) // 4. border
+            .clickable(enabled = isCorrect == null) { onClick() }     // 5. interaction
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
