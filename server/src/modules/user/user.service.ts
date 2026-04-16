@@ -12,6 +12,7 @@ interface PublicUserProfile {
   email: string;
   fullName: string;
   avatarUrl: string | null;
+  role: string;
 }
 
 @Injectable()
@@ -29,6 +30,7 @@ export class UserService {
         email: true,
         fullName: true,
         avatarUrl: true,
+        role: true,
       },
     });
 
@@ -87,6 +89,7 @@ export class UserService {
         email: true,
         fullName: true,
         avatarUrl: true,
+        role: true,
       },
     });
 
@@ -125,7 +128,8 @@ export class UserService {
       typeof candidate.id === 'string' &&
       typeof candidate.email === 'string' &&
       typeof candidate.fullName === 'string' &&
-      (typeof candidate.avatarUrl === 'string' || candidate.avatarUrl === null)
+      (typeof candidate.avatarUrl === 'string' || candidate.avatarUrl === null) &&
+      typeof candidate.role === 'string'
     );
   }
 }

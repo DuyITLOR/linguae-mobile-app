@@ -29,6 +29,7 @@ interface PublicUser {
   email: string;
   fullName: string;
   avatarUrl: string | null;
+  role: string;
 }
 
 interface AuthResult {
@@ -100,6 +101,7 @@ export class AuthService {
         email: true,
         fullName: true,
         avatarUrl: true,
+        role: true,
       },
     });
 
@@ -132,6 +134,7 @@ export class AuthService {
         avatarUrl: true,
         passwordHash: true,
         provider: true,
+        role: true,
       },
     });
 
@@ -162,6 +165,7 @@ export class AuthService {
         email: foundUser.email,
         fullName: foundUser.fullName,
         avatarUrl: foundUser.avatarUrl,
+        role: foundUser.role,
       },
       accessToken: this.generateAccessToken(foundUser.id, foundUser.email),
     };
@@ -192,6 +196,7 @@ export class AuthService {
         fullName: true,
         avatarUrl: true,
         provider: true,
+        role: true,
       },
     });
 
@@ -219,6 +224,7 @@ export class AuthService {
           email: true,
           fullName: true,
           avatarUrl: true,
+          role: true,
         },
       });
 
@@ -249,6 +255,7 @@ export class AuthService {
         email: true,
         fullName: true,
         avatarUrl: true,
+        role: true,
       },
     });
 
@@ -505,7 +512,8 @@ export class AuthService {
       typeof value.id === 'string' &&
       typeof value.email === 'string' &&
       typeof value.fullName === 'string' &&
-      (typeof value.avatarUrl === 'string' || value.avatarUrl === null)
+      (typeof value.avatarUrl === 'string' || value.avatarUrl === null) &&
+      typeof value.role === 'string'
     );
   }
 
