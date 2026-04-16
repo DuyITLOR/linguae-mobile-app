@@ -55,8 +55,8 @@ fun AppNavigation(
 
         composable(Screen.Topic.route) {
             TopicScreen(
-                onTopicClick = { topicId ->
-                    navController.navigate(Screen.VocabularyList.createRoute(topicId))
+                onTopicClick = { topicId, title ->
+                    navController.navigate(Screen.VocabularyList.createRoute(topicId, title))
                 }
             )
         }
@@ -159,13 +159,18 @@ fun AppNavigation(
             arguments = listOf(
                 navArgument("topicId") {
                     type = NavType.StringType
+                },
+                navArgument("title") {
+                    type = NavType.StringType
                 }
             )
         ) { backStackEntry ->
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: ""
 
             VocabularyListScreen(
                 topicId = topicId,
+                title = title,
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }
             )

@@ -42,7 +42,7 @@ import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
 
 @Composable
 fun TopicScreen(
-    onTopicClick: (String) -> Unit = {},
+    onTopicClick: (String, String) -> Unit = {topicId, title ->},
     viewModel: TopicViewModel = viewModel()
 ) {
     val topics by viewModel.topics.collectAsState()
@@ -80,7 +80,7 @@ fun TopicScreen(
                 CompactTopicCard(
                     topic = topic,
                     progress = 0f,
-                    onClick = { onTopicClick(topic.id) },
+                    onClick = { onTopicClick(topic.id, topic.title) },
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                 )
             }
