@@ -168,6 +168,7 @@ model User {
   resetPasswordExpiresAt DateTime?
   fullName               String
   avatarUrl              String?
+  role                   UserRoles                @default(USER)
   isActive               Boolean                  @default(true)
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @default(now())
@@ -334,6 +335,11 @@ model DailyTaskCompletion {
   Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
 
   @@id([dailyTaskId, vocabularyId])
+}
+
+enum UserRoles {
+  USER
+  ADMIN
 }
 
 enum UserVocabularyStatus {
