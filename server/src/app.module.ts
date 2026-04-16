@@ -12,6 +12,7 @@ import { DailyMissionModule } from './modules/daily-mission/daily-mission.module
 import { ClozeModule } from './modules/cloze/cloze.module';
 import { UserModule } from './modules/user/user.module';
 import { FlashcardModule } from './modules/flashcard/flashcard.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { FlashcardModule } from './modules/flashcard/flashcard.module';
     UserModule,
     DailyMissionModule,
     ClozeModule,
-    FlashcardModule
+    FlashcardModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
