@@ -20,6 +20,7 @@ import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardListScreen
+import com.penguin.linguae.feature.learning.SearchScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
@@ -222,6 +223,14 @@ fun AppNavigation(
                 navController = navController,
                 topicId = topicId,
                 onReturn = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onVocabularyClick = { vocabId ->
+                    navController.navigate(Screen.Vocabulary.createRoute(vocabId))
+                }
             )
         }
 

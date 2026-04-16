@@ -42,4 +42,6 @@ sealed class Screen(val route: String) {
     }
 
     object ResultScreen: Screen("result_screen")
+
+    object Search : Screen("search_screen")
 }
