@@ -24,9 +24,9 @@ sealed class Screen(val route: String) {
         fun createRoute(taskId: String) = "daily_flashcard_screen/$taskId"
     }
 
-    object VocabularyList: Screen("vocabulary_screen/{topicId}") {
-        fun createRoute(topicId: String): String {
-            return "vocabulary_screen/$topicId"
+    object VocabularyList: Screen("vocabulary_screen/{topicId}/{title}") {
+        fun createRoute(topicId: String, title: String): String {
+            return "vocabulary_screen/$topicId/${android.net.Uri.encode(title)}"
         }
     }
 
@@ -43,4 +43,6 @@ sealed class Screen(val route: String) {
     }
 
     object ResultScreen: Screen("result_screen")
+
+    object Search : Screen("search_screen")
 }

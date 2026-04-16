@@ -13,6 +13,7 @@ enum class Destination(
 ) {
     Home(Screen.Home, "Trang chủ", "Home", Icons.Default.Home),
     Topic(Screen.Topic, "Chủ đề", "Topic", Icons.Default.Book),
+    Search(Screen.Search, "Tìm kiếm", "Search", Icons.Default.Search),
     Progress(Screen.Progress, "Tiến độ", "Progress", Icons.Default.BarChart),
     Profile(Screen.Profile, "Hồ sơ", "Profile", Icons.Default.Person);
 
