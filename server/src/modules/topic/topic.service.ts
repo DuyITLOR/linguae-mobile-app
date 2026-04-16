@@ -16,6 +16,7 @@ export class TopicService {
             },
           },
         },
+        
       });
 
     return this.prisma.$queryRaw`
