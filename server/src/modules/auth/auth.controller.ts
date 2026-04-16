@@ -15,6 +15,7 @@ interface AuthPayload {
     email: string;
     fullName: string;
     avatarUrl: string | null;
+    role: string;
   };
   accessToken: string;
 }

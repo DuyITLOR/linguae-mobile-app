@@ -1,10 +1,8 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -12,6 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
+import com.penguin.linguae.data.model.ProfileUiState
+import com.penguin.linguae.data.model.UserRole
+import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
@@ -24,33 +25,29 @@ import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
+import com.penguin.linguae.feature.practiceResult.ResultScreen
 import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
-import com.penguin.linguae.data.model.ProfileUiState
-import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
-import com.penguin.linguae.feature.practiceResult.ResultScreen
 
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-
-    val startRoute = if (TokenManager.getToken() != null) {
-        Screen.Home.route
-    } else {
-        Screen.Login.route
-    }
+    val startRoute = resolveStartRoute()
 
     NavHost(
         navController = navController,
         modifier = modifier,
         startDestination = startRoute
     ) {
-
         composable(Screen.Home.route) {
             HomeScreen(navController = navController)
+        }
+
+        composable(Screen.Admin.route) {
+            AdminScreen()
         }
 
         composable(Screen.Topic.route) {
@@ -69,7 +66,7 @@ fun AppNavigation(
             LoginScreen(
                 viewModel = viewModel(),
                 onNavigateHome = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(resolveAuthenticatedRoute()) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
@@ -194,14 +191,12 @@ fun AppNavigation(
                 }
             )
         ) { backStackEntry ->
-
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
 
             FlashcardScreen(
                 topicId = topicId,
                 onBack = { navController.popBackStack() }
             )
-
         }
 
         composable(
@@ -221,7 +216,7 @@ fun AppNavigation(
         }
 
         composable(Screen.ResultScreen.route) {
-            ResultScreen(navController = navController, onReturn = {navController.popBackStack()})
+            ResultScreen(navController = navController, onReturn = { navController.popBackStack() })
         }
 
         composable(Screen.DailyMission.route) {
@@ -248,16 +243,20 @@ fun AppNavigation(
             )
         }
     }
+}
 
-    LaunchedEffect(startRoute) {
-        val currentRoute = navController.currentDestination?.route
-        if (currentRoute != startRoute) {
-            navController.navigate(startRoute) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    inclusive = false
-                }
-                launchSingleTop = true
-            }
-        }
+private fun resolveStartRoute(): String {
+    if (TokenManager.getToken() == null) {
+        return Screen.Login.route
+    }
+
+    return resolveAuthenticatedRoute()
+}
+
+private fun resolveAuthenticatedRoute(): String {
+    return when (UserManager.getUser()?.role) {
+        UserRole.ADMIN -> Screen.Admin.route
+        UserRole.USER -> Screen.Home.route
+        null -> Screen.Login.route
     }
 }
