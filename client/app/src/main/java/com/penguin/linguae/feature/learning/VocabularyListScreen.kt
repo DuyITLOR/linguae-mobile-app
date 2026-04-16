@@ -34,6 +34,7 @@ import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
+import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
 val StarActive = Color(0xFFFFC107)
@@ -41,10 +42,11 @@ val StarActive = Color(0xFFFFC107)
 @Composable
 fun VocabularyListScreen(
     topicId: String,
+    title: String,
     navController: NavHostController,
     onNavigateBack: () -> Unit,
     viewModel: VocabularyViewModel = viewModel(),
-    favoriteViewModel: FavoriteViewModel = viewModel()
+    favoriteViewModel: FavoriteViewModel = viewModel(),
 ) {
     val vocabularies by viewModel.vocabulary.collectAsState()
     val favoriteIds by favoriteViewModel.favoriteIds.collectAsState()
@@ -63,7 +65,7 @@ fun VocabularyListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TopHeader(onNavigateBack = onNavigateBack)
+            TopHeader(onNavigateBack = onNavigateBack, title = title)
             SearchBar(
                 query = querySearch,
                 onQueryChange = { newQuery ->
@@ -89,7 +91,7 @@ fun VocabularyListScreen(
 }
 
 @Composable
-fun TopHeader(onNavigateBack: () -> Unit) {
+fun TopHeader(onNavigateBack: () -> Unit, title: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,18 +106,12 @@ fun TopHeader(onNavigateBack: () -> Unit) {
                 )
             }
             Text(
-                text = "Đồ ăn & Thức uống",
+                text = title,
                 color = PurpleBlueTheme,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold
             )
         }
-        Text(
-            text = "25 từ vựng • 80% hoàn thành",
-            color = TextGray,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 48.dp, top = 2.dp)
-        )
     }
 }
 

@@ -21,6 +21,7 @@ import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardListScreen
+import com.penguin.linguae.feature.learning.SearchScreen
 import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
@@ -52,8 +53,8 @@ fun AppNavigation(
 
         composable(Screen.Topic.route) {
             TopicScreen(
-                onTopicClick = { topicId ->
-                    navController.navigate(Screen.VocabularyList.createRoute(topicId))
+                onTopicClick = { topicId, title ->
+                    navController.navigate(Screen.VocabularyList.createRoute(topicId, title))
                 }
             )
         }
@@ -156,13 +157,18 @@ fun AppNavigation(
             arguments = listOf(
                 navArgument("topicId") {
                     type = NavType.StringType
+                },
+                navArgument("title") {
+                    type = NavType.StringType
                 }
             )
         ) { backStackEntry ->
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: ""
 
             VocabularyListScreen(
                 topicId = topicId,
+                title = title,
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -212,6 +218,14 @@ fun AppNavigation(
                 navController = navController,
                 topicId = topicId,
                 onReturn = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onVocabularyClick = { vocabId ->
+                    navController.navigate(Screen.Vocabulary.createRoute(vocabId))
+                }
             )
         }
 

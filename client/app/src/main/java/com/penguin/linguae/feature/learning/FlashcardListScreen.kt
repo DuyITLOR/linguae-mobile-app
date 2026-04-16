@@ -79,7 +79,7 @@ private data class FlashcardTopicUi(
     val icon: ImageVector
 )
 
-private val TopicAccentPalette = listOf(
+internal val TopicAccentPalette = listOf(
     Color(0xFF5A67D8),
     Color(0xFF5468FF),
     Color(0xFF6A5AE0),
@@ -90,19 +90,19 @@ private val TopicAccentPalette = listOf(
     Color(0xFF4D8BFF)
 )
 
-private val TopicIconPalette = listOf(
+internal val TopicIconPalette = listOf(
     Icons.Default.MenuBook,
     Icons.Default.AutoStories,
     Icons.Default.LocalLibrary,
     Icons.Default.School
 )
 
-private fun topicColorFor(seed: String): Color {
+internal fun topicColorFor(seed: String): Color {
     val index = abs(seed.hashCode()) % TopicAccentPalette.size
     return TopicAccentPalette[index]
 }
 
-private fun topicIconFor(seed: String): ImageVector {
+internal fun topicIconFor(seed: String): ImageVector {
     val index = abs(seed.hashCode() / 31) % TopicIconPalette.size
     return TopicIconPalette[index]
 }
