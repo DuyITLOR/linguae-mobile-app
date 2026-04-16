@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.penguin.linguae.data.model.Destination
+import com.penguin.linguae.data.model.UserRole
 import com.penguin.linguae.core.navigation.AppNavigation
 import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.network.TokenManager
@@ -40,11 +41,13 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val bottomBarRoutes = Destination.entries.map { it.route }
+    val isAdminProfileRoute =
+        currentRoute == Screen.Profile.route && UserManager.getUser()?.role == UserRole.ADMIN
 
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            if (currentRoute in bottomBarRoutes) {
+            if (currentRoute in bottomBarRoutes && !isAdminProfileRoute) {
                 NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                     Destination.entries.forEach { destination ->
                         NavigationBarItem(

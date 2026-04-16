@@ -30,6 +30,7 @@ import com.penguin.linguae.feature.practiceResult.ResultScreen
 import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
+import com.penguin.linguae.feature.toeic.ToeicMockTestListScreen
 
 @Composable
 fun AppNavigation(
@@ -48,7 +49,15 @@ fun AppNavigation(
         }
 
         composable(Screen.Admin.route) {
-            AdminScreen()
+            val currentUser = UserManager.getUser()
+            AdminScreen(
+                currentUser = currentUser,
+                onNavigateProfile = {
+                    navController.navigate(Screen.Profile.route) {
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Screen.Topic.route) {
@@ -139,6 +148,12 @@ fun AppNavigation(
                 onTopicClick = { topicId ->
                     navController.navigate(Screen.Flashcard.createRoute(topicId))
                 },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.ToeicMockTestList.route) {
+            ToeicMockTestListScreen(
                 onBack = { navController.popBackStack() }
             )
         }

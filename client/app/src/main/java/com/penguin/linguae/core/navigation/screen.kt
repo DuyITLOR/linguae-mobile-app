@@ -13,6 +13,7 @@ sealed class Screen(val route: String) {
     object forogtPassword: Screen("forgot_password_screen")
 
     object FlashcardList : Screen("flashcard/list")
+    object ToeicMockTestList : Screen("toeic/mock-test-list")
 
     object Flashcard : Screen("flashcard/{topicId}/practice") {
         fun createRoute(topicId: String) = "flashcard/${topicId}/practice"

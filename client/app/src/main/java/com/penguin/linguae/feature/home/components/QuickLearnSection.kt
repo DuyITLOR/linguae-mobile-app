@@ -97,6 +97,7 @@ fun QuickLearn(
     onFlashcardClick: () -> Unit,
     onPracticeClick: () -> Unit,
     onFavoriteClick: () -> Unit,
+    onToeicMockTestClick: () -> Unit,
     viewModel: HomeViewModel
 ) {
     val menuItems = remember {
@@ -125,6 +126,12 @@ fun QuickLearn(
                 "Danh sách đã lưu",
                 Emerald,
             ) { onFavoriteClick() },
+            MenuItem(
+                R.drawable.book,
+                "TOEIC Test",
+                "Mock test ôn luyện",
+                Sapphire,
+            ) { onToeicMockTestClick() },
         )
     }
 
