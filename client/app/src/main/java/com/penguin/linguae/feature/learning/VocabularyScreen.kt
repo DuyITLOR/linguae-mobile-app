@@ -23,8 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.media.MediaPlayer
+import android.speech.tts.TextToSpeech
+import java.util.Locale
 import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
@@ -42,9 +44,23 @@ fun VocabularyScreen(
     viewModel: VocabularyViewModel = viewModel(),
     favoriteViewModel: FavoriteViewModel = viewModel()
 ) {
-    val mediaPlayer = remember { MediaPlayer() }
+    val context = LocalContext.current
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
     val vocabulary by viewModel.selectedVocabulary.collectAsState()
     val favoriteIds by favoriteViewModel.favoriteIds.collectAsState()
+
+    DisposableEffect(context) {
+        val engine = TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.US
+            }
+        }
+        tts = engine
+        onDispose {
+            engine.stop()
+            engine.shutdown()
+        }
+    }
 
     LaunchedEffect(vocabId) {
         viewModel.fetchVocabularyById(vocabId)
@@ -71,21 +87,7 @@ fun VocabularyScreen(
             partOfSpeech = vocab.partOfSpeech ?: "",
             onNavigateBack = onNavigateBack,
             onPlayAudio = {
-
-                val audioUrl = vocab.pronunciationAudio
-
-                if (!audioUrl.isNullOrEmpty()) {
-                    try {
-                        mediaPlayer.reset()
-                        mediaPlayer.setDataSource(audioUrl)
-                        mediaPlayer.prepareAsync()
-                        mediaPlayer.setOnPreparedListener { player ->
-                            player.start()
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+                tts?.speak(vocab.word, TextToSpeech.QUEUE_FLUSH, null, null)
             }
         )
 
