@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
@@ -31,17 +32,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.AppBackground
+import com.penguin.linguae.data.model.User
+import coil.compose.AsyncImage
 
 @Composable
 fun AdminScreen(
     modifier: Modifier = Modifier,
+    currentUser: User? = null,
+    onNavigateProfile: () -> Unit = {},
 ) {
     Surface(
         color = AppBackground,
@@ -54,7 +61,11 @@ fun AdminScreen(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             item {
-                AdminHeader(adminName = "Admin")
+                AdminHeader(
+                    adminName = currentUser.displayName(),
+                    avatarUrl = currentUser?.avatarUrl,
+                    onNavigateProfile = onNavigateProfile
+                )
             }
             item {
                 TotalUsersCard(totalUsers = "24.8k", growth = "+12% this month")
@@ -124,7 +135,11 @@ fun AdminScreen(
 }
 
 @Composable
-private fun AdminHeader(adminName: String) {
+private fun AdminHeader(
+    adminName: String,
+    avatarUrl: String?,
+    onNavigateProfile: () -> Unit,
+) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -144,18 +159,69 @@ private fun AdminHeader(adminName: String) {
             )
         }
 
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(34.dp)
+                    .background(color = Color(0xFFECE9FF), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notifications",
+                    tint = Color(0xFF6D5CE7),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            ProfileShortcut(
+                avatarUrl = avatarUrl,
+                onClick = onNavigateProfile
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProfileShortcut(
+    avatarUrl: String?,
+    onClick: () -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(42.dp)
+            .clip(CircleShape)
+            .background(Color.White)
+            .clickable(onClick = onClick)
+    ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(34.dp)
-                .background(color = Color(0xFFECE9FF), shape = CircleShape)
+                .size(30.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFF1EEFF))
         ) {
-            Icon(
-                imageVector = Icons.Default.Notifications,
-                contentDescription = "Notifications",
-                tint = Color(0xFF6D5CE7),
-                modifier = Modifier.size(18.dp)
-            )
+            if (!avatarUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = avatarUrl,
+                    contentDescription = "Open profile",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(CircleShape)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Open profile",
+                    tint = Color(0xFF5F55DB),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }
@@ -318,5 +384,29 @@ private fun AdminActionItem(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun AdminScreenPreview() {
-    AdminScreen()
+    AdminScreen(
+        currentUser = User(
+            id = "1",
+            email = "admin@linguae.app",
+            fullName = "Nguyen Admin",
+            avatarUrl = null
+        )
+    )
+}
+
+private fun User?.displayName(): String {
+    val fullName = this?.fullName?.trim().orEmpty()
+    if (fullName.isNotEmpty()) {
+        return fullName
+    }
+
+    val emailName = this?.email
+        ?.substringBefore("@")
+        ?.trim()
+        .orEmpty()
+    if (emailName.isNotEmpty()) {
+        return emailName
+    }
+
+    return "Admin"
 }

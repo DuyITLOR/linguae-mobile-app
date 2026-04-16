@@ -85,6 +85,9 @@ fun HomeScreen(
                                 launchSingleTop = true
                             }
                         },
+                        onToeicMockTestClick = {
+                            navController.navigate(Screen.ToeicMockTestList.route)
+                        },
                         onPracticeClick = {
                             navController.navigate(Screen.Cloze.createRoute("t4"))
                         },
