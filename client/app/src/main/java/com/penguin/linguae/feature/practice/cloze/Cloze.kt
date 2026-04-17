@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.cloze
+package com.penguin.linguae.feature.practice.cloze
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,8 +20,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.ui.theme.*
-import com.penguin.linguae.feature.cloze.component.*
-import com.penguin.linguae.feature.cloze.viewmodel.*
+import com.penguin.linguae.feature.practice.cloze.component.ClozeOptions
+import com.penguin.linguae.feature.practice.cloze.component.Header
+import com.penguin.linguae.feature.practice.cloze.component.QuestionHolder
+import com.penguin.linguae.feature.practice.cloze.viewmodel.ClozeViewModel
 
 @Composable
 fun ClozeScreen(
@@ -91,7 +93,7 @@ fun ClozeScreen(
                     verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    item { Header(currentIndex, onClick = onReturn)}
+                    item { Header(currentIndex, onClick = onReturn) }
                     item { QuestionHolder(current.question) }
                     item {
                         Text(

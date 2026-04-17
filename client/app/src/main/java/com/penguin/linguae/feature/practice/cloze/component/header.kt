@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.cloze.component
+package com.penguin.linguae.feature.practice.cloze.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.penguin.linguae.R
 import com.penguin.linguae.core.ui.theme.PurpleBlueTheme
 import com.penguin.linguae.core.ui.theme.SurfaceColor
-import com.penguin.linguae.core.ui.theme.TextGray
-import com.penguin.linguae.feature.cloze.viewmodel.ClozeViewModel
 
 @Composable
 fun Header(

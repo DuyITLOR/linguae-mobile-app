@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.practiceResult
+package com.penguin.linguae.feature.practice.practiceResult
 
 import android.util.Log
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -42,9 +42,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.data.model.ResultData
-import com.penguin.linguae.feature.practiceResult.viewmodel.ResultViewModel
+import com.penguin.linguae.feature.practice.practiceResult.viewmodel.ResultViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.math.log
 
 
 @Composable

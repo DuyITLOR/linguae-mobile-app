@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.practiceResult.viewmodel
+package com.penguin.linguae.feature.practice.practiceResult.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

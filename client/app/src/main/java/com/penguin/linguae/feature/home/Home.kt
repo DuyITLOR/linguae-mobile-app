@@ -89,7 +89,7 @@ fun HomeScreen(
                             navController.navigate(Screen.ToeicMockTestList.route)
                         },
                         onPracticeClick = {
-                            navController.navigate(Screen.Cloze.createRoute("t4"))
+                            navController.navigate(Screen.PracticeTopic.route)
                         },
                         viewModel = viewModel
                     )

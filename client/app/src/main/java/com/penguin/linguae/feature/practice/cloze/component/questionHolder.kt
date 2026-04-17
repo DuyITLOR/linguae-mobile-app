@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.cloze.component
+package com.penguin.linguae.feature.practice.cloze.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

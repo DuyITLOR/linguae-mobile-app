@@ -1,6 +1,7 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.internal.composableLambdaInstance
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -16,7 +17,7 @@ import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
-import com.penguin.linguae.feature.cloze.ClozeScreen
+import com.penguin.linguae.feature.practice.cloze.ClozeScreen
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
@@ -26,7 +27,8 @@ import com.penguin.linguae.feature.learning.FlashcardScreen
 import com.penguin.linguae.feature.learning.TopicScreen
 import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
-import com.penguin.linguae.feature.practiceResult.ResultScreen
+import com.penguin.linguae.feature.practice.practiceResult.ResultScreen
+import com.penguin.linguae.feature.practice.practiceTopic.PracticeTopicScreen
 import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
@@ -236,6 +238,17 @@ fun AppNavigation(
             )
         }
 
+        composable(Screen.ResultScreen.route) {
+            ResultScreen(navController = navController, onReturn = { navController.popBackStack() })
+        }
+
+        composable (Screen.PracticeTopic.route) {
+            PracticeTopicScreen(
+                navController = navController,
+                onReturn = { navController.popBackStack() },
+            )
+        }
+
         composable(Screen.Search.route) {
             SearchScreen(
                 onVocabularyClick = { vocabId ->
@@ -244,9 +257,6 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.ResultScreen.route) {
-            ResultScreen(navController = navController, onReturn = { navController.popBackStack() })
-        }
 
         composable(Screen.DailyMission.route) {
             DailyMissionScreen(

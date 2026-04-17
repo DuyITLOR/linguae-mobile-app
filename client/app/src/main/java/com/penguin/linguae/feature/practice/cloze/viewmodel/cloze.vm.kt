@@ -1,4 +1,4 @@
-    package com.penguin.linguae.feature.cloze.viewmodel
+package com.penguin.linguae.feature.practice.cloze.viewmodel
 
     import androidx.lifecycle.ViewModel
     import androidx.lifecycle.viewModelScope
