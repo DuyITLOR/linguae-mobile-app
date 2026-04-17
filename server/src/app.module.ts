@@ -13,7 +13,6 @@ import { ClozeModule } from './modules/cloze/cloze.module';
 import { UserModule } from './modules/user/user.module';
 import { FlashcardModule } from './modules/flashcard/flashcard.module';
 import { ChatModule } from './modules/chat/chat.module';
-import { AdminModule } from './modules/admin/admin.module';
 import { ToeicModule } from './modules/toeic/toeic.module';
 
 @Module({
@@ -30,7 +29,6 @@ import { ToeicModule } from './modules/toeic/toeic.module';
     ClozeModule,
     FlashcardModule,
     ChatModule,
-    AdminModule,
     ToeicModule,
   ],
   controllers: [AppController],
