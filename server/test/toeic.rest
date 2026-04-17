@@ -1,0 +1,32 @@
+GET http://localhost:4000/toeic
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+### Get Toeic
+GET http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+### Create Toeic
+POST http://localhost:4000/toeic
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+{
+    "title": "Toeic Test 1",
+    "description": "This is a sample Toeic test",
+    "level": "BEGINNER"
+}
+
+### Update Toeic
+PUT http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+{
+    "title": "Toeic Test 1 Updated",
+    "description": "This is an updated sample Toeic test",
+    "level": "INTERMEDIATE"
+}
+
+### Delete Toeic
+DELETE http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM

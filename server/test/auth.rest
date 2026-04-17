@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:5050
+@baseUrl = http://localhost:4000
 @apiKey = your-api-key
 @token = your-bearer-token
 
@@ -8,8 +8,8 @@ POST {{baseUrl}}/auth/sign-up
 Content-Type: application/json
 
 {
-  "fullName": "Test User",
-  "email": "test.user@gmail.com",
+  "fullName": "Admin",
+  "email": "admin@gmail.com",
   "password": "123456"
 }
 
@@ -19,7 +19,7 @@ POST {{baseUrl}}/auth/sign-in
 Content-Type: application/json
 
 {
-  "email": "lenhutduy@gmail.com",
+  "email": "admin@gmail.com",
   "password": "123456"
 }
 
