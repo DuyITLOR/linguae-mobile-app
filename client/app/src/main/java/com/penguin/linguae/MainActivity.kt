@@ -21,8 +21,7 @@ import com.penguin.linguae.core.navigation.AppNavigation
 import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
-
-
+import com.penguin.linguae.feature.chat.ChatScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,4 +84,5 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(contentPadding)
         )
     }
+    ChatScreen()
 }
