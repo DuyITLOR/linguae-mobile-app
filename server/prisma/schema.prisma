@@ -148,6 +148,7 @@ model Topic {
   id               String             @id @default(uuid())
   title            String
   description      String?
+  icon             String?
   level            Level              @default(BEGINNER)
   displayOrder     Int                @default(0)
   isActive         Boolean            @default(true)
