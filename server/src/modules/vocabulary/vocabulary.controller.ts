@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
-import { UserId } from '../../common';
+import { AdminGuard, UserId } from '../../common';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
 
 @Controller('vocabulary')
@@ -33,6 +33,7 @@ export class VocabularyController {
   }
 
   @Post()
+  @UseGuards(AdminGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async create(@Body() vocabulary: CreateVocabularyDto) {
     return await this.VocabularyService.create(vocabulary);
