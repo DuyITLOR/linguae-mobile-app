@@ -2,7 +2,6 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
 
     import androidx.lifecycle.ViewModel
     import androidx.lifecycle.viewModelScope
-    import androidx.navigation.NavController
     import com.penguin.linguae.core.navigation.Screen
     import com.penguin.linguae.data.model.ClozeQuestionWithOptions
     import com.penguin.linguae.data.model.ResultData

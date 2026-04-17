@@ -3,9 +3,7 @@ package com.penguin.linguae.data.repository
 import android.util.Log
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.Favorite
-import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.data.remote.FavoriteApi
-import com.penguin.linguae.data.remote.TopicApi
 
 
 class FavoriteRepository {

@@ -1,7 +1,6 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambdaInstance
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
