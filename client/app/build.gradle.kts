@@ -119,4 +119,5 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.runtime:runtime")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("org.commonmark:commonmark:0.21.0")
 }
