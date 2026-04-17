@@ -1,6 +1,7 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
 import { UserId } from '../../common';
+import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
 
 @Controller('vocabulary')
 export class VocabularyController {
@@ -29,5 +30,11 @@ export class VocabularyController {
     @Param('level', ParseIntPipe) level: number,
   ) {
     return await this.VocabularyService.getVocabularyByDifficulty(level);
+  }
+
+  @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  async create(@Body() vocabulary: CreateVocabularyDto) {
+    return await this.VocabularyService.create(vocabulary);
   }
 }

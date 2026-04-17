@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
 
 @Injectable()
 export class VocabularyService {
@@ -75,6 +76,31 @@ export class VocabularyService {
     return await this.prisma.vocabulary.findMany({
       where: { difficulty: level },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async create(dto: CreateVocabularyDto) {
+    return await this.prisma.vocabulary.create({
+      data: {
+        topicId: dto.topicId,
+        word: dto.word,
+        meaning: dto.meaning,
+        pronunciationText: dto.pronunciationText,
+        partOfSpeech: dto.partOfSpeech,
+        difficulty: dto.difficulty ?? 1,
+        updatedAt: new Date(),
+        VocabularyExample: dto.examples?.length
+          ? {
+              create: dto.examples.map((e) => ({
+                sentence: e.sentence,
+                translation: e.translation,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        VocabularyExample: true,
+      },
     });
   }
 }
