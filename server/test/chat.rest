@@ -1,0 +1,70 @@
+@baseUrl = http://localhost:5050
+@apiKey = dev-local-key
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmZjRmNmZlMi1mYjkzLTQzZTAtOWYzNi0zMGE3OGVhMWMxMGMiLCJlbWFpbCI6Imxlbmh1dGR1eUBnbWFpbC5jb20iLCJpYXQiOjE3NzYzNTMwMzYsImV4cCI6MTc3NjQzOTQzNn0.VXZ6IXf1ZXIajCFKqMNHDD-VCFU-0jEy7kxw-DilMD0
+
+### 1. Gọi chat thành công
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "message": "Giải thích ngắn gọn cho tui thì hiện tại đơn dùng khi nào?"
+}
+
+### 2. Gửi message ngắn để test phản hồi nhanh
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "message": "Cho ví dụ 3 câu với từ 'practice'."
+}
+
+### 3. Thiếu field message
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### 4. Message rỗng
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "message": ""
+}
+
+### 5. Message toàn dấu cách
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "message": "   "
+}
+
+### 6. Thiếu bearer token
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "message": "Test thiếu token"
+}
+
+### 7. Bearer token rỗng
+POST {{baseUrl}}/chat/ask
+x-api-key: {{apiKey}}
+Authorization: Bearer 
+Content-Type: application/json
+
+{
+  "message": "Test token rỗng"
+}
