@@ -21,6 +21,7 @@ import com.penguin.linguae.feature.chat.component.DraggableChatFab
 @Composable
 fun ChatScreen(modifier: Modifier = Modifier) {
     var isChatOpen by rememberSaveable { mutableStateOf(false) }
+    var isBubbleVisible by rememberSaveable { mutableStateOf(true) }
     var draft by rememberSaveable { mutableStateOf("") }
     val messages = remember {
         mutableStateListOf(
@@ -34,7 +35,7 @@ fun ChatScreen(modifier: Modifier = Modifier) {
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
-        val bubbleSize = 62.dp
+        val bubbleSize = 60.dp
         val bubbleSizePx = with(density) { bubbleSize.toPx() }
         val sidePaddingPx = with(density) { 16.dp.toPx() }
         val topPaddingPx = with(density) { 110.dp.toPx() }
@@ -44,10 +45,10 @@ fun ChatScreen(modifier: Modifier = Modifier) {
         val maxY = constraints.maxHeight.toFloat() - bubbleSizePx - bottomPaddingPx
 
         var offsetX by rememberSaveable {
-            mutableFloatStateOf((constraints.maxWidth * 0.78f).coerceAtLeast(0f))
+            mutableFloatStateOf((constraints.maxWidth * 0.85f).coerceAtLeast(0f))
         }
         var offsetY by rememberSaveable {
-            mutableFloatStateOf((constraints.maxHeight * 0.72f).coerceAtLeast(0f))
+            mutableFloatStateOf((constraints.maxHeight * 0.73f).coerceAtLeast(0f))
         }
 
         LaunchedEffect(maxX, maxY) {
@@ -56,17 +57,21 @@ fun ChatScreen(modifier: Modifier = Modifier) {
         }
 
         DraggableChatFab(
-            offsetX = offsetX,
-            offsetY = offsetY,
-            maxX = maxX,
-            maxY = maxY,
-            sidePaddingPx = sidePaddingPx,
-            topPaddingPx = topPaddingPx,
-            onOffsetChange = { x, y ->
-                offsetX = x
-                offsetY = y
-            },
-            onClick = { isChatOpen = true }
+                offsetX = offsetX,
+                offsetY = offsetY,
+                maxX = maxX,
+                maxY = maxY,
+                sidePaddingPx = sidePaddingPx,
+                topPaddingPx = topPaddingPx,
+                onOffsetChange = { x, y ->
+                    offsetX = x
+                    offsetY = y
+                },
+                onClick = { isChatOpen = true },
+                onCloseBubble = {
+                    isBubbleVisible = false
+                    isChatOpen = false
+                }
         )
     }
 
