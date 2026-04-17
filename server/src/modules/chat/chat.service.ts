@@ -3,6 +3,7 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { AskChatDto } from './dto/ask-chat.dto';
@@ -29,6 +30,8 @@ interface GeminiGenerateContentPayload {
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
+  private readonly requestTimeoutMs = 45_000;
   private readonly apiBaseUrl =
     process.env.CHAT_API_URL?.trim() ||
     'https://generativelanguage.googleapis.com/v1beta';
@@ -60,9 +63,14 @@ export class ChatService {
     }
 
     const abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), 30_000);
+    const timeoutId = setTimeout(
+      () => abortController.abort(),
+      this.requestTimeoutMs,
+    );
 
     try {
+      this.logger.log(`Calling LLM model=${this.model} messageLength=${message.length}`);
+
       const response = await fetch(this.buildRequestUrl(), {
         method: 'POST',
         headers: {
@@ -94,6 +102,18 @@ export class ChatService {
 
       if (!response.ok) {
         const providerError = this.extractProviderError(payload);
+        const payloadPreview = this.stringifyPayload(payload);
+
+        this.logger.error(
+          `LLM returned status=${response.status} model=${this.model} providerError=${providerError || 'Unknown error'} payload=${payloadPreview}`,
+        );
+
+        if (response.status === 429) {
+          throw new ServiceUnavailableException(
+            `LLM hết quota hoặc đang bị giới hạn tốc độ${providerError ? `: ${providerError}` : ''}`,
+          );
+        }
+
         throw new InternalServerErrorException(
           `Không thể lấy phản hồi từ LLM${providerError ? `: ${providerError}` : ''}`,
         );
@@ -102,10 +122,17 @@ export class ChatService {
       const answer = this.extractAnswer(payload);
 
       if (!answer) {
+        this.logger.error(
+          `LLM returned empty answer model=${this.model} payload=${this.stringifyPayload(payload)}`,
+        );
         throw new InternalServerErrorException(
           'LLM không trả về nội dung hợp lệ',
         );
       }
+
+      this.logger.log(
+        `LLM success model=${this.extractModel(payload) || this.model} answerLength=${answer.length}`,
+      );
 
       return {
         answer,
@@ -113,21 +140,30 @@ export class ChatService {
       };
     } catch (error) {
       if (error instanceof HttpException) {
+        this.logger.warn(`Chat HTTP exception: ${error.message}`);
         throw error;
       }
 
       if (error instanceof Error && error.name === 'AbortError') {
+        this.logger.error(
+          `LLM timeout after ${this.requestTimeoutMs}ms model=${this.model}`,
+        );
         throw new ServiceUnavailableException(
           'LLM phản hồi quá lâu, vui lòng thử lại',
         );
       }
 
       if (error instanceof Error) {
+        this.logger.error(
+          `Không thể gọi LLM: ${error.message}`,
+          error.stack,
+        );
         throw new InternalServerErrorException(
           `Không thể gọi LLM: ${error.message}`,
         );
       }
 
+      this.logger.error('Không thể gọi LLM: unknown error');
       throw new InternalServerErrorException('Không thể gọi LLM');
     } finally {
       clearTimeout(timeoutId);
@@ -226,5 +262,13 @@ export class ChatService {
       .trim();
 
     return normalized.length > 0 ? normalized : null;
+  }
+
+  private stringifyPayload(payload: unknown): string {
+    try {
+      return JSON.stringify(payload);
+    } catch {
+      return '[unserializable payload]';
+    }
   }
 }

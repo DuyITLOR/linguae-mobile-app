@@ -28,9 +28,9 @@ fun ChatMessageBubble(message: ChatUiMessage) {
                 ),
                 modifier = Modifier.fillMaxWidth(0.88f)
             ) {
-                Text(
+                MarkdownText(
                     text = message.text,
-                    style = MaterialTheme.typography.bodyMedium,
+                    isFromBot = true,
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
                 )
             }

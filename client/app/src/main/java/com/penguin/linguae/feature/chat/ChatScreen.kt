@@ -6,32 +6,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.penguin.linguae.data.model.ChatUiMessage
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.feature.chat.component.ChatSheet
 import com.penguin.linguae.feature.chat.component.DraggableChatFab
+import com.penguin.linguae.feature.chat.viewmodel.ChatViewModel
 
 @Composable
-fun ChatScreen(modifier: Modifier = Modifier) {
+fun ChatScreen(
+    modifier: Modifier = Modifier,
+    chatViewModel: ChatViewModel = viewModel()
+) {
     var isChatOpen by rememberSaveable { mutableStateOf(false) }
     var isBubbleVisible by rememberSaveable { mutableStateOf(true) }
     var draft by rememberSaveable { mutableStateOf("") }
-    val messages = remember {
-        mutableStateListOf(
-            ChatUiMessage(
-                id = "welcome",
-                text = "Xin chào, mình là trợ lý Linguae. Bạn muốn học gì hôm nay?",
-                isFromBot = true
-            )
-        )
-    }
+    val messages by chatViewModel.messages.collectAsStateWithLifecycle()
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
@@ -56,7 +51,8 @@ fun ChatScreen(modifier: Modifier = Modifier) {
             offsetY = offsetY.coerceIn(topPaddingPx, maxY.coerceAtLeast(topPaddingPx))
         }
 
-        DraggableChatFab(
+        if (isBubbleVisible) {
+            DraggableChatFab(
                 offsetX = offsetX,
                 offsetY = offsetY,
                 maxX = maxX,
@@ -71,16 +67,24 @@ fun ChatScreen(modifier: Modifier = Modifier) {
                 onCloseBubble = {
                     isBubbleVisible = false
                     isChatOpen = false
-                }
-        )
+                },
+            )
+        }
     }
 
-     if (isChatOpen) {
-         ChatSheet(
-             draft = draft,
-             messages = messages,
-             onDraftChange = { draft = it },
-             onClose = { isChatOpen = false }
-         )
-     }
+    if (isChatOpen) {
+        ChatSheet(
+            draft = draft,
+            isLoading = chatViewModel.isLoading,
+            messages = messages,
+            onDraftChange = { draft = it },
+            onSend = {
+                if (draft.isNotBlank()) {
+                    chatViewModel.ask(draft)
+                    draft = ""
+                }
+            },
+            onClose = { isChatOpen = false }
+        )
+    }
 }
