@@ -1,7 +1,10 @@
 package com.penguin.linguae.data.remote
 
+import com.penguin.linguae.data.model.CreateVocabularyRequest
 import com.penguin.linguae.data.model.Vocabulary
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -21,4 +24,9 @@ interface VocabularyApi {
         @Path("id") topicId: String,
         @Query("q") query: String
     ): List<Vocabulary>
+
+    @POST("vocabulary")
+    suspend fun createVocabulary(
+        @Body request: CreateVocabularyRequest
+    ): Vocabulary
 }

@@ -47,4 +47,7 @@ sealed class Screen(val route: String) {
     object PracticeTopic: Screen("practice_topic_screen")
 
     object Search : Screen("search_screen")
+
+    object AddTopic : Screen("admin/add_topic")
+    object AddVocabulary : Screen("admin/add_vocabulary")
 }
