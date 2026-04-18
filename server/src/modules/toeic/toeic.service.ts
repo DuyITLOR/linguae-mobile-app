@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateReadingPart5QuestionDto,
+  CreateReadingPart6QuestionDto,
   CreateToeicDto,
 } from './dto/createToeic.dto';
 import {
@@ -111,6 +112,37 @@ export class ToeicService {
         error instanceof NotFoundException ||
         error instanceof ForbiddenException;
       throw new InternalServerErrorException(msg);
+    }
+  }
+
+  // Part 6
+  async createReadingPart6Question(
+    dto: CreateReadingPart6QuestionDto[],
+    userId: string,
+  ) {
+    await this.checkPermission(userId);
+    try {
+      await this.prisma.$transaction(
+        dto.map((dto) =>
+          this.prisma.readingPart6Question.create({
+            data: {
+              toeicId: dto.toeicId,
+              question: dto.question,
+              readingPart6Options: {
+                create: dto.options.map((opt) => ({
+                  title: opt.title,
+                  option: opt.options,
+                  answer: opt.answer,
+                })),
+              },
+            },
+          }),
+        ),
+      );
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Error at creating part 6 question service',
+      );
     }
   }
 
