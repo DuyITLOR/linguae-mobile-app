@@ -5,8 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateToeicDto } from './dto/createToeic.dto';
-import { UpdateToeicDto } from './dto/updateToeic.dto';
+import {
+  CreateReadingPart5QuestionDto,
+  CreateToeicDto,
+} from './dto/createToeic.dto';
+import {
+  UpdateReadingPart5QuestionDto,
+  UpdateToeicDto,
+} from './dto/updateToeic.dto';
 
 @Injectable()
 export class ToeicService {
@@ -45,6 +51,25 @@ export class ToeicService {
     }
   }
 
+  async getAllReadingPart5Questions(toeicId: string) {
+    try {
+      const readingPart5Questions =
+        await this.prisma.readingPart5Question.findMany({
+          where: { toeicId },
+        });
+      if (readingPart5Questions.length === 0) {
+        throw new NotFoundException('Reading part 5 questions not found');
+      }
+      return readingPart5Questions;
+    } catch (error) {
+      const msg =
+        error instanceof NotFoundException
+          ? 'Reading part 5 questions not found'
+          : 'Failed to get reading part 5 questions';
+      throw new InternalServerErrorException(msg);
+    }
+  }
+
   // ==================== Create section ======================
 
   async createToeic(dto: CreateToeicDto) {
@@ -63,6 +88,30 @@ export class ToeicService {
     });
 
     return toeic;
+  }
+
+  async createReadingPart5Questions(
+    dto: CreateReadingPart5QuestionDto[],
+    userId: string,
+  ) {
+    await this.checkPermission(userId);
+    try {
+      const readingPart5Questions =
+        await this.prisma.readingPart5Question.createMany({
+          data: dto.map((item) => ({
+            toeicId: item.toeicId,
+            question: item.question,
+            options: item.options,
+            answer: item.answer,
+          })),
+        });
+      return readingPart5Questions;
+    } catch (error) {
+      const msg =
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException;
+      throw new InternalServerErrorException(msg);
+    }
   }
 
   // ==================== Update section ======================
@@ -94,6 +143,37 @@ export class ToeicService {
     }
   }
 
+  async updateReadingPart5Question(dto: UpdateReadingPart5QuestionDto) {
+    try {
+      await this.checkPermission(dto.userId);
+      const existingReadingPart5Question =
+        await this.prisma.readingPart5Question.findUnique({
+          where: { id: dto.id },
+        });
+      if (!existingReadingPart5Question) {
+        throw new NotFoundException('Reading part 5 question not found');
+      }
+
+      const readingPart5Question =
+        await this.prisma.readingPart5Question.update({
+          where: { id: dto.id },
+          data: {
+            question: dto.question,
+            options: dto.options,
+            answer: dto.answer,
+          },
+        });
+      return readingPart5Question;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      const msg =
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException;
+      throw new InternalServerErrorException(msg);
+    }
+  }
   // ==================== Delete section ======================
   async deleteToeic(id: string, userId: string) {
     try {

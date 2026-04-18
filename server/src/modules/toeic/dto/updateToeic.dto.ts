@@ -13,3 +13,17 @@ export interface UpdateToeicDto {
   description: string;
   level: ToeicLevel;
 }
+
+export interface UpdateReadingPart5QuestionRequestDto {
+  question: string;
+  options: string[];
+  answer: number;
+}
+
+export interface UpdateReadingPart5QuestionDto {
+  id: string;
+  userId: string;
+  question: string;
+  options: string[];
+  answer: number;
+}
