@@ -205,6 +205,20 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     )
 }
 
+private fun levelColor(level: String): Color = when (level.uppercase()) {
+    "BEGINNER" -> Color(0xFF27AE60)
+    "INTERMEDIATE" -> Color(0xFFE67E22)
+    "ADVANCED" -> Color(0xFFE74C3C)
+    else -> Color(0xFF7F8C8D)
+}
+
+private fun levelLabel(level: String): String = when (level.uppercase()) {
+    "BEGINNER" -> "Beginner"
+    "INTERMEDIATE" -> "Intermediate"
+    "ADVANCED" -> "Advanced"
+    else -> level
+}
+
 @Composable
 fun CompactTopicCard(
     topic: Topic,
@@ -214,7 +228,8 @@ fun CompactTopicCard(
 ) {
     val seed = "${topic.id}_${topic.title}_${topic.level}"
     val accent = topicColorFor(seed)
-    val icon = topicIconFor(seed)
+    val fallbackIcon = topicIconFor(seed)
+    val lvlColor = levelColor(topic.level)
 
     val cardGradient = Brush.linearGradient(
         colors = listOf(
@@ -250,12 +265,16 @@ fun CompactTopicCard(
                         .background(accent.copy(alpha = 0.28f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = accent,
-                        modifier = Modifier.size(22.dp)
-                    )
+                    if (!topic.icon.isNullOrBlank()) {
+                        Text(text = topic.icon, fontSize = 22.sp)
+                    } else {
+                        Icon(
+                            imageVector = fallbackIcon,
+                            contentDescription = null,
+                            tint = accent,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                 }
 
                 Row(
@@ -272,11 +291,20 @@ fun CompactTopicCard(
                             fontWeight = FontWeight.Bold,
                             fontSize = 17.sp
                         )
-                        Text(
-                            text = topic.level,
-                            color = TextGray,
-                            fontSize = 13.sp
-                        )
+                        Spacer(Modifier.height(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(lvlColor.copy(alpha = 0.15f))
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = levelLabel(topic.level),
+                                color = lvlColor,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
 
                     Icon(
