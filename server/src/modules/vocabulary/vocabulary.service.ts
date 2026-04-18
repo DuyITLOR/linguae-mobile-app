@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
+import { UpdateVocabularyDto } from './dto/update-vocabulary.dto';
 
 @Injectable()
 export class VocabularyService {
@@ -95,6 +96,60 @@ export class VocabularyService {
                 sentence: e.sentence,
                 translation: e.translation,
               })),
+            }
+          : undefined,
+      },
+      include: {
+        VocabularyExample: true,
+      },
+    });
+  }
+
+  async delete(id: string) {
+    const vocabulary = await this.prisma.vocabulary.findUnique({
+      where: { id },
+    });
+
+    if (!vocabulary) {
+      throw new NotFoundException('Vocabulary is not found');
+    }
+
+    return await this.prisma.vocabulary.delete({
+      where: { id },
+    });
+  }
+
+  async update(id: string, dto: UpdateVocabularyDto) {
+    const vocabulary = await this.prisma.vocabulary.findUnique({
+      where: { id },
+    });
+
+    if (!vocabulary) {
+      throw new NotFoundException('Vocabulary is not found');
+    }
+
+    const validExamples = dto.examples
+      ?.filter((e): e is { sentence: string; translation?: string } => !!e.sentence);
+
+    return await this.prisma.vocabulary.update({
+      where: { id },
+      data: {
+        topicId: dto.topicId,
+        word: dto.word,
+        meaning: dto.meaning,
+        pronunciationText: dto.pronunciationText,
+        partOfSpeech: dto.partOfSpeech,
+        difficulty: dto.difficulty ?? 1,
+        updatedAt: new Date(),
+        VocabularyExample: validExamples
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: validExamples.map((e) => ({
+                  sentence: e.sentence,
+                  translation: e.translation,
+                })),
+              },
             }
           : undefined,
       },
