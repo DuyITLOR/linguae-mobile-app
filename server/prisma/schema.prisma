@@ -356,7 +356,7 @@ model ReadingPart5Question {
   answer    Int
   createdAt DateTime @default(now())
 
-  Toeic Toeic @relation(fields: [toeicId], references: [id])
+  Toeic Toeic @relation(fields: [toeicId], references: [id], onDelete: Cascade)
 }
 
 model ReadingPart6Question {
@@ -365,7 +365,7 @@ model ReadingPart6Question {
   question  String
   createdAt DateTime @default(now())
 
-  Toeic               Toeic                @relation(fields: [toeicId], references: [id])
+  Toeic               Toeic                @relation(fields: [toeicId], references: [id], onDelete: Cascade)
   readingPart6Options ReadingPart6Option[]
 }
 
@@ -377,7 +377,7 @@ model ReadingPart6Option {
   answer     Int
   createdAt  DateTime @default(now())
 
-  ReadingPart6Question ReadingPart6Question @relation(fields: [questionId], references: [id])
+  ReadingPart6Question ReadingPart6Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 enum ToeicLevel {

@@ -11,9 +11,21 @@ export interface CreateToeicDto {
   level: ToeicLevel;
 }
 
+export interface Part6Option {
+  title: number;
+  options: string[];
+  answer: number;
+}
+
 export interface CreateReadingPart5QuestionDto {
   toeicId: string;
   question: string;
   options: string[];
   answer: number;
+}
+
+export interface CreateReadingPart6QuestionDto {
+  toeicId: string;
+  question: string;
+  options: Part6Option[];
 }

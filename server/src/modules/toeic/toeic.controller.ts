@@ -11,6 +11,7 @@ import {
 import { ToeicService } from './toeic.service';
 import type {
   CreateReadingPart5QuestionDto,
+  CreateReadingPart6QuestionDto,
   CreateToeicDto,
   CreateToeicRequestDto,
 } from './dto/createToeic.dto';
@@ -69,6 +70,15 @@ export class ToeicController {
       throw new BadRequestException('Questions must be an array');
     }
     return await this.toeicService.createReadingPart5Questions(body, userId);
+  }
+
+  // Part 6
+  @Post('reading-part-6-questions')
+  async createReadingPart6Questions(
+    @Body() body: CreateReadingPart6QuestionDto[],
+    @UserId() userId: string,
+  ) {
+    return await this.toeicService.createReadingPart6Question(body, userId);
   }
 
   // ==================== Update section ======================

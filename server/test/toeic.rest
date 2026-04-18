@@ -337,6 +337,198 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
     }
 ]
 
+### Create Toeic Part 6 Questions
+POST http://localhost:4000/toeic/reading-part-6-questions
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+[
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "<p><strong>To:</strong> samsmith@digitalIT.com</p><p><strong>From:</strong> sharronb@email.com</p><p><strong>Date:</strong> September 24</p><p><strong>Subject:</strong> Business Contract</p><p>Dear Mr. Smith,</p><p>I am Sharron Biggs, CEO and founder of Biggs Graphics. I recently came across your advertisement <strong>(131)</strong> the partnership of a graphic design company for a number of your projects.</p><p>Biggs Graphics has <strong>(132)</strong> experience working with various small businesses and companies in designing advertising campaigns, logos, and websites.</p><p><strong>(133)</strong> Our website www.biggs-graphics.com also has some information about our company.</p><p>I'm interested in working with your company on your projects and hope we can build a beneficial partnership. I look forward <strong>(134)</strong> your reply.</p><p>Sincerely,</p><p>Sharron Biggs</p><p><strong>CEO, Biggs Graphics</strong></p>",
+        "options": [
+            {
+                "title": 131,
+                "options": [
+                    "seek",
+                    "to seek",
+                    "seeking",
+                    "are seeking"
+                ],
+                "answer": 2
+            },
+            {
+                "title": 132,
+                "options": [
+                    "extensive",
+                    "restricted",
+                    "generous",
+                    "limitless"
+                ],
+                "answer": 0
+            }, 
+            {
+                "title": 133,
+                "options": [
+                    "I would really appreciate the opportunity to work with you.",
+                    "I heard that DigitalIT is a great company.",
+                    "In fact, our designs are often copied by other companies.",
+                    "I have attached a number of our past designs to illustrate what we specialize in."
+                ],
+                "answer": 3
+            },
+            {
+                "title": 134,
+                "options": [
+                    "at",
+                    "to",
+                    "with",
+                    "from"
+                ],
+                "answer": 1
+            }
+        ]
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "Thank you for shopping at Larson''s China. Our products are known for their modern and unique patterns and color combinations, as well as ___(135)___ and strength. ___(136)___ Please note, however, that repeated drops and rough handling will ___(137)___ eventual breakage. We suggest you store them carefully and that you don''t use harsh chemicals, steel sponges, or ___(138)___ scrubbing when cleaning them. Please visit our website at www.larsonchina.com for information about handling and care or call us at 555-1234 if you have any questions or concerns.",
+        "options": [
+            {
+                "title": 135,
+                "options": [
+                    "durable",
+                    "durability",
+                    "durableness",
+                    "nondurable"
+                ],
+                "answer": 1
+            },
+            {
+                "title": 136,
+                "options": [
+                    "Larson's utensils and silverware go great with the dinnerware.",
+                    "Our most popular line, the Spring Flower China, is sold out at most locations.",
+                    "Visit our store to check out our other beautiful products.",
+                    "They are dishwasher - and microwave-safe and we're confident that you'll be using them for years to come."
+                ],
+                "answer": 3
+            },
+            {
+                "title": 137,
+                "options": [
+                    "result in",
+                    "occur to",
+                    "ending at",
+                    "stop with"
+                ],
+                "answer": 0
+            },
+            {
+                "title": 138,
+                "options": [
+                    "ambitious",
+                    "combative",
+                    "aggressive",
+                    "complacent"
+                ],
+                "answer": 2
+            }
+        ]
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "<p><strong>Entry Position: Gold &amp; Slide Accounting Firm</strong> <div/> We are looking for enthusiastic candidates with an educational background in finance or ___(139)___. All candidates should have some computer experience. Job experience is not ___(140)___ but preferred. Candidates with a bilingual language ability ___(141)___ favored. Positions include jobs in accounting, statistics, and general office assistant. If you are interested, please visit our website at www.G&amp;Saccountingfirm.com/employment for more information. You can send your cover letters and resumes to Karen Hill at khill@G&amp;S.com. We will begin interviewing candidates on Monday, November 5. ___(142)___</p>",
+        "options": [
+            {
+                "title": 139,
+                "options": [
+                    "account",
+                    "accountant",
+                    "accounting",
+                    "accounted"
+                ],
+                "answer": 2
+            },
+            {
+                "title": 140,
+                "options": [
+                    "basic",
+                    "decisive",
+                    "additional",
+                    "necessary"
+                ],
+                "answer": 3
+            },
+            {
+                "title": 141,
+                "options": [
+                    "is being",
+                    "will be",
+                    "has been",
+                    "were being"
+                ],
+                "answer": 1
+            },
+            {
+                "title": 142,
+                "options": [
+                    "We sincerely thank you for your interest.",
+                    "The positions begin the following month.",
+                    "Please call us for more information.",
+                    "We apologize for any inconvenience."
+                ],
+                "answer": 1
+            }
+        ]
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "<p><strong>To:</strong> Kitchen staff, office employees<br><strong>From:</strong> Manager, Larry Park<br><strong>Date:</strong> March 23<br><strong>Subject:</strong> Renovations</p><p>To all kitchen staff and Harmon employees,</p><p>From Sunday, March 23 to Thursday, March 27, the employee cafeteria kitchens will undergo renovations as new appliances and equipment ___(143)___ in to replace the old ones. ___(144)___ Instead, the convenience shops will carry more sandwiches, prepared lunch boxes, and snacks for the employees during this time.</p><p>The renovations will increase the number of sinks, ovens, and stove tops so that a larger volume of meals can be provided ___(145)___ the lunch and dinner rushes. We apologize for the inconvenience but we hope that the changes will ___(146)___ the services in the cafeteria.</p>",
+        "options": [
+            {
+                "title": 143,
+                "options": [
+                    "are bringing",
+                    "have brought",
+                    "bring",
+                    "are brought"
+                ],
+                "answer": 3
+            },
+            {
+                "title": 144,
+                "options": [
+                    "This will take a lot of work.",
+                    "As a result, the convenience shops will be closed.",
+                    "Because of this, hot meals will not be available for the patrons.",
+                    "There will be noise and chaos as a result."
+                ],
+                "answer": 2
+            },
+            {
+                "title": 145,
+                "options": [
+                    "before",
+                    "after",
+                    "during",
+                    "within"
+                ],
+                "answer": 2
+            },
+            {
+                "title": 146,
+                "options": [
+                    "develop",
+                    "improve",
+                    "rectify",
+                    "recover"
+                ],
+                "answer": 1
+            }
+        ]
+    }
+]
+
 # ======================== Update =========================
 ### Update Toeic
 PUT http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
