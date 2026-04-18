@@ -1,6 +1,7 @@
 package com.penguin.linguae.data.repository
 
 import com.penguin.linguae.core.network.RetrofitClient
+import com.penguin.linguae.data.model.CreateVocabularyRequest
 import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.data.remote.VocabularyApi
 
@@ -31,6 +32,14 @@ class VocabularyRepository {
             val data = api.getVocabularyByTopic(topicId, query)
             Result.success(data)
         } catch(e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createVocabulary(request: CreateVocabularyRequest): Result<Vocabulary> {
+        return try {
+            Result.success(api.createVocabulary(request))
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

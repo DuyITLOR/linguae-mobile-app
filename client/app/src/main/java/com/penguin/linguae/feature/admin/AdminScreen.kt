@@ -49,6 +49,8 @@ fun AdminScreen(
     modifier: Modifier = Modifier,
     currentUser: User? = null,
     onNavigateProfile: () -> Unit = {},
+    onNavigateAddTopic: () -> Unit = {},
+    onNavigateAddVocabulary: () -> Unit = {},
 ) {
     Surface(
         color = AppBackground,
@@ -113,12 +115,14 @@ fun AdminScreen(
                     AdminActionItem(
                         title = "Add Word",
                         subtitle = "Update vocabulary database",
-                        icon = Icons.Default.MenuBook
+                        icon = Icons.Default.MenuBook,
+                        onClick = onNavigateAddVocabulary
                     )
                     AdminActionItem(
                         title = "Add Topic",
                         subtitle = "Create new learning category",
-                        icon = Icons.Default.Add
+                        icon = Icons.Default.Add,
+                        onClick = onNavigateAddTopic
                     )
                     AdminActionItem(
                         title = "Upload Exam",
@@ -325,14 +329,15 @@ private fun AdminMetricCard(
 private fun AdminActionItem(
     title: String,
     subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit = {}
 ) {
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable(onClick = onClick)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

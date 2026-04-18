@@ -2,6 +2,7 @@ package com.penguin.linguae.data.repository
 
 import android.util.Log
 import com.penguin.linguae.core.network.RetrofitClient
+import com.penguin.linguae.data.model.CreateTopicRequest
 import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.data.model.TopicIncludeVocab
 import com.penguin.linguae.data.remote.TopicApi
@@ -28,6 +29,14 @@ class TopicRepository {
 
             Log.i("API_TEST", data.toString())
             Result.success(data)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createTopic(request: CreateTopicRequest): Result<Topic> {
+        return try {
+            Result.success(api.createTopic(request))
         } catch (e: Exception) {
             Result.failure(e)
         }

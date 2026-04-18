@@ -12,6 +12,8 @@ import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.data.model.UserRole
+import com.penguin.linguae.feature.admin.AddTopicScreen
+import com.penguin.linguae.feature.admin.AddVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
@@ -57,7 +59,27 @@ fun AppNavigation(
                     navController.navigate(Screen.Profile.route) {
                         launchSingleTop = true
                     }
+                },
+                onNavigateAddTopic = {
+                    navController.navigate(Screen.AddTopic.route)
+                },
+                onNavigateAddVocabulary = {
+                    navController.navigate(Screen.AddVocabulary.route)
                 }
+            )
+        }
+
+        composable(Screen.AddTopic.route) {
+            AddTopicScreen(
+                viewModel = viewModel(),
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.AddVocabulary.route) {
+            AddVocabularyScreen(
+                viewModel = viewModel(),
+                onBack = { navController.popBackStack() }
             )
         }
 
