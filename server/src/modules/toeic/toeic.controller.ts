@@ -1,10 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ToeicService } from './toeic.service';
 import type {
+  CreateReadingPart5QuestionDto,
   CreateToeicDto,
   CreateToeicRequestDto,
 } from './dto/createToeic.dto';
 import type {
+  UpdateReadingPart5QuestionDto,
+  UpdateReadingPart5QuestionRequestDto,
   UpdateToeicDto,
   UpdateToeicRequestDto,
 } from './dto/updateToeic.dto';
@@ -25,6 +37,11 @@ export class ToeicController {
     return await this.toeicService.getToeicById(id);
   }
 
+  @Get('reading-part-5-questions/:id')
+  async getAllReadingPart5Questions(@Param('id') id: string) {
+    return await this.toeicService.getAllReadingPart5Questions(id);
+  }
+
   // ==================== Create section ======================
 
   @Post()
@@ -37,6 +54,21 @@ export class ToeicController {
       ...body,
     } as CreateToeicDto;
     return await this.toeicService.createToeic(dto);
+  }
+
+  @Post('reading-part-5-questions')
+  async createReadingPart5Questions(
+    @Body() body: CreateReadingPart5QuestionDto[],
+    @UserId() userId: string,
+  ) {
+    if (body.length === 0) {
+      throw new BadRequestException('No questions provided');
+    }
+
+    if (!Array.isArray(body)) {
+      throw new BadRequestException('Questions must be an array');
+    }
+    return await this.toeicService.createReadingPart5Questions(body, userId);
   }
 
   // ==================== Update section ======================
@@ -52,6 +84,20 @@ export class ToeicController {
       ...body,
     } as UpdateToeicDto;
     return await this.toeicService.updateToeic(dto);
+  }
+
+  @Put('reading-part-5-questions/:id')
+  async updateReadingPart5Question(
+    @Param('id') id: string,
+    @Body() body: UpdateReadingPart5QuestionRequestDto,
+    @UserId() userId: string,
+  ) {
+    const dto = {
+      id,
+      userId,
+      ...body,
+    } as UpdateReadingPart5QuestionDto;
+    return await this.toeicService.updateReadingPart5Question(dto);
   }
 
   // ==================== Delete section ======================

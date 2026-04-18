@@ -10,3 +10,10 @@ export interface CreateToeicDto {
   title: string;
   level: ToeicLevel;
 }
+
+export interface CreateReadingPart5QuestionDto {
+  toeicId: string;
+  question: string;
+  options: string[];
+  answer: number;
+}
