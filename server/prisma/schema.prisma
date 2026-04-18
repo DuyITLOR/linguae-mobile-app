@@ -345,6 +345,7 @@ model Toeic {
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   readingPart5Questions ReadingPart5Question[]
+  readingPart6Questions ReadingPart6Question[]
 }
 
 model ReadingPart5Question {
@@ -356,6 +357,26 @@ model ReadingPart5Question {
   createdAt DateTime @default(now())
 
   Toeic Toeic @relation(fields: [toeicId], references: [id])
+}
+
+model ReadingPart6Question {
+  id        String   @id @default(uuid())
+  toeicId   String
+  question  String
+  createdAt DateTime @default(now())
+
+  Toeic               Toeic                @relation(fields: [toeicId], references: [id])
+  readingPart6Options ReadingPart6Option[]
+}
+
+model ReadingPart6Option {
+  id         String   @id @default(uuid())
+  questionId String
+  option     String[]
+  answer     Int
+  createdAt  DateTime @default(now())
+
+  ReadingPart6Question ReadingPart6Question @relation(fields: [questionId], references: [id])
 }
 
 enum ToeicLevel {

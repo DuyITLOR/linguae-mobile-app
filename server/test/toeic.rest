@@ -1,10 +1,15 @@
+# ======================== Get =========================
 GET http://localhost:4000/toeic
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
 
 ### Get Toeic
 GET http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
+
+### Get Toeic Part 5 Questions
+GET http://localhost:4000/toeic/reading-part-5-questions/fbc04e83-d751-4cfe-a97a-18ee38c38f5b
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
 
+# ======================== Create =========================
 ### Create Toeic
 POST http://localhost:4000/toeic
 Content-Type: application/json
@@ -16,6 +21,323 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
     "level": "BEGINNER"
 }
 
+### Create Toeic Part 5 Questions
+POST http://localhost:4000/toeic/reading-part-5-questions
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+[
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "When filling out the order form, please _____ your address clearly to prevent delays.",
+        "options": [
+            "fix",
+            "write",
+            "send",
+            "direct"
+        ],
+        "answer": 1
+    }, 
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "Ms. Morgan recruited the individuals that the company _____ for the next three months.",
+        "options": [
+            "will employ",
+            "to employ",
+            "has been employed",
+            "employ"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The contractor had a fifteen-percent _____ in his business after advertising in the local newspaper.",
+        "options": [
+            "experience",
+            "growth",
+            "formula",
+            "incentive"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The free clinic was founded by a group of doctors to give _____ for various medical conditions.",
+        "options": [
+            "treatment",
+            "treat",
+            "treated",
+            "treating"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "Participants in the walking tour should gather _____ 533 Bates Road on Saturday morning.",
+        "options": [
+            "with",
+            "at",
+            "like",
+            "among"
+        ],
+        "answer": 1
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The figures that accompany the financial statement should be _____ to the spending category.",
+        "options": [
+            "relevance",
+            "relevantly",
+            "more relevantly",
+            "relevant"
+        ],
+        "answer": 3
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The building owner purchased the property _____ three months ago, but she has already spent a great deal of money on renovations.",
+        "options": [
+            "yet",
+            "just",
+            "few",
+            "still"
+        ],
+        "answer": 1
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "We would like to discuss this problem honestly and _____ at the next staff meeting.",
+        "options": [
+            "rarely",
+            "tiredly",
+            "openly",
+            "highly"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The store’s manager plans to put the new merchandise on display _____ to promote the line of fall fashions.",
+        "options": [
+            "soon",
+            "very",
+            "that",
+            "still"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "_____ that the insulation has been replaced, the building is much more energy-efficient.",
+        "options": [
+            "Now",
+            "For",
+            "As",
+            "Though"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "Mr. Sims needs a more _____ vehicle for commuting from his suburban home to his office downtown.",
+        "options": [
+            "expressive",
+            "reliable",
+            "partial",
+            "extreme"
+        ],
+        "answer": 1
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The company _____ lowered its prices to outsell its competitors and attract more customers.",
+        "options": [
+            "strategy",
+            "strategically",
+            "strategies",
+            "strategic"
+        ],
+        "answer": 1
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": " _____ Mr. Williams addressed the audience, he showed a brief video about the engine he had designed.",
+        "options": [
+            "Then",
+            "So that",
+            "Before",
+            "Whereas"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "For optimal safety on the road, avoid _____ the view of the rear window and side-view mirrors.",
+        "options": [
+            "obstructs",
+            "obstructed",
+            "obstruction",
+            "obstructing"
+        ],
+        "answer": 3
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "Having proper ventilation throughout the building is _____ for protecting the health and well-being of the workers.",
+        "options": [
+            "cooperative",
+            "visible",
+            "essential",
+            "alternative"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "_____ sales of junk food have been steadily declining indicates that consumers are becoming more health-conscious.",
+        "options": [
+            "In addition to",
+            "The fact that",
+            "As long as",
+            "In keeping with"
+        ],
+        "answer": 1
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The sprinklers for the lawn’s irrigation system are _____ controlled.",
+        "options": [
+            "mechanically",
+            "mechanic",
+            "mechanism",
+            "mechanical"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The library staff posted signs to _____ patrons of the upcoming closure for renovations.",
+        "options": [
+            "notify",
+            "agree",
+            "generate",
+            "perform"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "Mr. Ross, _____ is repainting the interior of the lobby, was recommended by a friend of the building manager.",
+        "options": [
+            "himself",
+            "he",
+            "who",
+            "which"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The guidelines for the monthly publication are _____ revised to adapt to the changing readers.",
+        "options": [
+            "courteously",
+            "initially",
+            "periodically",
+            "physically"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "_____ an ankle injury, the baseball player participated in the last game of the season.",
+        "options": [
+            "In spite of",
+            "Even if",
+            "Whether",
+            "Given that"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The governmental department used to provide financial aid, but now it offers _____ services only.",
+        "options": [
+            "legal",
+            "legalize",
+            "legally",
+            "legalizes"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "At the guest’s _____ , an extra set of towels and complimentary soaps were brought to the room.",
+        "options": [
+            "quote",
+            "graduation",
+            "request",
+            "dispute"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The upscale boutique Jane’s Closet is known for selling the most stylish _____ for young professionals.",
+        "options": [
+            "accessorized",
+            "accessorize",
+            "accessorizes",
+            "accessories"
+        ],
+        "answer": 3
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The company started to recognize the increasing _____ of using resources responsibly.",
+        "options": [
+            "more important",
+            "importantly",
+            "importance",
+            "important"
+        ],
+        "answer": 2
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "_____ restructuring several departments within the company, the majority of the problems with miscommunication have disappeared.",
+        "options": [
+            "After",
+            "Until",
+            "Below",
+            "Like"
+        ],
+        "answer": 0
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": "The riskiest _____ of the development of new medications are the trials with human subjects.",
+        "options": [
+            "proceeds",
+            "perspectives",
+            "installments",
+            "stages"
+        ],
+        "answer": 3 
+    },
+    {
+        "toeicId": "fbc04e83-d751-4cfe-a97a-18ee38c38f5b",
+        "question": " _____ seeking a position at Tulare Designs must submit a portfolio of previous work.",
+        "options": [
+            "Anyone",
+            "Whenever",
+            "Other",
+            "Fewer"
+        ],
+        "answer": 0
+    }
+]
+
+# ======================== Update =========================
 ### Update Toeic
 PUT http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
 Content-Type: application/json
@@ -27,6 +349,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
     "level": "INTERMEDIATE"
 }
 
+### Update Toeic Part 5 Question
+PUT http://localhost:4000/toeic/reading-part-5-questions/a36a11a8-8254-422c-90a3-daf7cf592dd5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+{
+    "question": "When filling out the order form, please _____ your address clearly to prevent delays.",
+    "options": [
+        "fix",
+        "write",
+        "send",
+        "direct"
+    ],
+    "answer": 1
+}
+
+
+# ======================== Delete =========================
 ### Delete Toeic
 DELETE http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
