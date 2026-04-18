@@ -8,8 +8,8 @@ export class TopicService {
 
   async getAllTopic(keyword?: string) {
     const cleanWord = keyword?.trim();
-    if (!cleanWord)
-      return await this.prisma.topic.findMany({
+    if (!cleanWord) {
+      const topics = await this.prisma.topic.findMany({
         include: {
           _count: {
             select: {
@@ -17,18 +17,32 @@ export class TopicService {
             },
           },
         },
-        
       });
+      const levelOrder: Record<string, number> = {
+        BEGINNER: 0,
+        INTERMEDIATE: 1,
+        ADVANCED: 2,
+      };
+      return topics.sort(
+        (a, b) => (levelOrder[a.level] ?? 3) - (levelOrder[b.level] ?? 3),
+      );
+    }
 
     return this.prisma.$queryRaw`
       select t.*, json_build_object(
-        'Vocabulary', COUNT(v.id) 
+        'Vocabulary', COUNT(v.id)
       ) as "_count"
       from "Topic" t
       left join "Vocabulary" v on v."topicId" = t."id"
-      where t."title" ilike ${'%' + keyword + '%'} or 
+      where t."title" ilike ${'%' + keyword + '%'} or
             t."description" ilike ${'%' + keyword + '%'}
       group by t.id
+      order by case t."level"
+        when 'BEGINNER' then 0
+        when 'INTERMEDIATE' then 1
+        when 'ADVANCED' then 2
+        else 3
+      end
     `;
   }
 
