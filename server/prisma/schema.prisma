@@ -159,6 +159,7 @@ model Topic {
   PracticeSession  PracticeSession[]
   Vocabulary       Vocabulary[]
   ClozeQuestion    ClozeQuestion[]
+  TopicPractice    TopicPractice[]
 }
 
 model User {
@@ -273,6 +274,15 @@ model VocabularyExample {
   Vocabulary   Vocabulary @relation(fields: [vocabularyId], references: [id])
 
   @@index([vocabularyId])
+}
+
+model TopicPractice {
+  id        String   @id @default(uuid())
+  topicId   String
+  questionType  String[]
+  createdAt DateTime @default(now())
+
+  Topic Topic @relation(fields: [topicId], references: [id])
 }
 
 model ClozeQuestion {
