@@ -34,6 +34,7 @@ import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.feature.toeic.ToeicMockTestListScreen
+import com.penguin.linguae.feature.toeic.ToeicTest
 
 @Composable
 fun AppNavigation(
@@ -177,7 +178,25 @@ fun AppNavigation(
 
         composable(Screen.ToeicMockTestList.route) {
             ToeicMockTestListScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onMockTestClick = { toeicId ->
+                    navController.navigate(Screen.ToeicTest.createRoute(toeicId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ToeicTest.route,
+            arguments = listOf(
+                navArgument("toeicId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val toeicId = backStackEntry.arguments?.getString("toeicId") ?: ""
+            ToeicTest(
+                onBack = { navController.popBackStack() },
+                toeicId = toeicId
             )
         }
 
