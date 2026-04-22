@@ -53,10 +53,9 @@ class VocabularyRepository {
         }
     }
 
-    suspend fun deleteVocabulary(id: String): Result<Unit> {
+    suspend fun deleteVocabulary(id: String): Result<Vocabulary> {
         return try {
-            api.deleteVocabulary(id)
-            Result.success(Unit)
+            Result.success(api.deleteVocabulary(id))
         } catch (e: Exception) {
             Result.failure(e)
         }
