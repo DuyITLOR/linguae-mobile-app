@@ -90,6 +90,9 @@ fun ToeicTest(
     val totalRequiredAnswers = uiState.part5Questions.size + uiState.part6Questions.sumOf { it.readingPart6Options.size }
     val selectedAnswersCount = uiState.part5Answers.size + uiState.part6Answers.size
     val allAnswersSelected = totalRequiredAnswers > 0 && selectedAnswersCount == totalRequiredAnswers
+    val remainingTimeText = remember(uiState.remainingTimeSeconds) {
+        formatRemainingTime(uiState.remainingTimeSeconds)
+    }
 
     LaunchedEffect(toeicId) {
         viewModel.initialize(toeicId)
@@ -142,6 +145,22 @@ fun ToeicTest(
         )
     }
 
+    if (uiState.isTimeUp) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Hết thời gian làm bài") },
+            text = { Text("Bạn đã hết thời gian làm bài. Vui lòng nộp bài để kết thúc bài thi.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.submitToeicTest() },
+                    enabled = uiState.isSubmitting.not()
+                ) {
+                    Text(if (uiState.isSubmitting) "Đang nộp bài..." else "Nộp bài")
+                }
+            }
+        )
+    }
+
     Scaffold(
         containerColor = PageBg,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -166,6 +185,8 @@ fun ToeicTest(
             Header(
                 currentQuestion = uiState.currentQuestionIndex + 1,
                 totalQuestions = uiState.totalQuestions,
+                remainingTime = remainingTimeText,
+                isTimeUp = uiState.isTimeUp,
                 onBack = { showExitConfirmDialog = true }
             )
 
@@ -400,6 +421,8 @@ private fun QuestionProgressBar(
 private fun Header(
     currentQuestion: Int,
     totalQuestions: Int,
+    remainingTime: String,
+    isTimeUp: Boolean,
     onBack: () -> Unit
 ) {
     val safeTotal = totalQuestions.coerceAtLeast(1)
@@ -423,8 +446,8 @@ private fun Header(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = String.format("%02d:%02d", safeCurrent, safeTotal),
-            color = PurplePrimary,
+            text = remainingTime,
+            color = if (isTimeUp) Color(0xFFD64545) else PurplePrimary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
@@ -767,6 +790,13 @@ private fun ErrorState(
             Text("Try again", color = Color.White)
         }
     }
+}
+
+private fun formatRemainingTime(totalSeconds: Int): String {
+    val safeSeconds = totalSeconds.coerceAtLeast(0)
+    val minutes = safeSeconds / 60
+    val seconds = safeSeconds % 60
+    return String.format("%02d:%02d", minutes, seconds)
 }
 
 @Preview(showBackground = true)

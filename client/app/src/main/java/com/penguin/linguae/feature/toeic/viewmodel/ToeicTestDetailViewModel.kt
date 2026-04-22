@@ -8,15 +8,20 @@ import com.penguin.linguae.data.model.SubmitToeicAnswerRequest
 import com.penguin.linguae.data.model.ToeicAnswerRequest
 import com.penguin.linguae.data.repository.ToeicRepository
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 enum class ToeicPart {
     PART_5,
     PART_6
 }
+
+private const val DEFAULT_TOEIC_DURATION_SECONDS = 60 * 60
 
 data class ToeicTestUiState(
     val isLoading: Boolean = false,
@@ -29,7 +34,10 @@ data class ToeicTestUiState(
     val part5Answers: Map<Int, Int> = emptyMap(),
     val part6Answers: Map<String, Int> = emptyMap(),
     val part5Questions: List<ReadingPart5Question> = emptyList(),
-    val part6Questions: List<ReadingPart6Question> = emptyList()
+    val part6Questions: List<ReadingPart6Question> = emptyList(),
+    val durationSeconds: Int = DEFAULT_TOEIC_DURATION_SECONDS,
+    val remainingTimeSeconds: Int = DEFAULT_TOEIC_DURATION_SECONDS,
+    val isTimeUp: Boolean = false
 ) {
     val totalQuestions: Int
         get() = when (selectedPart) {
@@ -56,6 +64,7 @@ class ToeicTestDetailViewModel : ViewModel() {
     val uiState: StateFlow<ToeicTestUiState> = _uiState.asStateFlow()
 
     private var currentToeicId: String? = null
+    private var timerJob: Job? = null
 
     fun initialize(toeicId: String) {
         val shouldReload = currentToeicId != toeicId ||
@@ -128,6 +137,7 @@ class ToeicTestDetailViewModel : ViewModel() {
     fun submitToeicTest() {
         val toeicId = currentToeicId ?: return
         val state = _uiState.value
+        if (state.isSubmitting) return
         val answers = buildSubmissionAnswers(state)
         val totalRequiredAnswers = state.part5Questions.size + state.totalPart6SubQuestions
 
@@ -173,13 +183,15 @@ class ToeicTestDetailViewModel : ViewModel() {
     }
 
     private fun loadAllParts(toeicId: String) {
+        timerJob?.cancel()
         val selectedPart = _uiState.value.selectedPart
         _uiState.value = _uiState.value.copy(
             isLoading = true,
             errorMessage = null,
             submitMessage = null,
             currentQuestionIndex = 0,
-            selectedAnswerIndex = null
+            selectedAnswerIndex = null,
+            isTimeUp = false
         )
 
         viewModelScope.launch {
@@ -189,7 +201,8 @@ class ToeicTestDetailViewModel : ViewModel() {
             val part5Result = part5Deferred.await()
             val part6Result = part6Deferred.await()
 
-            val error = part5Result.exceptionOrNull() ?: part6Result.exceptionOrNull()
+            val error = part5Result.exceptionOrNull()
+                ?: part6Result.exceptionOrNull()
             if (error != null) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -206,9 +219,48 @@ class ToeicTestDetailViewModel : ViewModel() {
                 part5Questions = part5Questions,
                 part6Questions = part6Questions,
                 currentQuestionIndex = 0,
-                selectedAnswerIndex = selectedAnswerFor(0, selectedPart)
+                selectedAnswerIndex = selectedAnswerFor(0, selectedPart),
+                durationSeconds = DEFAULT_TOEIC_DURATION_SECONDS,
+                remainingTimeSeconds = DEFAULT_TOEIC_DURATION_SECONDS,
+                isTimeUp = false
             )
+            startCountdown()
         }
+    }
+
+    private fun startCountdown() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (isActive) {
+                val state = _uiState.value
+                if (state.isLoading || state.isSubmitting || state.isTimeUp) {
+                    break
+                }
+
+                if (state.remainingTimeSeconds <= 0) {
+                    _uiState.value = state.copy(isTimeUp = true, remainingTimeSeconds = 0)
+                    break
+                }
+
+                delay(1_000)
+
+                val updatedState = _uiState.value
+                if (updatedState.isLoading || updatedState.isSubmitting || updatedState.isTimeUp) {
+                    continue
+                }
+
+                val nextRemaining = (updatedState.remainingTimeSeconds - 1).coerceAtLeast(0)
+                _uiState.value = updatedState.copy(
+                    remainingTimeSeconds = nextRemaining,
+                    isTimeUp = nextRemaining == 0
+                )
+            }
+        }
+    }
+
+    override fun onCleared() {
+        timerJob?.cancel()
+        super.onCleared()
     }
 
     private fun selectedAnswerFor(questionIndex: Int, part: ToeicPart): Int? {
