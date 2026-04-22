@@ -42,5 +42,5 @@ interface VocabularyApi {
     @DELETE("vocabulary/{id}")
     suspend fun deleteVocabulary(
         @Path("id") id: String
-    ): Unit
+    ): Vocabulary
 }

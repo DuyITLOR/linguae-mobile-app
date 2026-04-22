@@ -70,8 +70,17 @@ class ManageVocabularyViewModel(
         partOfSpeech = vocab.partOfSpeech
         difficulty = vocab.difficulty
         examples.clear()
-        examples.addAll(vocab.VocabularyExample.map { ExampleInput(it.sentence, it.translation ?: "") })
         mode = VocabManageMode.EDIT
+
+        viewModelScope.launch {
+            vocabRepository.getVocabularyById(vocab.id)
+                .onSuccess { full ->
+                    editingVocab = full
+                    examples.clear()
+                    examples.addAll(full.VocabularyExample.map { ExampleInput(it.sentence, it.translation ?: "") })
+                }
+                .onFailure { error = it.message ?: "Failed to load vocabulary details" }
+        }
     }
 
     fun cancelForm() {
@@ -140,13 +149,13 @@ class ManageVocabularyViewModel(
 
     fun executeDelete() {
         val id = deleteTargetId ?: return
+        deleteTargetId = null
         viewModelScope.launch {
             isLoading = true
             vocabRepository.deleteVocabulary(id)
                 .onSuccess { loadVocabularies() }
                 .onFailure { error = it.message ?: "Failed to delete vocabulary" }
             isLoading = false
-            deleteTargetId = null
         }
     }
 

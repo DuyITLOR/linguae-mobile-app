@@ -1,7 +1,21 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { VocabularyService } from './vocabulary.service';
 import { AdminGuard, UserId } from '../../common';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
+import { UpdateVocabularyDto } from './dto/update-vocabulary.dto';
 
 @Controller('vocabulary')
 export class VocabularyController {
@@ -37,5 +51,19 @@ export class VocabularyController {
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async create(@Body() vocabulary: CreateVocabularyDto) {
     return await this.VocabularyService.create(vocabulary);
+  }
+
+  @Delete(':id')
+  @UseGuards(AdminGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  async delete(@Param('id') id: string) {
+    return await this.VocabularyService.delete(id);
+  }
+
+  @Put(':id')
+  @UseGuards(AdminGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  async update(@Param('id') id: string, @Body() dto: UpdateVocabularyDto) {
+    return await this.VocabularyService.update(id, dto);
   }
 }

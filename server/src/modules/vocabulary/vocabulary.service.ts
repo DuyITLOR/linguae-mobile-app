@@ -114,6 +114,14 @@ export class VocabularyService {
       throw new NotFoundException('Vocabulary is not found');
     }
 
+    await this.prisma.vocabularyExample.deleteMany({
+      where: { vocabularyId: id },
+    });
+
+    await this.prisma.userVocabularyProgress.deleteMany({
+      where: { vocabularyId: id },
+    });
+
     return await this.prisma.vocabulary.delete({
       where: { id },
     });
@@ -128,8 +136,9 @@ export class VocabularyService {
       throw new NotFoundException('Vocabulary is not found');
     }
 
-    const validExamples = dto.examples
-      ?.filter((e): e is { sentence: string; translation?: string } => !!e.sentence);
+    const validExamples = dto.examples?.filter(
+      (e): e is { sentence: string; translation?: string } => !!e.sentence,
+    );
 
     return await this.prisma.vocabulary.update({
       where: { id },
