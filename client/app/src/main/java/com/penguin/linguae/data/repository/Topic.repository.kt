@@ -5,6 +5,7 @@ import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.CreateTopicRequest
 import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.data.model.TopicIncludeVocab
+import com.penguin.linguae.data.model.UpdateTopicRequest
 import com.penguin.linguae.data.remote.TopicApi
 
 
@@ -37,6 +38,23 @@ class TopicRepository {
     suspend fun createTopic(request: CreateTopicRequest): Result<Topic> {
         return try {
             Result.success(api.createTopic(request))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateTopic(topicId: String, request: UpdateTopicRequest): Result<Topic> {
+        return try {
+            Result.success(api.updateTopic(topicId, request))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteTopic(topicId: String): Result<Unit> {
+        return try {
+            api.deleteTopic(topicId)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

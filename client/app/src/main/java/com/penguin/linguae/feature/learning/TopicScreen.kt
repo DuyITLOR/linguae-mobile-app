@@ -205,7 +205,7 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-private fun levelColor(level: String): Color = when (level.uppercase()) {
+internal fun levelColor(level: String): Color = when (level.uppercase()) {
     "BEGINNER" -> Color(0xFF27AE60)
     "INTERMEDIATE" -> Color(0xFFE67E22)
     "ADVANCED" -> Color(0xFFE74C3C)
