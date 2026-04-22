@@ -372,7 +372,7 @@ model ToeicAnswer {
   toeicSessionId String
   questionId     String
   part           Int
-  selectedOption Int
+  selected       Int
 
   ToeicSession ToeicSession @relation(fields: [toeicSessionId], references: [id], onDelete: Cascade)
 }

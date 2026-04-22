@@ -22,6 +22,7 @@ import type {
   UpdateToeicRequestDto,
 } from './dto/updateToeic.dto';
 import { UserId } from '../../common/decorators/user-id.decorator';
+import { SubmitToeicAnswerDto } from './dto/submitToeicAnswer.dto';
 
 @Controller('toeic')
 export class ToeicController {
@@ -41,6 +42,11 @@ export class ToeicController {
   @Get('reading-part-5-questions/:id')
   async getAllReadingPart5Questions(@Param('id') id: string) {
     return await this.toeicService.getAllReadingPart5Questions(id);
+  }
+
+  @Get('reading-part-6-questions/:id')
+  async getAllReadingPart6Questions(@Param('id') id: string) {
+    return await this.toeicService.getAllReadingPart6Questions(id);
   }
 
   // ==================== Create section ======================
@@ -70,6 +76,14 @@ export class ToeicController {
       throw new BadRequestException('Questions must be an array');
     }
     return await this.toeicService.createReadingPart5Questions(body, userId);
+  }
+
+  @Post('submit-answer')
+  async submitToeicAnswer(
+    @Body() body: SubmitToeicAnswerDto,
+    @UserId() userId: string,
+  ) {
+    return await this.toeicService.submitToeicAnswer(body, userId);
   }
 
   // Part 6

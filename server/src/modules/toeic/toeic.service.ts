@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -14,6 +15,9 @@ import {
   UpdateReadingPart5QuestionDto,
   UpdateToeicDto,
 } from './dto/updateToeic.dto';
+import { SubmitToeicAnswerDto } from './dto/submitToeicAnswer.dto';
+
+const TOTAL_QUESTIONS = 28 + 16;
 
 @Injectable()
 export class ToeicService {
@@ -71,6 +75,28 @@ export class ToeicService {
     }
   }
 
+  async getAllReadingPart6Questions(toeicId: string) {
+    try {
+      const readingPart6Questions =
+        await this.prisma.readingPart6Question.findMany({
+          where: { toeicId },
+          include: {
+            readingPart6Options: true,
+          },
+        });
+      if (readingPart6Questions.length === 0) {
+        throw new NotFoundException('Reading part 6 questions not found');
+      }
+      return readingPart6Questions;
+    } catch (error) {
+      const msg =
+        error instanceof NotFoundException
+          ? 'Reading part 6 questions not found'
+          : 'Failed to get reading part 6 questions';
+      throw new InternalServerErrorException(msg);
+    }
+  }
+
   // ==================== Create section ======================
 
   async createToeic(dto: CreateToeicDto) {
@@ -91,6 +117,7 @@ export class ToeicService {
     return toeic;
   }
 
+  // Part 5
   async createReadingPart5Questions(
     dto: CreateReadingPart5QuestionDto[],
     userId: string,
@@ -140,9 +167,52 @@ export class ToeicService {
         ),
       );
     } catch (err) {
+      const msg =
+        err instanceof NotFoundException || err instanceof ForbiddenException
+          ? 'Permission denied or related toeic not found'
+          : 'Error at creating part 6 question service';
       throw new InternalServerErrorException(
-        'Error at creating part 6 question service',
+        msg || 'Error at creating part 6 question service',
       );
+    }
+  }
+
+  // Submit answer
+  async submitToeicAnswer(dto: SubmitToeicAnswerDto, userId: string) {
+    try {
+      if (dto.answers.length !== TOTAL_QUESTIONS) {
+        throw new BadRequestException(
+          'Must answer all questions before submitting',
+        );
+      }
+
+      await this.prisma.$transaction(async (tx) => {
+        // Create a new toeic session
+        const toeicSession = await tx.toeicSession.create({
+          data: {
+            userId,
+            toeicId: dto.toeicId,
+            correctAnswers: dto.correctAnswers,
+          },
+        });
+
+        await tx.toeicAnswer.createMany({
+          data: dto.answers.map((a) => ({
+            toeicSessionId: toeicSession.id,
+            questionId: a.questionId,
+            part: a.part,
+            selected: a.selected,
+          })),
+        });
+      });
+
+      return { message: 'Toeic answers submitted successfully' };
+    } catch (err) {
+      const msg =
+        err instanceof NotFoundException
+          ? 'Toeic or questions not found'
+          : 'Error at submitting toeic answer service';
+      throw new InternalServerErrorException(msg);
     }
   }
 

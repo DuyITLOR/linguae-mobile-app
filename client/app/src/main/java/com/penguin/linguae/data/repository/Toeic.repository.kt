@@ -3,6 +3,8 @@ package com.penguin.linguae.data.repository
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.ReadingPart5Question
 import com.penguin.linguae.data.model.ReadingPart6Question
+import com.penguin.linguae.data.model.SubmitToeicAnswerRequest
+import com.penguin.linguae.data.model.SubmitToeicAnswerResponse
 import com.penguin.linguae.data.model.Toeic
 import com.penguin.linguae.data.remote.ToeicApi
 
@@ -29,6 +31,14 @@ class ToeicRepository {
     suspend fun getReadingPart6Questions(toeicId: String): Result<List<ReadingPart6Question>> {
         return try {
             Result.success(api.getReadingPart6Questions(toeicId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun submitToeicAnswer(request: SubmitToeicAnswerRequest): Result<SubmitToeicAnswerResponse> {
+        return try {
+            Result.success(api.submitToeicAnswer(request))
         } catch (e: Exception) {
             Result.failure(e)
         }
