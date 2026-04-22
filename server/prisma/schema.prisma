@@ -159,7 +159,7 @@ model Topic {
   PracticeSession  PracticeSession[]
   Vocabulary       Vocabulary[]
   ClozeQuestion    ClozeQuestion[]
-  TopicPractice    TopicPractice[]
+  TopicPracticeConfig    TopicPracticeConfig[]
 }
 
 model User {
@@ -276,7 +276,7 @@ model VocabularyExample {
   @@index([vocabularyId])
 }
 
-model TopicPractice {
+model TopicPracticeConfig {
   id        String   @id @default(uuid())
   topicId   String
   questionType  String[]
