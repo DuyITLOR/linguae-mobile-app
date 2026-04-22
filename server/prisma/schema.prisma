@@ -277,10 +277,10 @@ model VocabularyExample {
 }
 
 model TopicPractice {
-  id        String   @id @default(uuid())
-  topicId   String
-  questionType  String[]
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  topicId      String
+  questionType String[]
+  createdAt    DateTime @default(now())
 
   Topic Topic @relation(fields: [topicId], references: [id])
 }
@@ -356,6 +356,25 @@ model Toeic {
   updatedAt             DateTime               @updatedAt
   readingPart5Questions ReadingPart5Question[]
   readingPart6Questions ReadingPart6Question[]
+}
+
+model ToeicSession {
+  id             String        @id @default(uuid())
+  userId         String
+  toeicId        String
+  correctAnswers Int
+  submittedAt    DateTime      @default(now())
+  toeicAnswers   ToeicAnswer[]
+}
+
+model ToeicAnswer {
+  id             String @id @default(uuid())
+  toeicSessionId String
+  questionId     String
+  part           Int
+  selectedOption Int
+
+  ToeicSession ToeicSession @relation(fields: [toeicSessionId], references: [id], onDelete: Cascade)
 }
 
 model ReadingPart5Question {
