@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +22,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +36,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -63,7 +69,11 @@ import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.SurfaceColor
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
-import com.penguin.linguae.feature.admin.viewmodel.AddVocabularyViewModel
+import com.penguin.linguae.data.model.Vocabulary
+import com.penguin.linguae.feature.admin.viewmodel.ExampleInput
+import com.penguin.linguae.feature.admin.viewmodel.ManageVocabularyViewModel
+import com.penguin.linguae.feature.admin.viewmodel.ManageVocabularyViewModelFactory
+import com.penguin.linguae.feature.admin.viewmodel.VocabManageMode
 
 private val vocabPartsOfSpeech = listOf(
     "NOUN", "VERB", "ADJECTIVE", "ADVERB",
@@ -71,24 +81,43 @@ private val vocabPartsOfSpeech = listOf(
 )
 
 private val difficultyLabels = mapOf(1 to "Beginner", 2 to "Intermediate", 3 to "Advanced")
+private val difficultyColors = mapOf(
+    1 to Color(0xFF27AE60),
+    2 to Color(0xFFE67E22),
+    3 to Color(0xFFE74C3C)
+)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddVocabularyScreen(
-    viewModel: AddVocabularyViewModel = viewModel(),
+fun ManageVocabularyScreen(
+    topicId: String,
+    topicTitle: String,
+    viewModel: ManageVocabularyViewModel = viewModel(factory = ManageVocabularyViewModelFactory(topicId, topicTitle)),
     onBack: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(viewModel.success) {
-        if (viewModel.success) onBack()
-    }
 
     LaunchedEffect(viewModel.error) {
         viewModel.error?.let {
             snackbarHostState.showSnackbar(it)
             viewModel.clearError()
         }
+    }
+
+    if (viewModel.deleteTargetId != null) {
+        AlertDialog(
+            onDismissRequest = { viewModel.cancelDelete() },
+            title = { Text("Delete Vocabulary") },
+            text = { Text("Are you sure you want to delete this word? This cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.executeDelete() },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE74C3C))
+                ) { Text("Delete") }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.cancelDelete() }) { Text("Cancel") }
+            }
+        )
     }
 
     Scaffold(
@@ -99,226 +128,286 @@ fun AddVocabularyScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
         ) {
-            // Gradient header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(90.dp)
                     .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(PurplePrimary, PurpleDark, PurpleDeep)
-                        )
-                    )
+                    .background(Brush.verticalGradient(listOf(PurplePrimary, PurpleDark, PurpleDeep)))
             ) {
-                Column(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
+                        .padding(horizontal = 4.dp, vertical = 16.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Back",
-                                tint = SurfaceColor
-                            )
-                        }
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = "Add Vocabulary",
-                                color = SurfaceColor,
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                            Text(
-                                text = "Add a new word to the database",
-                                color = SurfaceColor.copy(alpha = 0.75f),
-                                fontSize = 14.sp
-                            )
-                        }
+                    IconButton(onClick = {
+                        if (viewModel.mode != VocabManageMode.LIST) viewModel.cancelForm() else onBack()
+                    }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = SurfaceColor)
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = when (viewModel.mode) {
+                                VocabManageMode.LIST -> viewModel.scopedTopicTitle
+                                VocabManageMode.CREATE -> "New Word"
+                                VocabManageMode.EDIT -> "Edit Word"
+                            },
+                            color = SurfaceColor,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = when (viewModel.mode) {
+                                VocabManageMode.LIST -> "${viewModel.vocabularies.size} words"
+                                VocabManageMode.CREATE -> "Add a word to ${viewModel.scopedTopicTitle}"
+                                VocabManageMode.EDIT -> "Update word details"
+                            },
+                            color = SurfaceColor.copy(alpha = 0.75f),
+                            fontSize = 13.sp
+                        )
                     }
                 }
             }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
-            ) {
-                // Basic Info section
-                VocabFormSection(title = "Basic Info") {
-                    VocabFormField(label = "Topic *") {
-                        VocabTopicDropdown(
-                            topics = viewModel.topics.map { it.title to it.id },
-                            selectedTitle = viewModel.selectedTopic?.title ?: "",
-                            onSelect = { id ->
-                                viewModel.selectedTopic = viewModel.topics.find { it.id == id }
-                            }
-                        )
-                    }
-                    VocabFormField(label = "Word *") {
-                        OutlinedTextField(
-                            value = viewModel.word,
-                            onValueChange = { viewModel.word = it },
-                            placeholder = { Text("e.g. Ambiguous", color = TextGray) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(18.dp),
-                            colors = vocabFieldColors(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    VocabFormField(label = "Meaning *") {
-                        OutlinedTextField(
-                            value = viewModel.meaning,
-                            onValueChange = { viewModel.meaning = it },
-                            placeholder = { Text("e.g. Having multiple meanings", color = TextGray) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(18.dp),
-                            colors = vocabFieldColors(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    VocabFormField(label = "Pronunciation (IPA)") {
-                        OutlinedTextField(
-                            value = viewModel.pronunciationText,
-                            onValueChange = { viewModel.pronunciationText = it },
-                            placeholder = { Text("e.g. /æmˈbɪɡ.ju.əs/", color = TextGray) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(18.dp),
-                            colors = vocabFieldColors(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-
-                // Details section
-                VocabFormSection(title = "Details") {
-                    VocabFormField(label = "Part of Speech") {
-                        VocabPartOfSpeechDropdown(
-                            selected = viewModel.partOfSpeech,
-                            onSelect = { viewModel.partOfSpeech = it }
-                        )
-                    }
-                    VocabFormField(label = "Difficulty") {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            listOf(1, 2, 3).forEach { level ->
-                                FilterChip(
-                                    selected = viewModel.difficulty == level,
-                                    onClick = { viewModel.difficulty = level },
-                                    label = {
-                                        Text(
-                                            text = difficultyLabels[level] ?: level.toString(),
-                                            fontSize = 12.sp
-                                        )
-                                    },
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = PurplePrimary,
-                                        selectedLabelColor = Color.White
-                                    ),
-                                    border = FilterChipDefaults.filterChipBorder(
-                                        enabled = true,
-                                        selected = viewModel.difficulty == level,
-                                        borderColor = BorderGray,
-                                        selectedBorderColor = PurplePrimary
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Examples section
-                VocabFormSection(title = "Examples") {
-                    viewModel.examples.forEachIndexed { index, example ->
-                        VocabExampleRow(
-                            index = index,
-                            sentence = example.sentence,
-                            translation = example.translation,
-                            onSentenceChange = { viewModel.updateExample(index, it, example.translation) },
-                            onTranslationChange = { viewModel.updateExample(index, example.sentence, it) },
-                            onRemove = { viewModel.removeExample(index) }
-                        )
-                        if (index < viewModel.examples.lastIndex) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-
-                    TextButton(
-                        onClick = { viewModel.addExample() },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.textButtonColors(contentColor = PurplePrimary)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Add Example", fontWeight = FontWeight.SemiBold)
-                    }
-                }
-
-                // Submit button
-                Button(
-                    onClick = { viewModel.submit() },
-                    enabled = !viewModel.isLoading,
-                    shape = RoundedCornerShape(18.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PurplePrimary,
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp)
-                ) {
-                    if (viewModel.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
-                            color = Color.White,
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text("Creating...", fontWeight = FontWeight.SemiBold)
-                    } else {
-                        Text("Create Vocabulary", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-                    }
-                }
+            when (viewModel.mode) {
+                VocabManageMode.LIST -> VocabListContent(
+                    vocabularies = viewModel.vocabularies,
+                    isLoading = viewModel.isLoading,
+                    onAdd = { viewModel.startCreate() },
+                    onEdit = { viewModel.startEdit(it) },
+                    onDelete = { viewModel.confirmDelete(it) }
+                )
+                else -> VocabFormContent(viewModel = viewModel)
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun VocabTopicDropdown(
-    topics: List<Pair<String, String>>,
-    selectedTitle: String,
-    onSelect: (String) -> Unit
+private fun VocabListContent(
+    vocabularies: List<Vocabulary>,
+    isLoading: Boolean,
+    onAdd: () -> Unit,
+    onEdit: (Vocabulary) -> Unit,
+    onDelete: (String) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
-        OutlinedTextField(
-            value = selectedTitle,
-            onValueChange = {},
-            readOnly = true,
-            placeholder = { Text("Select a topic", color = TextGray) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            shape = RoundedCornerShape(18.dp),
-            colors = vocabFieldColors(),
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            horizontalArrangement = Arrangement.End,
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor()
-        )
-        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            topics.forEach { (title, id) ->
-                DropdownMenuItem(
-                    text = { Text(title) },
-                    onClick = { onSelect(id); expanded = false }
+                .padding(horizontal = 20.dp, vertical = 12.dp)
+        ) {
+            Button(
+                onClick = onAdd,
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(6.dp))
+                Text("New Word", fontWeight = FontWeight.SemiBold)
+            }
+        }
+
+        if (isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = PurplePrimary)
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                items(vocabularies) { vocab ->
+                    VocabManageCard(
+                        vocab = vocab,
+                        onEdit = { onEdit(vocab) },
+                        onDelete = { onDelete(vocab.id) }
+                    )
+                }
+                item { Spacer(Modifier.height(24.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun VocabManageCard(vocab: Vocabulary, onEdit: () -> Unit, onDelete: () -> Unit) {
+    val diffColor = difficultyColors[vocab.difficulty] ?: Color(0xFF7F8C8D)
+    val diffLabel = difficultyLabels[vocab.difficulty] ?: vocab.difficulty.toString()
+
+    Surface(
+        color = Color.White,
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.dp, Color(0xFFE8E3FA)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(vocab.word, color = TextDark, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(vocab.meaning, color = TextGray, fontSize = 13.sp, maxLines = 1)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(diffColor.copy(alpha = 0.13f))
+                            .padding(horizontal = 7.dp, vertical = 2.dp)
+                    ) {
+                        Text(diffLabel, color = diffColor, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                    if (vocab.partOfSpeech != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFFF1EEFF))
+                                .padding(horizontal = 7.dp, vertical = 2.dp)
+                        ) {
+                            Text(vocab.partOfSpeech, color = PurplePrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+                }
+            }
+
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = PurplePrimary, modifier = Modifier.size(20.dp))
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFE74C3C), modifier = Modifier.size(20.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun VocabFormContent(viewModel: ManageVocabularyViewModel) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 20.dp)
+    ) {
+        VocabFormSection(title = "Basic Info") {
+            VocabFormField(label = "Word *") {
+                OutlinedTextField(
+                    value = viewModel.word,
+                    onValueChange = { viewModel.word = it },
+                    placeholder = { Text("e.g. Ambiguous", color = TextGray) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(18.dp),
+                    colors = vocabFieldColors(),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
+            VocabFormField(label = "Meaning *") {
+                OutlinedTextField(
+                    value = viewModel.meaning,
+                    onValueChange = { viewModel.meaning = it },
+                    placeholder = { Text("e.g. Having multiple meanings", color = TextGray) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(18.dp),
+                    colors = vocabFieldColors(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            VocabFormField(label = "Pronunciation (IPA)") {
+                OutlinedTextField(
+                    value = viewModel.pronunciationText,
+                    onValueChange = { viewModel.pronunciationText = it },
+                    placeholder = { Text("e.g. /æmˈbɪɡ.ju.əs/", color = TextGray) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(18.dp),
+                    colors = vocabFieldColors(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        VocabFormSection(title = "Details") {
+            VocabFormField(label = "Part of Speech") {
+                VocabPartOfSpeechDropdown(selected = viewModel.partOfSpeech, onSelect = { viewModel.partOfSpeech = it })
+            }
+            VocabFormField(label = "Difficulty") {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(1, 2, 3).forEach { lvl ->
+                        FilterChip(
+                            selected = viewModel.difficulty == lvl,
+                            onClick = { viewModel.difficulty = lvl },
+                            label = { Text(difficultyLabels[lvl] ?: lvl.toString(), fontSize = 12.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = PurplePrimary,
+                                selectedLabelColor = Color.White
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = viewModel.difficulty == lvl,
+                                borderColor = BorderGray,
+                                selectedBorderColor = PurplePrimary
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        VocabFormSection(title = "Examples") {
+            viewModel.examples.forEachIndexed { index, example ->
+                VocabExampleRow(
+                    index = index,
+                    sentence = example.sentence,
+                    translation = example.translation,
+                    onSentenceChange = { viewModel.updateExample(index, it, example.translation) },
+                    onTranslationChange = { viewModel.updateExample(index, example.sentence, it) },
+                    onRemove = { viewModel.removeExample(index) }
+                )
+                if (index < viewModel.examples.lastIndex) Spacer(Modifier.height(4.dp))
+            }
+            TextButton(
+                onClick = { viewModel.addExample() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(contentColor = PurplePrimary)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("Add Example", fontWeight = FontWeight.SemiBold)
+            }
+        }
+
+        Button(
+            onClick = { viewModel.submit() },
+            enabled = !viewModel.isLoading,
+            shape = RoundedCornerShape(18.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary, contentColor = Color.White),
+            modifier = Modifier.fillMaxWidth().height(54.dp)
+        ) {
+            if (viewModel.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                Spacer(Modifier.width(10.dp))
+                Text(if (viewModel.mode == VocabManageMode.CREATE) "Creating..." else "Saving...", fontWeight = FontWeight.SemiBold)
+            } else {
+                Text(
+                    text = if (viewModel.mode == VocabManageMode.CREATE) "Create Vocabulary" else "Update Vocabulary",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
+        }
+
+        OutlinedButton(
+            onClick = { viewModel.cancelForm() },
+            shape = RoundedCornerShape(18.dp),
+            border = BorderStroke(1.dp, BorderGray),
+            modifier = Modifier.fillMaxWidth().height(50.dp)
+        ) {
+            Text("Cancel", color = TextGray, fontWeight = FontWeight.SemiBold)
         }
     }
 }
@@ -327,7 +416,6 @@ private fun VocabTopicDropdown(
 @Composable
 private fun VocabPartOfSpeechDropdown(selected: String?, onSelect: (String?) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
             value = selected ?: "",
@@ -337,20 +425,12 @@ private fun VocabPartOfSpeechDropdown(selected: String?, onSelect: (String?) -> 
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = RoundedCornerShape(18.dp),
             colors = vocabFieldColors(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor()
+            modifier = Modifier.fillMaxWidth().menuAnchor()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text("None", color = TextGray) },
-                onClick = { onSelect(null); expanded = false }
-            )
+            DropdownMenuItem(text = { Text("None", color = TextGray) }, onClick = { onSelect(null); expanded = false })
             vocabPartsOfSpeech.forEach { pos ->
-                DropdownMenuItem(
-                    text = { Text(pos) },
-                    onClick = { onSelect(pos); expanded = false }
-                )
+                DropdownMenuItem(text = { Text(pos) }, onClick = { onSelect(pos); expanded = false })
             }
         }
     }
@@ -370,28 +450,15 @@ private fun VocabExampleRow(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(12.dp)
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(12.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Example ${index + 1}",
-                    color = PurplePrimary,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Text("Example ${index + 1}", color = PurplePrimary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "Remove",
-                        tint = TextGray,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Icon(Icons.Default.Close, contentDescription = "Remove", tint = TextGray, modifier = Modifier.size(16.dp))
                 }
             }
             OutlinedTextField(
@@ -424,16 +491,8 @@ private fun VocabFormSection(title: String, content: @Composable () -> Unit) {
         border = BorderStroke(1.dp, Color(0xFFE8E3FA)),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            Text(
-                text = title,
-                color = TextDark,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text(text = title, color = TextDark, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             content()
         }
     }

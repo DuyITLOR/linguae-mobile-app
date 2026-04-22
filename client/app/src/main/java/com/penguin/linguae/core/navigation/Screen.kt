@@ -52,5 +52,9 @@ sealed class Screen(val route: String) {
     object Search : Screen("search_screen")
 
     object AddTopic : Screen("admin/add_topic")
-    object AddVocabulary : Screen("admin/add_vocabulary")
+
+    object ManageVocabByTopic : Screen("admin/topic/{topicId}/vocabulary/{topicTitle}") {
+        fun createRoute(topicId: String, topicTitle: String) =
+            "admin/topic/$topicId/vocabulary/${android.net.Uri.encode(topicTitle)}"
+    }
 }

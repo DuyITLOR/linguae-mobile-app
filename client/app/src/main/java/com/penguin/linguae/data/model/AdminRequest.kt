@@ -8,6 +8,13 @@ data class CreateTopicRequest(
     val displayOrder: Int
 )
 
+data class UpdateTopicRequest(
+    val title: String?,
+    val description: String?,
+    val icon: String?,
+    val level: String?
+)
+
 data class CreateVocabularyExampleRequest(
     val sentence: String,
     val translation: String?
@@ -21,4 +28,14 @@ data class CreateVocabularyRequest(
     val partOfSpeech: String?,
     val difficulty: Int,
     val examples: List<CreateVocabularyExampleRequest>
+)
+
+data class UpdateVocabularyRequest(
+    val topicId: String?,
+    val word: String?,
+    val meaning: String?,
+    val pronunciationText: String?,
+    val partOfSpeech: String?,
+    val difficulty: Int?,
+    val examples: List<CreateVocabularyExampleRequest>?
 )

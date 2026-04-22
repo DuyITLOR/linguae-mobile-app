@@ -2,6 +2,7 @@ package com.penguin.linguae.data.repository
 
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.CreateVocabularyRequest
+import com.penguin.linguae.data.model.UpdateVocabularyRequest
 import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.data.remote.VocabularyApi
 
@@ -39,6 +40,23 @@ class VocabularyRepository {
     suspend fun createVocabulary(request: CreateVocabularyRequest): Result<Vocabulary> {
         return try {
             Result.success(api.createVocabulary(request))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateVocabulary(id: String, request: UpdateVocabularyRequest): Result<Vocabulary> {
+        return try {
+            Result.success(api.updateVocabulary(id, request))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteVocabulary(id: String): Result<Unit> {
+        return try {
+            api.deleteVocabulary(id)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
