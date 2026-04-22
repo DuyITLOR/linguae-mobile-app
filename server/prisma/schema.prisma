@@ -358,6 +358,25 @@ model Toeic {
   readingPart6Questions ReadingPart6Question[]
 }
 
+model ToeicSession {
+  id             String        @id @default(uuid())
+  userId         String
+  toeicId        String
+  correctAnswers Int
+  submittedAt    DateTime      @default(now())
+  toeicAnswers   ToeicAnswer[]
+}
+
+model ToeicAnswer {
+  id             String @id @default(uuid())
+  toeicSessionId String
+  questionId     String
+  part           Int
+  selected       Int
+
+  ToeicSession ToeicSession @relation(fields: [toeicSessionId], references: [id], onDelete: Cascade)
+}
+
 model ReadingPart5Question {
   id        String   @id @default(uuid())
   toeicId   String

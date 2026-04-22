@@ -12,8 +12,8 @@ import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.data.model.UserRole
-import com.penguin.linguae.feature.admin.AddTopicScreen
-import com.penguin.linguae.feature.admin.AddVocabularyScreen
+import com.penguin.linguae.feature.admin.ManageTopicScreen
+import com.penguin.linguae.feature.admin.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
@@ -34,6 +34,7 @@ import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.feature.toeic.ToeicMockTestListScreen
+import com.penguin.linguae.feature.toeic.ToeicTest
 
 @Composable
 fun AppNavigation(
@@ -62,23 +63,32 @@ fun AppNavigation(
                 },
                 onNavigateAddTopic = {
                     navController.navigate(Screen.AddTopic.route)
-                },
-                onNavigateAddVocabulary = {
-                    navController.navigate(Screen.AddVocabulary.route)
                 }
             )
         }
 
         composable(Screen.AddTopic.route) {
-            AddTopicScreen(
+            ManageTopicScreen(
                 viewModel = viewModel(),
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onTopicClick = { topic ->
+                    navController.navigate(Screen.ManageVocabByTopic.createRoute(topic.id, topic.title))
+                }
             )
         }
 
-        composable(Screen.AddVocabulary.route) {
-            AddVocabularyScreen(
-                viewModel = viewModel(),
+        composable(
+            route = Screen.ManageVocabByTopic.route,
+            arguments = listOf(
+                navArgument("topicId") { type = NavType.StringType },
+                navArgument("topicTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: ""
+            ManageVocabularyScreen(
+                topicId = topicId,
+                topicTitle = topicTitle,
                 onBack = { navController.popBackStack() }
             )
         }
@@ -177,7 +187,25 @@ fun AppNavigation(
 
         composable(Screen.ToeicMockTestList.route) {
             ToeicMockTestListScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onMockTestClick = { toeicId ->
+                    navController.navigate(Screen.ToeicTest.createRoute(toeicId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ToeicTest.route,
+            arguments = listOf(
+                navArgument("toeicId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val toeicId = backStackEntry.arguments?.getString("toeicId") ?: ""
+            ToeicTest(
+                onBack = { navController.popBackStack() },
+                toeicId = toeicId
             )
         }
 

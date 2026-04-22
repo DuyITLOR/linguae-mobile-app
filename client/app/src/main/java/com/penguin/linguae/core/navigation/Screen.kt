@@ -14,6 +14,9 @@ sealed class Screen(val route: String) {
 
     object FlashcardList : Screen("flashcard/list")
     object ToeicMockTestList : Screen("toeic/mock-test-list")
+    object ToeicTest: Screen("toeic/test/{toeicId}") {
+        fun createRoute(toeicId: String) = "toeic/test/${toeicId}"
+    }
 
     object Flashcard : Screen("flashcard/{topicId}/practice") {
         fun createRoute(topicId: String) = "flashcard/${topicId}/practice"
@@ -49,5 +52,9 @@ sealed class Screen(val route: String) {
     object Search : Screen("search_screen")
 
     object AddTopic : Screen("admin/add_topic")
-    object AddVocabulary : Screen("admin/add_vocabulary")
+
+    object ManageVocabByTopic : Screen("admin/topic/{topicId}/vocabulary/{topicTitle}") {
+        fun createRoute(topicId: String, topicTitle: String) =
+            "admin/topic/$topicId/vocabulary/${android.net.Uri.encode(topicTitle)}"
+    }
 }

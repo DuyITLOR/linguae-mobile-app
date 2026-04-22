@@ -37,14 +37,14 @@ export class TopicController {
     return await this.TopicService.createTopic(dto);
   }
 
-  @Put('id')
+  @Put(':id')
   @UseGuards(AdminGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async update(@Param('id') id: string, @Body() dto: UpdateTopicDto) {
     return await this.TopicService.update(id, dto);
   }
 
-  @Delete('id')
+  @Delete(':id')
   @UseGuards(AdminGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async delete(@Param('id') id: string) {

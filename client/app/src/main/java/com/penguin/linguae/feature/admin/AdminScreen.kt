@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Notifications
@@ -50,7 +49,6 @@ fun AdminScreen(
     currentUser: User? = null,
     onNavigateProfile: () -> Unit = {},
     onNavigateAddTopic: () -> Unit = {},
-    onNavigateAddVocabulary: () -> Unit = {},
 ) {
     Surface(
         color = AppBackground,
@@ -113,15 +111,9 @@ fun AdminScreen(
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     AdminActionItem(
-                        title = "Add Word",
-                        subtitle = "Update vocabulary database",
+                        title = "Topics & Vocabulary",
+                        subtitle = "Manage topics and their words",
                         icon = Icons.Default.MenuBook,
-                        onClick = onNavigateAddVocabulary
-                    )
-                    AdminActionItem(
-                        title = "Add Topic",
-                        subtitle = "Create new learning category",
-                        icon = Icons.Default.Add,
                         onClick = onNavigateAddTopic
                     )
                     AdminActionItem(
