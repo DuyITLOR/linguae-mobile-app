@@ -17,6 +17,7 @@ import com.penguin.linguae.feature.admin.cloze.ManageClozeScreen
 import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
+import com.penguin.linguae.feature.admin.ToeicListScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
@@ -66,6 +67,9 @@ fun AppNavigation(
                 },
                 onNavigateAddTopic = {
                     navController.navigate(Screen.AddTopic.route)
+                },
+                onNavigateManageExam = {
+                    navController.navigate(Screen.ToeicList.route)
                 }
             )
         }
@@ -99,6 +103,13 @@ fun AppNavigation(
                 onManageCloze = {
                     navController.navigate(Screen.ManageCloze.createRoute(topicId, topicTitle))
                 }
+            )
+        }
+
+        composable(Screen.ToeicList.route) {
+            ToeicListScreen(
+                onBack = { navController.popBackStack() },
+                onAddExam = { }
             )
         }
 
