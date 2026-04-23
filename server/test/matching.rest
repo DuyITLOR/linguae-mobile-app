@@ -1,0 +1,139 @@
+@baseUrl = http://localhost:5050
+@apiKey = dev-local-key
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3Njk2MzM3MSwiZXhwIjoxNzc3MDQ5NzcxfQ.rcq4P1LMm94W6P8NYUFjY4GciUus3LJQg7-j3uxoXUE
+@topicId = 1d61177e-2b15-4430-b5b3-c719312aa27d
+@matchingId = be22bde1-acac-48c7-96b7-1d67f778b396
+
+### 1. Tao bai matching moi
+POST {{baseUrl}}/matching
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "topicId": "{{topicId}}",
+  "title": "Noi tu cot A voi cot B",
+  "pairs": [
+    {
+      "leftText": "apple",
+      "rightText": "qua tao"
+    },
+    {
+      "leftText": "dog",
+      "rightText": "con cho"
+    },
+    {
+      "leftText": "run",
+      "rightText": "chay"
+    },
+    {
+      "leftText": "beautiful",
+      "rightText": "dep"
+    }
+  ]
+}
+
+### 2. Loi validation - thieu title
+POST {{baseUrl}}/matching
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "topicId": "{{topicId}}",
+  "pairs": [
+    {
+      "leftText": "apple",
+      "rightText": "qua tao"
+    },
+    {
+      "leftText": "dog",
+      "rightText": "con cho"
+    }
+  ]
+}
+
+### 3. Loi validation - pairs qua it
+POST {{baseUrl}}/matching
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "topicId": "{{topicId}}",
+  "title": "Noi cot A voi cot B",
+  "pairs": [
+    {
+      "leftText": "apple",
+      "rightText": "qua tao"
+    }
+  ]
+}
+
+### 4. Loi auth - thieu bearer token
+POST {{baseUrl}}/matching
+x-api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "topicId": "{{topicId}}",
+  "title": "Noi cot A voi cot B",
+  "pairs": [
+    {
+      "leftText": "apple",
+      "rightText": "qua tao"
+    },
+    {
+      "leftText": "dog",
+      "rightText": "con cho"
+    }
+  ]
+}
+
+### 5. Cap nhat bai matching
+PATCH {{baseUrl}}/matching/{{matchingId}}
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Noi tu cot A voi cot B - ban cap nhat",
+  "pairs": [
+    {
+      "leftText": "apple",
+      "rightText": "tao",
+      "displayOrder": 2
+    },
+    {
+      "leftText": "dog",
+      "rightText": "cho",
+      "displayOrder": 1
+    },
+    {
+      "leftText": "run",
+      "rightText": "chay",
+      "displayOrder": 0
+    }
+  ]
+}
+
+### 6. Cap nhat topic cho bai matching
+PATCH {{baseUrl}}/matching/{{matchingId}}
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Noi tu cot A voi cot B - doi topic",
+  "topicId": "{{topicId}}",
+  "pairs": [
+    {
+      "leftText": "beautiful",
+      "rightText": "dep"
+    },
+    {
+      "leftText": "fast",
+      "rightText": "nhanh"
+    }
+  ]
+}
