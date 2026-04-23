@@ -15,6 +15,7 @@ import { FlashcardModule } from './modules/flashcard/flashcard.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { ToeicModule } from './modules/toeic/toeic.module';
 import { TopicPracticeConfigModule } from './modules/topic-practice-config/topic-practice-config.module';
+import { MatchingModule } from './modules/matching/matching.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TopicPracticeConfigModule } from './modules/topic-practice-config/topic
     ChatModule,
     ToeicModule,
     TopicPracticeConfigModule,
+    MatchingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
