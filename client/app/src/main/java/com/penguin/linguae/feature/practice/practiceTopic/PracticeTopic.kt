@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.feature.practice.practiceTopic.viewmodel.PracticeTopicViewModel
@@ -39,6 +40,14 @@ fun PracticeTopicScreen(
 
     val filtered = remember(query) {
         topics?.filter { it.title.contains(query, ignoreCase = true) }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.onTopicClicked = { topic ->
+            if (topic != null) {
+                navController.navigate(Screen.TopicPracticeConfig.createRoute(topic.id))
+            }
+        }
     }
 
     Column(
@@ -131,7 +140,12 @@ fun PracticeTopicScreen(
                 )
             }
 
-            if (filtered?.isEmpty() ?: false) {
+            if (filtered === null){
+                items(topics ?: emptyList(), key = { it.id }) { topic ->
+                    TopicCard(topic = topic, onClick = { viewModel.onTopicClicked(topic) })
+                }
+            }
+            else if (filtered.isEmpty() ?: false) {
                 item {
                     Box(
                         Modifier.fillMaxWidth().padding(vertical = 40.dp),
@@ -141,7 +155,7 @@ fun PracticeTopicScreen(
                     }
                 }
             } else {
-                items(topics ?: emptyList(), key = { it.title }) { topic ->
+                items(filtered, key = { it.id }) { topic ->
                     TopicCard(topic = topic, onClick = { viewModel.onTopicClicked(topic) })
                 }
             }

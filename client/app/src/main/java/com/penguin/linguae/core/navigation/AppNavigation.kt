@@ -30,6 +30,7 @@ import com.penguin.linguae.feature.learning.VocabularyListScreen
 import com.penguin.linguae.feature.learning.VocabularyScreen
 import com.penguin.linguae.feature.practice.practiceResult.ResultScreen
 import com.penguin.linguae.feature.practice.practiceTopic.PracticeTopicScreen
+import com.penguin.linguae.feature.practice.topicPracticeConfig.TopicPracticeConfigScreen
 import com.penguin.linguae.feature.profile.ProfileEditScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
@@ -295,6 +296,20 @@ fun AppNavigation(
             PracticeTopicScreen(
                 navController = navController,
                 onReturn = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            route = Screen.TopicPracticeConfig.route,
+            arguments = listOf(
+                navArgument("topicId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            TopicPracticeConfigScreen(
+                topicId = topicId,
+                navController = navController,
+                onReturn = { navController.popBackStack() }
             )
         }
 

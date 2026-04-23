@@ -48,6 +48,9 @@ sealed class Screen(val route: String) {
 
     object ResultScreen: Screen("result_screen")
     object PracticeTopic: Screen("practice_topic_screen")
+    object TopicPracticeConfig: Screen("topic_practice_config/{topicId}") {
+        fun createRoute(topicId: String) = "topic_practice_config/$topicId"
+    }
 
     object Search : Screen("search_screen")
 

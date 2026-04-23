@@ -15,10 +15,14 @@ import { TopicService } from './topic.service';
 import { AdminGuard } from '../../common';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
+import { TopicPracticeConfigService } from '../topic-practice-config/topic-practice-config.service';
 
 @Controller('topic')
 export class TopicController {
-  constructor(private readonly TopicService: TopicService) {}
+  constructor(
+    private readonly TopicService: TopicService,
+    private readonly topicPracticeConfigService: TopicPracticeConfigService,
+  ) {}
 
   @Get()
   async getAllTopic(@Query('q') query: string) {
@@ -28,6 +32,11 @@ export class TopicController {
   @Get(':topicId')
   async getTopicById(@Param('topicId') topicId: string) {
     return await this.TopicService.getTopicById(topicId);
+  }
+
+  @Get(':topicId/practice-config')
+  async getPracticeConfigByTopicId(@Param('topicId') topicId: string) {
+    return await this.topicPracticeConfigService.getTopicPracticeConfigByTopicId(topicId);
   }
 
   @Post()

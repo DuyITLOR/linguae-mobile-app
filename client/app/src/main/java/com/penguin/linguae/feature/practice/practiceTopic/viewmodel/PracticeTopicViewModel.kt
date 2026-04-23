@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onStart
 
-@OptIn(FlowPreview::class)
 class PracticeTopicViewModel (
     val _topicRepository: TopicRepository = TopicRepository()
 ): ViewModel() {
@@ -50,7 +49,7 @@ class PracticeTopicViewModel (
             }
     }
 
-    fun onTopicClicked(topic: Topic?) {}
+    var onTopicClicked: (Topic?) -> Unit = {}
 
     fun onQueryChange(name: String) {
         _query.value = name
