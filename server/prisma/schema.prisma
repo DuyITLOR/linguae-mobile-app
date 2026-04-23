@@ -145,21 +145,22 @@ model Reminder {
 }
 
 model Topic {
-  id               String             @id @default(uuid())
-  title            String
-  description      String?
-  icon             String?
-  level            Level              @default(BEGINNER)
-  displayOrder     Int                @default(0)
-  isActive         Boolean            @default(true)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime
-  FlashcardSession FlashcardSession[]
-  LearningHistory  LearningHistory[]
-  PracticeSession  PracticeSession[]
-  Vocabulary       Vocabulary[]
-  ClozeQuestion    ClozeQuestion[]
-  TopicPracticeConfig    TopicPracticeConfig[]
+  id                  String             @id @default(uuid())
+  title               String
+  description         String?
+  icon                String?
+  level               Level              @default(BEGINNER)
+  displayOrder        Int                @default(0)
+  isActive            Boolean            @default(true)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime
+  FlashcardSession    FlashcardSession[]
+  LearningHistory     LearningHistory[]
+  PracticeSession     PracticeSession[]
+  Vocabulary          Vocabulary[]
+  ClozeQuestion       ClozeQuestion[]
+  MatchingQuestion    MatchingQuestion[]
+  TopicPracticeConfig TopicPracticeConfig[]
 }
 
 model User {
@@ -306,6 +307,31 @@ model ClozeOptions {
   ClozeQuestion ClozeQuestion @relation(fields: [questionId], references: [id])
 
   @@id([questionId, id])
+}
+
+model MatchingQuestion {
+  id        String   @id @default(uuid())
+  topicId   String
+  title     String
+  createdAt DateTime @default(now())
+
+  Topic         Topic          @relation(fields: [topicId], references: [id])
+  MatchingPair  MatchingPair[]
+
+  @@index([topicId])
+}
+
+model MatchingPair {
+  id                 String   @id @default(uuid())
+  matchingQuestionId String
+  leftText           String
+  rightText          String
+  displayOrder       Int      @default(0)
+  createdAt          DateTime @default(now())
+
+  MatchingQuestion MatchingQuestion @relation(fields: [matchingQuestionId], references: [id], onDelete: Cascade)
+
+  @@index([matchingQuestionId])
 }
 
 model DailyMission {
