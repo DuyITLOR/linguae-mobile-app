@@ -49,6 +49,7 @@ fun AdminScreen(
     currentUser: User? = null,
     onNavigateProfile: () -> Unit = {},
     onNavigateAddTopic: () -> Unit = {},
+    onNavigateManageExam: () -> Unit = {},
 ) {
     Surface(
         color = AppBackground,
@@ -117,9 +118,10 @@ fun AdminScreen(
                         onClick = onNavigateAddTopic
                     )
                     AdminActionItem(
-                        title = "Upload Exam",
+                        title = "Manage Exam",
                         subtitle = "Import assessment modules",
-                        icon = Icons.Default.FileUpload
+                        icon = Icons.Default.FileUpload,
+                        onClick = onNavigateManageExam
                     )
                 }
             }
