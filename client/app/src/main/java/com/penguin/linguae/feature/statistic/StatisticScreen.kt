@@ -1,5 +1,6 @@
 package com.penguin.linguae.feature.statistic
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,7 @@ import com.penguin.linguae.feature.statistic.components.WeeklyActivityChart
 import com.penguin.linguae.feature.statistic.viewmodel.StatisticViewModel
 
 @Composable
-fun StatisticScreen(viewModel: StatisticViewModel = StatisticViewModel()) {
+fun StatisticScreen(viewModel: StatisticViewModel = viewModel()) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     Surface(
@@ -102,7 +103,11 @@ fun StatisticScreen(viewModel: StatisticViewModel = StatisticViewModel()) {
 
                     item {
                         WeeklyActivityChart(
-                            activity = data.weeklyActivity,
+                            activity = uiState.weeklyActivity,
+                            weekOffset = uiState.weekOffset,
+                            isLoading = uiState.weeklyActivityLoading,
+                            onPrevWeek = { viewModel.prevWeek() },
+                            onNextWeek = { viewModel.nextWeek() },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
                     }

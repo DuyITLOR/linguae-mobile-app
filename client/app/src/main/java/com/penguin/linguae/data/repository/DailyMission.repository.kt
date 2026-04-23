@@ -3,6 +3,7 @@ package com.penguin.linguae.data.repository
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.CompleteWordRequest
 import com.penguin.linguae.data.model.CompleteWordResponse
+import com.penguin.linguae.data.model.DailyActivityStats
 import com.penguin.linguae.data.model.DailyMission
 import com.penguin.linguae.data.model.DailyMissionSummary
 import com.penguin.linguae.data.model.StatisticsResponse
@@ -40,6 +41,14 @@ class DailyMissionRepository {
     suspend fun getStatistics(): Result<StatisticsResponse> {
         return try {
             Result.success(api.getStatistics())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getWeeklyActivity(weekOffset: Int): Result<List<DailyActivityStats>> {
+        return try {
+            Result.success(api.getWeeklyActivity(weekOffset))
         } catch (e: Exception) {
             Result.failure(e)
         }

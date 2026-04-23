@@ -380,6 +380,38 @@ export class DailyMissionService {
     return { streak, totalVocabularyLearned, todayProgress, weeklyActivity, missionHistory };
   }
 
+  async getWeeklyActivity(userId: string, weekOffset: number) {
+    const today = this.todayOnly(new Date());
+    const endDate = new Date(today);
+    endDate.setUTCDate(today.getUTCDate() + weekOffset * 7);
+    const startDate = new Date(endDate);
+    startDate.setUTCDate(endDate.getUTCDate() - 6);
+
+    const weeklyMissions = await this.prismaService.dailyMission.findMany({
+      where: { userId, date: { gte: startDate, lte: endDate } },
+      include: { DailyTask: true },
+      orderBy: { date: 'asc' },
+    });
+
+    const missionMap = new Map(
+      weeklyMissions.map((m) => [m.date.toISOString().split('T')[0], m]),
+    );
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(startDate);
+      d.setUTCDate(d.getUTCDate() + i);
+      const key = d.toISOString().split('T')[0];
+      const m = missionMap.get(key);
+      return {
+        date: key,
+        completedTasks: m
+          ? m.DailyTask.filter((t) => t.status === TaskStatus.COMPLETED).length
+          : 0,
+        totalTasks: m ? m.DailyTask.length : 0,
+      };
+    });
+  }
+
   async getTaskWords(userId: string, taskId: string) {
     const task = await this.prismaService.dailyTask.findFirst({
       where: {
