@@ -7,6 +7,8 @@ import {
   Param,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ToeicService } from './toeic.service';
 import type {
@@ -78,7 +80,8 @@ export class ToeicController {
     return await this.toeicService.createReadingPart5Questions(body, userId);
   }
 
-  @Post('submit-answer')
+  @Post('test/submit-answer')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async submitToeicAnswer(
     @Body() body: SubmitToeicAnswerDto,
     @UserId() userId: string,

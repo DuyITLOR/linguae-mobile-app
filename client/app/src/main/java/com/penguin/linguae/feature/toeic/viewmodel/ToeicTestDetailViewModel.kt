@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguin.linguae.data.model.ReadingPart5Question
 import com.penguin.linguae.data.model.ReadingPart6Question
-import com.penguin.linguae.data.model.SubmitToeicAnswerRequest
-import com.penguin.linguae.data.model.ToeicAnswerRequest
 import com.penguin.linguae.data.repository.ToeicRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -37,7 +35,9 @@ data class ToeicTestUiState(
     val part6Questions: List<ReadingPart6Question> = emptyList(),
     val durationSeconds: Int = DEFAULT_TOEIC_DURATION_SECONDS,
     val remainingTimeSeconds: Int = DEFAULT_TOEIC_DURATION_SECONDS,
-    val isTimeUp: Boolean = false
+    val isTimeUp: Boolean = false,
+    val isSubmitted: Boolean = false,
+    val correctAnswersCount: Int = 0
 ) {
     val totalQuestions: Int
         get() = when (selectedPart) {
@@ -55,6 +55,9 @@ data class ToeicTestUiState(
 
     val totalPart6SubQuestions: Int
         get() = part6Questions.sumOf { it.readingPart6Options.size }
+
+    val totalAnswersCount: Int
+        get() = part5Questions.size + totalPart6SubQuestions
 }
 
 class ToeicTestDetailViewModel : ViewModel() {
@@ -92,6 +95,7 @@ class ToeicTestDetailViewModel : ViewModel() {
     fun onSelectAnswer(index: Int) {
         val state = _uiState.value
         if (state.selectedPart != ToeicPart.PART_5) return
+        if (state.isSubmitted) return
         _uiState.value = state.copy(
             selectedAnswerIndex = index,
             part5Answers = state.part5Answers + (state.currentQuestionIndex to index)
@@ -100,6 +104,7 @@ class ToeicTestDetailViewModel : ViewModel() {
 
     fun onSelectPart6Answer(optionId: String, answerIndex: Int) {
         val state = _uiState.value
+        if (state.isSubmitted) return
         _uiState.value = state.copy(
             part6Answers = state.part6Answers + (optionId to answerIndex)
         )
@@ -135,47 +140,22 @@ class ToeicTestDetailViewModel : ViewModel() {
     }
 
     fun submitToeicTest() {
-        val toeicId = currentToeicId ?: return
         val state = _uiState.value
         if (state.isSubmitting) return
-        val answers = buildSubmissionAnswers(state)
-        val totalRequiredAnswers = state.part5Questions.size + state.totalPart6SubQuestions
-
-        if (answers.size != totalRequiredAnswers) {
-            _uiState.value = state.copy(
-                submitMessage = "Vui lòng trả lời hết câu hỏi Part 5 và Part 6 trước khi nộp bài."
-            )
-            return
-        }
+        if (state.isSubmitted) return
+        val totalRequiredAnswers = state.totalAnswersCount
 
         val correctAnswers = calculateCorrectAnswers(state)
         _uiState.value = state.copy(
-            isSubmitting = true,
+            isSubmitting = false,
             submitMessage = null,
-            errorMessage = null
+            errorMessage = null,
+            isSubmitted = true,
+            correctAnswersCount = correctAnswers
         )
-
-        viewModelScope.launch {
-            repository.submitToeicAnswer(
-                SubmitToeicAnswerRequest(
-                    toeicId = toeicId,
-                    answers = answers,
-                    correctAnswers = correctAnswers
-                )
-            )
-                .onSuccess { response ->
-                    _uiState.value = _uiState.value.copy(
-                        isSubmitting = false,
-                        submitMessage = response.message
-                    )
-                }
-                .onFailure { throwable ->
-                    _uiState.value = _uiState.value.copy(
-                        isSubmitting = false,
-                        submitMessage = throwable.message ?: "Nộp bài thất bại"
-                    )
-                }
-        }
+        _uiState.value = _uiState.value.copy(
+            submitMessage = "Kết quả: $correctAnswers/$totalRequiredAnswers câu đúng"
+        )
     }
 
     fun consumeSubmitMessage() {
@@ -191,7 +171,9 @@ class ToeicTestDetailViewModel : ViewModel() {
             submitMessage = null,
             currentQuestionIndex = 0,
             selectedAnswerIndex = null,
-            isTimeUp = false
+            isTimeUp = false,
+            isSubmitted = false,
+            correctAnswersCount = 0
         )
 
         viewModelScope.launch {
@@ -222,7 +204,9 @@ class ToeicTestDetailViewModel : ViewModel() {
                 selectedAnswerIndex = selectedAnswerFor(0, selectedPart),
                 durationSeconds = DEFAULT_TOEIC_DURATION_SECONDS,
                 remainingTimeSeconds = DEFAULT_TOEIC_DURATION_SECONDS,
-                isTimeUp = false
+                isTimeUp = false,
+                isSubmitted = false,
+                correctAnswersCount = 0
             )
             startCountdown()
         }
@@ -233,7 +217,7 @@ class ToeicTestDetailViewModel : ViewModel() {
         timerJob = viewModelScope.launch {
             while (isActive) {
                 val state = _uiState.value
-                if (state.isLoading || state.isSubmitting || state.isTimeUp) {
+                if (state.isLoading || state.isSubmitting || state.isTimeUp || state.isSubmitted) {
                     break
                 }
 
@@ -245,7 +229,7 @@ class ToeicTestDetailViewModel : ViewModel() {
                 delay(1_000)
 
                 val updatedState = _uiState.value
-                if (updatedState.isLoading || updatedState.isSubmitting || updatedState.isTimeUp) {
+                if (updatedState.isLoading || updatedState.isSubmitting || updatedState.isTimeUp || updatedState.isSubmitted) {
                     continue
                 }
 
@@ -269,32 +253,6 @@ class ToeicTestDetailViewModel : ViewModel() {
             ToeicPart.PART_5 -> state.part5Answers[questionIndex]
             ToeicPart.PART_6 -> null
         }
-    }
-
-    private fun buildSubmissionAnswers(state: ToeicTestUiState): List<ToeicAnswerRequest> {
-        val part5Submission = state.part5Questions.mapIndexedNotNull { index, question ->
-            state.part5Answers[index]?.let { selected ->
-                ToeicAnswerRequest(
-                    questionId = question.id,
-                    selected = selected,
-                    part = 5
-                )
-            }
-        }
-
-        val part6Submission = state.part6Questions.flatMap { question ->
-            question.readingPart6Options.mapNotNull { option ->
-                state.part6Answers[option.id]?.let { selected ->
-                    ToeicAnswerRequest(
-                        questionId = option.id,
-                        selected = selected,
-                        part = 6
-                    )
-                }
-            }
-        }
-
-        return part5Submission + part6Submission
     }
 
     private fun calculateCorrectAnswers(state: ToeicTestUiState): Int {

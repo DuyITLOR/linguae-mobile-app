@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,8 +17,6 @@ import {
   UpdateToeicDto,
 } from './dto/updateToeic.dto';
 import { SubmitToeicAnswerDto } from './dto/submitToeicAnswer.dto';
-
-const TOTAL_QUESTIONS = 28 + 16;
 
 @Injectable()
 export class ToeicService {
@@ -180,9 +179,102 @@ export class ToeicService {
   // Submit answer
   async submitToeicAnswer(dto: SubmitToeicAnswerDto, userId: string) {
     try {
-      if (dto.answers.length !== TOTAL_QUESTIONS) {
+      const [user, toeic] = await Promise.all([
+        this.prisma.user.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        }),
+        this.prisma.toeic.findUnique({
+          where: { id: dto.toeicId },
+          include: {
+            readingPart5Questions: true,
+            readingPart6Questions: {
+              include: {
+                readingPart6Options: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (!toeic) {
+        throw new NotFoundException('Toeic not found');
+      }
+
+      const part5AnswerKey = new Map<
+        string,
+        { correctAnswer: number; optionCount: number }
+      >(
+        toeic.readingPart5Questions.map((question) => [
+          question.id,
+          {
+            correctAnswer: question.answer,
+            optionCount: question.options.length,
+          },
+        ] as const),
+      );
+      const part6AnswerKey = new Map<
+        string,
+        { correctAnswer: number; optionCount: number }
+      >();
+
+      for (const question of toeic.readingPart6Questions) {
+        for (const option of question.readingPart6Options) {
+          part6AnswerKey.set(option.id, {
+            correctAnswer: option.answer,
+            optionCount: option.option.length,
+          });
+        }
+      }
+
+      const totalQuestions = part5AnswerKey.size + part6AnswerKey.size;
+      if (totalQuestions === 0) {
+        throw new BadRequestException('Toeic test has no questions');
+      }
+
+      if (dto.answer.length !== totalQuestions) {
         throw new BadRequestException(
           'Must answer all questions before submitting',
+        );
+      }
+
+      const submittedQuestionIds = new Set<string>();
+      let correctAnswer = 0;
+
+      for (const submittedAnswer of dto.answer) {
+        const duplicateKey = `${submittedAnswer.part}:${submittedAnswer.questionId}`;
+        if (submittedQuestionIds.has(duplicateKey)) {
+          throw new BadRequestException('Duplicate answers are not allowed');
+        }
+        submittedQuestionIds.add(duplicateKey);
+
+        const answerKey =
+          submittedAnswer.part === 5
+            ? part5AnswerKey.get(submittedAnswer.questionId)
+            : part6AnswerKey.get(submittedAnswer.questionId);
+
+        if (!answerKey) {
+          throw new BadRequestException(
+            'Submitted answer does not belong to this toeic test',
+          );
+        }
+
+        if (submittedAnswer.selected >= answerKey.optionCount) {
+          throw new BadRequestException('Selected answer is out of range');
+        }
+
+        if (submittedAnswer.selected === answerKey.correctAnswer) {
+          correctAnswer += 1;
+        }
+      }
+
+      if (dto.correctAnswer !== correctAnswer) {
+        throw new BadRequestException(
+          'Correct answer count does not match the answer key',
         );
       }
 
@@ -192,12 +284,12 @@ export class ToeicService {
           data: {
             userId,
             toeicId: dto.toeicId,
-            correctAnswers: dto.correctAnswers,
+            correctAnswers: correctAnswer,
           },
         });
 
         await tx.toeicAnswer.createMany({
-          data: dto.answers.map((a) => ({
+          data: dto.answer.map((a) => ({
             toeicSessionId: toeicSession.id,
             questionId: a.questionId,
             part: a.part,
@@ -208,11 +300,12 @@ export class ToeicService {
 
       return { message: 'Toeic answers submitted successfully' };
     } catch (err) {
-      const msg =
-        err instanceof NotFoundException
-          ? 'Toeic or questions not found'
-          : 'Error at submitting toeic answer service';
-      throw new InternalServerErrorException(msg);
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new InternalServerErrorException(
+        'Error at submitting toeic answer service',
+      );
     }
   }
 

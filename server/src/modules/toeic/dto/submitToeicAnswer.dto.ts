@@ -1,13 +1,24 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsIn,
+  IsInt,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 export class AnswerDto {
   @IsString()
   questionId!: string;
 
-  @IsNumber()
+  @IsInt()
+  @Min(0)
   selected!: number;
 
-  @IsNumber()
+  @IsInt()
+  @IsIn([5, 6])
   part!: number;
 }
 
@@ -15,9 +26,13 @@ export class SubmitToeicAnswerDto {
   @IsString()
   toeicId!: string;
 
-  @IsArray()
-  answers!: AnswerDto[];
+  @IsInt()
+  @Min(0)
+  correctAnswer!: number;
 
-  @IsNumber()
-  correctAnswers!: number;
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => AnswerDto)
+  answer!: AnswerDto[];
 }

@@ -20,6 +20,6 @@ interface ToeicApi {
     @GET("toeic/reading-part-6-questions/{toeicId}")
     suspend fun getReadingPart6Questions(@Path("toeicId") toeicId: String): List<ReadingPart6Question>
 
-    @POST("toeic/submit-answer")
+    @POST("toeic/test/submit-answer")
     suspend fun submitToeicAnswer(@Body request: SubmitToeicAnswerRequest): SubmitToeicAnswerResponse
 }

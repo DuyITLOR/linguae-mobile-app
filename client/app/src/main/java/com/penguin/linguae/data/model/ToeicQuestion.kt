@@ -25,8 +25,8 @@ data class ReadingPart6Question(
 
 data class SubmitToeicAnswerRequest(
     val toeicId: String,
-    val answers: List<ToeicAnswerRequest>,
-    val correctAnswers: Int
+    val correctAnswer: Int,
+    val answer: List<ToeicAnswerRequest>
 )
 
 data class ToeicAnswerRequest(

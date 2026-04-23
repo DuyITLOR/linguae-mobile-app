@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -86,10 +87,6 @@ fun ToeicTest(
     val snackbarHostState = remember { SnackbarHostState() }
     var isControlPanelVisible by rememberSaveable { mutableStateOf(true) }
     var showExitConfirmDialog by rememberSaveable { mutableStateOf(false) }
-    var showIncompleteSubmitDialog by rememberSaveable { mutableStateOf(false) }
-    val totalRequiredAnswers = uiState.part5Questions.size + uiState.part6Questions.sumOf { it.readingPart6Options.size }
-    val selectedAnswersCount = uiState.part5Answers.size + uiState.part6Answers.size
-    val allAnswersSelected = totalRequiredAnswers > 0 && selectedAnswersCount == totalRequiredAnswers
     val remainingTimeText = remember(uiState.remainingTimeSeconds) {
         formatRemainingTime(uiState.remainingTimeSeconds)
     }
@@ -106,7 +103,11 @@ fun ToeicTest(
     }
 
     BackHandler {
-        showExitConfirmDialog = true
+        if (uiState.isSubmitted) {
+            onBack()
+        } else {
+            showExitConfirmDialog = true
+        }
     }
 
     if (showExitConfirmDialog) {
@@ -132,20 +133,13 @@ fun ToeicTest(
         )
     }
 
-    if (showIncompleteSubmitDialog) {
-        AlertDialog(
-            onDismissRequest = { showIncompleteSubmitDialog = false },
-            title = { Text("Chưa đủ đáp án") },
-            text = { Text("Hãy điền hết câu trả lời trước khi nộp.") },
-            confirmButton = {
-                TextButton(onClick = { showIncompleteSubmitDialog = false }) {
-                    Text("Hủy")
-                }
-            }
-        )
+    LaunchedEffect(uiState.isSubmitted) {
+        if (uiState.isSubmitted) {
+            showExitConfirmDialog = false
+        }
     }
 
-    if (uiState.isTimeUp) {
+    if (uiState.isTimeUp && uiState.isSubmitted.not()) {
         AlertDialog(
             onDismissRequest = {},
             title = { Text("Hết thời gian làm bài") },
@@ -187,12 +181,25 @@ fun ToeicTest(
                 totalQuestions = uiState.totalQuestions,
                 remainingTime = remainingTimeText,
                 isTimeUp = uiState.isTimeUp,
-                onBack = { showExitConfirmDialog = true }
+                onBack = {
+                    if (uiState.isSubmitted) {
+                        onBack()
+                    } else {
+                        showExitConfirmDialog = true
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
             PartBadge(uiState.selectedPart)
             Spacer(modifier = Modifier.height(10.dp))
+            if (uiState.isSubmitted) {
+                SubmissionResultCard(
+                    correctAnswers = uiState.correctAnswersCount,
+                    totalAnswers = uiState.totalAnswersCount
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+            }
 
             when {
                 uiState.isLoading -> {
@@ -227,7 +234,8 @@ fun ToeicTest(
                                 QuestionSection(
                                     uiState = uiState,
                                     onSelectAnswer = viewModel::onSelectAnswer,
-                                    onSelectPart6Answer = viewModel::onSelectPart6Answer
+                                    onSelectPart6Answer = viewModel::onSelectPart6Answer,
+                                    isSubmitted = uiState.isSubmitted
                                 )
                             }
 
@@ -288,13 +296,7 @@ fun ToeicTest(
                                     uiState = uiState,
                                     onJumpToQuestion = viewModel::jumpToQuestion,
                                     onHidePanel = { isControlPanelVisible = false },
-                                    onSubmit = {
-                                        if (allAnswersSelected) {
-                                            viewModel.submitToeicTest()
-                                        } else {
-                                            showIncompleteSubmitDialog = true
-                                        }
-                                    }
+                                    onSubmit = viewModel::submitToeicTest
                                 )
                             }
                         }
@@ -355,7 +357,7 @@ private fun BottomControlPanel(
         if (uiState.selectedPart == ToeicPart.PART_6) {
             Button(
                 onClick = onSubmit,
-                enabled = uiState.isSubmitting.not(),
+                enabled = uiState.isSubmitting.not() && uiState.isSubmitted.not(),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF16A34A)),
                 modifier = Modifier.fillMaxWidth()
@@ -369,7 +371,11 @@ private fun BottomControlPanel(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
                 Text(
-                    text = if (uiState.isSubmitting) "Đang nộp bài..." else "Nộp bài",
+                    text = when {
+                        uiState.isSubmitting -> "Đang nộp bài..."
+                        uiState.isSubmitted -> "Đã nộp bài"
+                        else -> "Nộp bài"
+                    },
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -390,6 +396,27 @@ private fun BottomControlPanel(
                 }.toSet()
             },
             onQuestionClick = onJumpToQuestion
+        )
+    }
+}
+
+@Composable
+private fun SubmissionResultCard(
+    correctAnswers: Int,
+    totalAnswers: Int
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFE9F9EE), RoundedCornerShape(16.dp))
+            .border(1.dp, Color(0xFF22C55E), RoundedCornerShape(16.dp))
+            .padding(horizontal = 14.dp, vertical = 12.dp)
+    ) {
+        Text(
+            text = "Kết quả: $correctAnswers/$totalAnswers câu đúng",
+            color = Color(0xFF15803D),
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp
         )
     }
 }
@@ -483,7 +510,8 @@ private fun PartBadge(part: ToeicPart) {
 private fun QuestionSection(
     uiState: ToeicTestUiState,
     onSelectAnswer: (Int) -> Unit,
-    onSelectPart6Answer: (String, Int) -> Unit
+    onSelectPart6Answer: (String, Int) -> Unit,
+    isSubmitted: Boolean
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         when (uiState.selectedPart) {
@@ -509,12 +537,25 @@ private fun QuestionSection(
                 )
 
                 question?.options.orEmpty().forEachIndexed { index, option ->
+                    val selectedIndex = uiState.part5Answers[uiState.currentQuestionIndex]
                     AnswerItem(
                         label = ('A' + index).toString(),
                         content = option,
-                        isSelected = uiState.selectedAnswerIndex == index,
-                        onClick = { onSelectAnswer(index) }
+                        isSelected = selectedIndex == index,
+                        onClick = { onSelectAnswer(index) },
+                        isSubmitted = isSubmitted,
+                        isCorrectOption = question?.answer == index
                     )
+                }
+
+                if (isSubmitted && question != null) {
+                    val selectedIndex = uiState.part5Answers[uiState.currentQuestionIndex]
+                    if (selectedIndex != question.answer) {
+                        WrongAnswerNote(
+                            selectedAnswerIndex = selectedIndex,
+                            correctAnswerIndex = question.answer
+                        )
+                    }
                 }
             }
 
@@ -538,7 +579,8 @@ private fun QuestionSection(
                         selectedAnswerIndex = uiState.part6Answers[option.id],
                         onSelectAnswer = { answerIndex ->
                             onSelectPart6Answer(option.id, answerIndex)
-                        }
+                        },
+                        isSubmitted = isSubmitted
                     )
                 }
             }
@@ -592,7 +634,8 @@ private fun HtmlQuestionCard(html: String) {
 private fun Part6QuestionCard(
     option: ReadingPart6Option,
     selectedAnswerIndex: Int?,
-    onSelectAnswer: (Int) -> Unit
+    onSelectAnswer: (Int) -> Unit,
+    isSubmitted: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -612,10 +655,34 @@ private fun Part6QuestionCard(
                 label = ('A' + index).toString(),
                 content = answer,
                 isSelected = selectedAnswerIndex == index,
-                onClick = { onSelectAnswer(index) }
+                onClick = { onSelectAnswer(index) },
+                isSubmitted = isSubmitted,
+                isCorrectOption = option.answer == index
+            )
+        }
+
+        if (isSubmitted && selectedAnswerIndex != option.answer) {
+            WrongAnswerNote(
+                selectedAnswerIndex = selectedAnswerIndex,
+                correctAnswerIndex = option.answer
             )
         }
     }
+}
+
+@Composable
+private fun WrongAnswerNote(
+    selectedAnswerIndex: Int?,
+    correctAnswerIndex: Int
+) {
+    val selectedLabel = selectedAnswerIndex?.let(::answerIndexToLabel).orEmpty()
+    val correctLabel = answerIndexToLabel(correctAnswerIndex)
+    Text(
+        text = "Lựa chọn: $selectedLabel | Đáp án đúng: $correctLabel",
+        color = Color(0xFFB91C1C),
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Medium
+    )
 }
 
 @Composable
@@ -623,22 +690,39 @@ private fun AnswerItem(
     label: String,
     content: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isSubmitted: Boolean = false,
+    isCorrectOption: Boolean = false
 ) {
-    val containerColor = if (isSelected) Color(0xFFDCD6FF) else Color(0xFFF3F2FA)
-    val borderColor = if (isSelected) PurplePrimary else Color.Transparent
+    val containerColor = when {
+        isSubmitted && isCorrectOption -> Color(0xFFE8F7EA)
+        isSubmitted && isSelected && isCorrectOption.not() -> Color(0xFFFDECEC)
+        isSelected -> Color(0xFFDCD6FF)
+        else -> Color(0xFFF3F2FA)
+    }
+    val borderColor = when {
+        isSubmitted && isCorrectOption -> Color(0xFF22C55E)
+        isSubmitted && isSelected && isCorrectOption.not() -> Color(0xFFEF4444)
+        isSelected -> PurplePrimary
+        else -> Color.Transparent
+    }
+    val labelColor = when {
+        isSubmitted && isCorrectOption -> Color(0xFF15803D)
+        isSubmitted && isSelected && isCorrectOption.not() -> Color(0xFFB91C1C)
+        else -> PurplePrimary
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(containerColor, RoundedCornerShape(14.dp))
             .border(1.dp, borderColor, RoundedCornerShape(14.dp))
-            .clickable(onClick = onClick)
+            .clickable(enabled = isSubmitted.not(), onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            color = PurplePrimary,
+            color = labelColor,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             modifier = Modifier.size(24.dp)
@@ -798,6 +882,8 @@ private fun formatRemainingTime(totalSeconds: Int): String {
     val seconds = safeSeconds % 60
     return String.format("%02d:%02d", minutes, seconds)
 }
+
+private fun answerIndexToLabel(index: Int): String = ('A' + index).toString()
 
 @Preview(showBackground = true)
 @Composable
