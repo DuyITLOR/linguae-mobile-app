@@ -43,7 +43,7 @@ fun ChatScreen(
             mutableFloatStateOf((constraints.maxWidth * 0.95f).coerceAtLeast(0f))
         }
         var offsetY by rememberSaveable {
-            mutableFloatStateOf((constraints.maxHeight * 0.85f).coerceAtLeast(0f))
+            mutableFloatStateOf((constraints.maxHeight * 0.72f).coerceAtLeast(0f))
         }
 
         LaunchedEffect(maxX, maxY) {
