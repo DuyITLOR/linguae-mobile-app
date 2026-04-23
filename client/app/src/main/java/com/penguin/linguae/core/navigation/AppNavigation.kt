@@ -13,8 +13,10 @@ import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.data.model.UserRole
 import com.penguin.linguae.feature.admin.ManageTopicScreen
+import com.penguin.linguae.feature.admin.ManageClozeScreen
 import com.penguin.linguae.feature.admin.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
+import com.penguin.linguae.feature.admin.TopicContentMenuScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
@@ -73,7 +75,29 @@ fun AppNavigation(
                 viewModel = viewModel(),
                 onBack = { navController.popBackStack() },
                 onTopicClick = { topic ->
-                    navController.navigate(Screen.ManageVocabByTopic.createRoute(topic.id, topic.title))
+                    navController.navigate(Screen.TopicContentMenu.createRoute(topic.id, topic.title))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.TopicContentMenu.route,
+            arguments = listOf(
+                navArgument("topicId") { type = NavType.StringType },
+                navArgument("topicTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: ""
+            TopicContentMenuScreen(
+                topicId = topicId,
+                topicTitle = topicTitle,
+                onBack = { navController.popBackStack() },
+                onManageVocab = {
+                    navController.navigate(Screen.ManageVocabByTopic.createRoute(topicId, topicTitle))
+                },
+                onManageCloze = {
+                    navController.navigate(Screen.ManageCloze.createRoute(topicId, topicTitle))
                 }
             )
         }
@@ -88,6 +112,22 @@ fun AppNavigation(
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
             val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: ""
             ManageVocabularyScreen(
+                topicId = topicId,
+                topicTitle = topicTitle,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.ManageCloze.route,
+            arguments = listOf(
+                navArgument("topicId") { type = NavType.StringType },
+                navArgument("topicTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: ""
+            ManageClozeScreen(
                 topicId = topicId,
                 topicTitle = topicTitle,
                 onBack = { navController.popBackStack() }

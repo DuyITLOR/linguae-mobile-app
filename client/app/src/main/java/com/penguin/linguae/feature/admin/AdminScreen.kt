@@ -111,8 +111,8 @@ fun AdminScreen(
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     AdminActionItem(
-                        title = "Topics & Vocabulary",
-                        subtitle = "Manage topics and their words",
+                        title = "Topics",
+                        subtitle = "Manage topics, vocabularies and practices",
                         icon = Icons.Default.MenuBook,
                         onClick = onNavigateAddTopic
                     )

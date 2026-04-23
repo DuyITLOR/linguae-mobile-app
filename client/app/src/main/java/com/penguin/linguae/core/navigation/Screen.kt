@@ -60,4 +60,14 @@ sealed class Screen(val route: String) {
         fun createRoute(topicId: String, topicTitle: String) =
             "admin/topic/$topicId/vocabulary/${android.net.Uri.encode(topicTitle)}"
     }
+
+    object ManageCloze : Screen("admin/topic/{topicId}/cloze/{topicTitle}") {
+        fun createRoute(topicId: String, topicTitle: String) =
+            "admin/topic/$topicId/cloze/${android.net.Uri.encode(topicTitle)}"
+    }
+
+    object TopicContentMenu : Screen("admin/topic/{topicId}/menu/{topicTitle}") {
+        fun createRoute(topicId: String, topicTitle: String) =
+            "admin/topic/$topicId/menu/${android.net.Uri.encode(topicTitle)}"
+    }
 }

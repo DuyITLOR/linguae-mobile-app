@@ -4,6 +4,7 @@ import android.util.Log
 import com.penguin.linguae.core.network.RetrofitClient
 import com.penguin.linguae.data.model.ClozeOption
 import com.penguin.linguae.data.model.ClozeQuestion
+import com.penguin.linguae.data.model.CreateClozeQuestionRequest
 import com.penguin.linguae.data.remote.ClozeApi
 
 class ClozeRepository {
@@ -35,8 +36,14 @@ class ClozeRepository {
 
     suspend fun getClozeQuestionWithTopicId(topicId: String): List<ClozeQuestion> {
         val questions = api.questionWithTopicId(topicId)
-        if (questions.isEmpty())
-            throw Exception("No cloze questions found")
         return questions
+    }
+
+    suspend fun createClozeQuestion(request: CreateClozeQuestionRequest): ClozeQuestion {
+        return api.createQuestion(request)
+    }
+
+    suspend fun deleteClozeQuestion(id: Int) {
+        api.deleteQuestion(id)
     }
 }

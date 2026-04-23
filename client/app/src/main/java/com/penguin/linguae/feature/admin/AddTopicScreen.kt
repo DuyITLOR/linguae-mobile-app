@@ -2,7 +2,6 @@ package com.penguin.linguae.feature.admin
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -257,7 +256,12 @@ private fun TopicListContent(
 }
 
 @Composable
-private fun TopicManageCard(topic: Topic, onClick: () -> Unit, onEdit: () -> Unit, onDelete: (Topic) -> Unit) {
+private fun TopicManageCard(
+    topic: Topic,
+    onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: (Topic) -> Unit
+) {
     val seed = "${topic.id}_${topic.title}_${topic.level}"
     val accent = topicColorFor(seed)
     val fallbackIcon = topicIconFor(seed)

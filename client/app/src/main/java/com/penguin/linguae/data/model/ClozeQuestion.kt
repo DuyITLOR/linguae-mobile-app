@@ -7,3 +7,15 @@ data class ClozeQuestion(
     @SerializedName("id") val questionID: Int = -1,
     @SerializedName("sentence") val question: String = "",
 )
+
+data class CreateClozeOptionRequest(
+    val optionText: String,
+    val isCorrect: Boolean,
+    val blankIndex: Int
+)
+
+data class CreateClozeQuestionRequest(
+    val topicId: String,
+    val sentence: String,
+    val options: List<CreateClozeOptionRequest>
+)

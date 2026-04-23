@@ -81,6 +81,31 @@ export class VocabularyService {
   }
 
   async create(dto: CreateVocabularyDto) {
+    // Ensure TopicPracticeConfig exists for this topic and has 'VOCABULARY' type
+    const config = await this.prisma.topicPracticeConfig.findFirst({
+      where: { topicId: dto.topicId },
+    });
+
+    if (config) {
+      if (!config.questionType.includes('VOCABULARY')) {
+        await this.prisma.topicPracticeConfig.update({
+          where: { id: config.id },
+          data: {
+            questionType: {
+              push: 'VOCABULARY',
+            },
+          },
+        });
+      }
+    } else {
+      await this.prisma.topicPracticeConfig.create({
+        data: {
+          topicId: dto.topicId,
+          questionType: ['VOCABULARY'],
+        },
+      });
+    }
+
     return await this.prisma.vocabulary.create({
       data: {
         topicId: dto.topicId,

@@ -2,6 +2,7 @@ package com.penguin.linguae.data.remote
 
 import com.penguin.linguae.data.model.ClozeOption
 import com.penguin.linguae.data.model.ClozeQuestion
+import com.penguin.linguae.data.model.CreateClozeQuestionRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -27,4 +28,13 @@ interface ClozeApi {
         @Query("topicId") topicId: String
     ): List<ClozeQuestion>
 
+    @POST("cloze/create")
+    suspend fun createQuestion(
+        @Body request: CreateClozeQuestionRequest
+    ): ClozeQuestion
+
+    @retrofit2.http.DELETE("cloze/{id}")
+    suspend fun deleteQuestion(
+        @retrofit2.http.Path("id") id: Int
+    )
 }
