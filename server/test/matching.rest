@@ -4,7 +4,17 @@
 @topicId = 1d61177e-2b15-4430-b5b3-c719312aa27d
 @matchingId = be22bde1-acac-48c7-96b7-1d67f778b396
 
-### 1. Tao bai matching moi
+### 1. Lay danh sach matching
+GET {{baseUrl}}/matching
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+
+### 2. Lay danh sach matching theo topicId
+GET {{baseUrl}}/matching?topicId={{topicId}}
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
+
+### 3. Tao bai matching moi
 POST {{baseUrl}}/matching
 x-api-key: {{apiKey}}
 Authorization: Bearer {{token}}
@@ -33,7 +43,7 @@ Content-Type: application/json
   ]
 }
 
-### 2. Loi validation - thieu title
+### 4. Loi validation - thieu title
 POST {{baseUrl}}/matching
 x-api-key: {{apiKey}}
 Authorization: Bearer {{token}}
@@ -53,7 +63,7 @@ Content-Type: application/json
   ]
 }
 
-### 3. Loi validation - pairs qua it
+### 5. Loi validation - pairs qua it
 POST {{baseUrl}}/matching
 x-api-key: {{apiKey}}
 Authorization: Bearer {{token}}
@@ -70,7 +80,7 @@ Content-Type: application/json
   ]
 }
 
-### 4. Loi auth - thieu bearer token
+### 6. Loi auth - thieu bearer token
 POST {{baseUrl}}/matching
 x-api-key: {{apiKey}}
 Content-Type: application/json
@@ -90,7 +100,7 @@ Content-Type: application/json
   ]
 }
 
-### 5. Cap nhat bai matching
+### 7. Cap nhat bai matching
 PATCH {{baseUrl}}/matching/{{matchingId}}
 x-api-key: {{apiKey}}
 Authorization: Bearer {{token}}
@@ -117,7 +127,7 @@ Content-Type: application/json
   ]
 }
 
-### 6. Cap nhat topic cho bai matching
+### 8. Cap nhat topic cho bai matching
 PATCH {{baseUrl}}/matching/{{matchingId}}
 x-api-key: {{apiKey}}
 Authorization: Bearer {{token}}
@@ -137,3 +147,8 @@ Content-Type: application/json
     }
   ]
 }
+
+### 9. Xoa bai matching
+DELETE {{baseUrl}}/matching/{{matchingId}}
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}}
