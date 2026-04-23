@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.admin
+package com.penguin.linguae.feature.admin.cloze
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -23,15 +23,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.data.model.ClozeQuestion
-import com.penguin.linguae.feature.admin.viewmodel.ClozeManageMode
-import com.penguin.linguae.feature.admin.viewmodel.ManageClozeViewModel
-import com.penguin.linguae.feature.admin.viewmodel.ManageClozeViewModelFactory
+import com.penguin.linguae.feature.admin.cloze.viewmodel.ClozeManageMode
+import com.penguin.linguae.feature.admin.cloze.viewmodel.ManageClozeViewModel
+import com.penguin.linguae.feature.admin.cloze.viewmodel.ManageClozeViewModelFactory
 
 @Composable
 fun ManageClozeScreen(
     topicId: String,
     topicTitle: String,
-    viewModel: ManageClozeViewModel = viewModel(factory = ManageClozeViewModelFactory(topicId, topicTitle)),
+    viewModel: ManageClozeViewModel = viewModel(factory = ManageClozeViewModelFactory(
+        topicId,
+        topicTitle
+    )
+    ),
     onBack: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }

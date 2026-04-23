@@ -12,11 +12,11 @@ import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
 import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.data.model.UserRole
-import com.penguin.linguae.feature.admin.ManageTopicScreen
-import com.penguin.linguae.feature.admin.ManageClozeScreen
-import com.penguin.linguae.feature.admin.ManageVocabularyScreen
+import com.penguin.linguae.feature.admin.topic.ManageTopicScreen
+import com.penguin.linguae.feature.admin.cloze.ManageClozeScreen
+import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
-import com.penguin.linguae.feature.admin.TopicContentMenuScreen
+import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
