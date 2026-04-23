@@ -60,6 +60,18 @@ export class MatchingService {
     }));
   }
 
+  async getMatchingQuestions(topicId?: string) {
+    return this.prisma.matchingQuestion.findMany({
+      where: topicId ? { topicId } : undefined,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        MatchingPair: {
+          orderBy: { displayOrder: 'asc' },
+        },
+      },
+    });
+  }
+
   async createMatchingQuestion(dto: CreateMatchingQuestionDto) {
     await this.ensureTopicExists(dto.topicId);
     await this.ensureMatchingEnabledForTopic(dto.topicId);
@@ -107,6 +119,26 @@ export class MatchingService {
             }
           : undefined,
       },
+      include: {
+        MatchingPair: {
+          orderBy: { displayOrder: 'asc' },
+        },
+      },
+    });
+  }
+
+  async deleteMatchingQuestion(id: string) {
+    const matchingQuestion = await this.prisma.matchingQuestion.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!matchingQuestion) {
+      throw new NotFoundException('Matching question not found');
+    }
+
+    return this.prisma.matchingQuestion.delete({
+      where: { id },
       include: {
         MatchingPair: {
           orderBy: { displayOrder: 'asc' },
