@@ -40,10 +40,10 @@ fun ChatScreen(
         val maxY = constraints.maxHeight.toFloat() - bubbleSizePx - bottomPaddingPx
 
         var offsetX by rememberSaveable {
-            mutableFloatStateOf((constraints.maxWidth * 0.85f).coerceAtLeast(0f))
+            mutableFloatStateOf((constraints.maxWidth * 0.95f).coerceAtLeast(0f))
         }
         var offsetY by rememberSaveable {
-            mutableFloatStateOf((constraints.maxHeight * 0.73f).coerceAtLeast(0f))
+            mutableFloatStateOf((constraints.maxHeight * 0.85f).coerceAtLeast(0f))
         }
 
         LaunchedEffect(maxX, maxY) {
