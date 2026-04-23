@@ -2,13 +2,20 @@ package com.penguin.linguae.feature.statistic.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +37,14 @@ import com.penguin.linguae.data.model.DailyActivityStats
 import java.util.Calendar
 
 @Composable
-fun WeeklyActivityChart(activity: List<DailyActivityStats>, modifier: Modifier = Modifier) {
+fun WeeklyActivityChart(
+    activity: List<DailyActivityStats>,
+    weekOffset: Int,
+    isLoading: Boolean,
+    onPrevWeek: () -> Unit,
+    onNextWeek: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -44,53 +58,101 @@ fun WeeklyActivityChart(activity: List<DailyActivityStats>, modifier: Modifier =
                 .padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = "Hoạt động tuần này",
-                color = TextDark,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Hoạt động trong tuần",
+                    color = TextDark,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            Canvas(
+            // Week navigation row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = onPrevWeek, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronLeft,
+                        contentDescription = "Tuần trước",
+                        tint = PrimaryPurple
+                    )
+                }
+
+                Text(
+                    text = weekLabel(weekOffset),
+                    color = TextGray,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                IconButton(
+                    onClick = onNextWeek,
+                    enabled = weekOffset < 0,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = "Tuần sau",
+                        tint = if (weekOffset < 0) PrimaryPurple else TextGray.copy(alpha = 0.3f)
+                    )
+                }
+            }
+
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(110.dp)
+                    .height(110.dp),
+                contentAlignment = Alignment.Center
             ) {
-                val count = activity.size.coerceAtLeast(1)
-                val slotWidth = size.width / count
-                val barWidth = slotWidth * 0.5f
-                val maxBarHeight = size.height
-                val cornerR = CornerRadius(8.dp.toPx())
-
-                activity.forEachIndexed { i, day ->
-                    val x = i * slotWidth + (slotWidth - barWidth) / 2f
-
-                    // Track (background bar)
-                    drawRoundRect(
-                        color = LightPurple,
-                        topLeft = Offset(x, 0f),
-                        size = Size(barWidth, maxBarHeight),
-                        cornerRadius = cornerR
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = PrimaryPurple,
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 2.dp
                     )
+                } else {
+                    Canvas(modifier = Modifier.fillMaxWidth().height(110.dp)) {
+                        val count = activity.size.coerceAtLeast(1)
+                        val slotWidth = size.width / count
+                        val barWidth = slotWidth * 0.5f
+                        val maxBarHeight = size.height
+                        val cornerR = CornerRadius(8.dp.toPx())
 
-                    // Filled bar
-                    val ratio = if (day.totalTasks > 0) {
-                        day.completedTasks.toFloat() / day.totalTasks.toFloat()
-                    } else 0f
+                        activity.forEachIndexed { i, day ->
+                            val x = i * slotWidth + (slotWidth - barWidth) / 2f
 
-                    if (ratio > 0f) {
-                        val barHeight = ratio * maxBarHeight
-                        drawRoundRect(
-                            color = PrimaryPurple,
-                            topLeft = Offset(x, maxBarHeight - barHeight),
-                            size = Size(barWidth, barHeight),
-                            cornerRadius = cornerR
-                        )
+                            drawRoundRect(
+                                color = LightPurple,
+                                topLeft = Offset(x, 0f),
+                                size = Size(barWidth, maxBarHeight),
+                                cornerRadius = cornerR
+                            )
+
+                            val ratio = if (day.totalTasks > 0) {
+                                day.completedTasks.toFloat() / day.totalTasks.toFloat()
+                            } else 0f
+
+                            if (ratio > 0f) {
+                                val barHeight = ratio * maxBarHeight
+                                drawRoundRect(
+                                    color = PrimaryPurple,
+                                    topLeft = Offset(x, maxBarHeight - barHeight),
+                                    size = Size(barWidth, barHeight),
+                                    cornerRadius = cornerR
+                                )
+                            }
+                        }
                     }
                 }
             }
 
-            // Day labels
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
@@ -107,6 +169,12 @@ fun WeeklyActivityChart(activity: List<DailyActivityStats>, modifier: Modifier =
             }
         }
     }
+}
+
+private fun weekLabel(weekOffset: Int): String = when {
+    weekOffset == 0 -> "Tuần này"
+    weekOffset == -1 -> "Tuần trước"
+    else -> "${-weekOffset} tuần trước"
 }
 
 private fun dateToLabel(dateStr: String): String {

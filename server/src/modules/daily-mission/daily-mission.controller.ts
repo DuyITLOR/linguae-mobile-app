@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { DailyMissionService } from './daily-mission.service';
 import { UserId } from '../../common';
@@ -42,6 +45,14 @@ export class DailyMissionController {
   @Get('statistics')
   async getStatistics(@UserId() userId: string) {
     return this.dailyMissionService.getStatistics(userId);
+  }
+
+  @Get('weekly-activity')
+  async getWeeklyActivity(
+    @UserId() userId: string,
+    @Query('weekOffset', new DefaultValuePipe(0), ParseIntPipe) weekOffset: number,
+  ) {
+    return this.dailyMissionService.getWeeklyActivity(userId, weekOffset);
   }
 
   @Get('task/:taskId/words')
