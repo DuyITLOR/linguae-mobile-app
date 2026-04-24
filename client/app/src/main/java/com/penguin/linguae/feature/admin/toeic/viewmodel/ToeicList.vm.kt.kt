@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.admin.viewmodel
+package com.penguin.linguae.feature.admin.toeic.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

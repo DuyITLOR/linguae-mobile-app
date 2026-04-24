@@ -66,6 +66,11 @@ sealed class Screen(val route: String) {
             "admin/topic/$topicId/cloze/${android.net.Uri.encode(topicTitle)}"
     }
 
+    object ManageMatching : Screen("admin/topic/{topicId}/matching/{topicTitle}") {
+        fun createRoute(topicId: String, topicTitle: String) =
+            "admin/topic/$topicId/matching/${android.net.Uri.encode(topicTitle)}"
+    }
+
     object TopicContentMenu : Screen("admin/topic/{topicId}/menu/{topicTitle}") {
         fun createRoute(topicId: String, topicTitle: String) =
             "admin/topic/$topicId/menu/${android.net.Uri.encode(topicTitle)}"
