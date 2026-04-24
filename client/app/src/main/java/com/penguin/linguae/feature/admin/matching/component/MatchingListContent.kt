@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -50,6 +51,7 @@ fun MatchingListContent(
     topicTitle: String,
     questions: List<MatchingQuestionUi>,
     searchQuery: String,
+    isLoading: Boolean,
     onSearchQueryChange: (String) -> Unit,
     onAdd: () -> Unit,
     onEdit: (MatchingQuestionUi) -> Unit,
@@ -97,7 +99,7 @@ fun MatchingListContent(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
             placeholder = {
-                Text("Search matching prompts or pair content", color = TextGray)
+                Text("Search matching", color = TextGray)
             },
             leadingIcon = {
                 Icon(
@@ -150,7 +152,14 @@ fun MatchingListContent(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        if (filteredQuestions.isEmpty()) {
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = PurplePrimary)
+            }
+        } else if (filteredQuestions.isEmpty()) {
             MatchingEmptyState(
                 hasQuestions = questions.isNotEmpty(),
                 searchQuery = searchQuery

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -46,6 +47,7 @@ fun MatchingFormContent(
     mode: MatchingManageMode,
     title: String,
     pairs: List<MatchingDraftPair>,
+    isSubmitting: Boolean,
     onTitleChange: (String) -> Unit,
     onLeftChange: (Int, String) -> Unit,
     onRightChange: (Int, String) -> Unit,
@@ -162,21 +164,31 @@ fun MatchingFormContent(
 
         Button(
             onClick = onSubmit,
+            enabled = !isSubmitting,
             shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary, contentColor = Color.White),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(54.dp)
         ) {
-            Text(
-                text = if (mode == MatchingManageMode.EDIT) "Update Matching Set" else "Create Matching Set",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
+            if (isSubmitting) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = if (mode == MatchingManageMode.EDIT) "Update Matching Set" else "Create Matching Set",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
         }
 
         OutlinedButton(
             onClick = onCancel,
+            enabled = !isSubmitting,
             shape = RoundedCornerShape(18.dp),
             border = BorderStroke(1.dp, BorderGray),
             modifier = Modifier
