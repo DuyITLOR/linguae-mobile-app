@@ -146,7 +146,7 @@ model Reminder {
 
 model Topic {
   id                  String             @id @default(uuid())
-  title               String
+  title               String             @unique
   description         String?
   icon                String?
   level               Level              @default(BEGINNER)

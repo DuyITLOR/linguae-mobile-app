@@ -65,16 +65,23 @@ export class TopicService {
   }
 
   async createTopic(dto: CreateTopicDto) {
-    return await this.prisma.topic.create({
-      data: {
-        title: dto.title,
-        description: dto.description,
-        icon: dto.icon,
-        level: dto.level,
-        displayOrder: dto.displayOrder ?? 0,
-        updatedAt: new Date(),
-      },
-    });
+    try {
+      return await this.prisma.topic.create({
+        data: {
+          title: dto.title,
+          description: dto.description,
+          icon: dto.icon,
+          level: dto.level,
+          displayOrder: dto.displayOrder ?? 0,
+          updatedAt: new Date(),
+        },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new Error('Title already exists');
+      }
+      throw error;
+    }
   }
 
   async delete(topicId: string) {
@@ -96,27 +103,34 @@ export class TopicService {
   }
 
   async update(topicId: string, dto: UpdateTopicDto) {
-    const topic = await this.prisma.topic.findUnique({
-      where: {
-        id: topicId,
-      },
-    });
+    try {
+      const topic = await this.prisma.topic.findUnique({
+        where: {
+          id: topicId,
+        },
+      });
 
-    if (!topic) {
-      throw new NotFoundException('Topic not found');
+      if (!topic) {
+        throw new NotFoundException('Topic not found');
+      }
+
+      return await this.prisma.topic.update({
+        where: {
+          id: topicId,
+        },
+        data: {
+          title: dto.title,
+          description: dto.description,
+          icon: dto.icon,
+          level: dto.level,
+          updatedAt: new Date(),
+        },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new Error('Title already exists');
+      }
+      throw error;
     }
-
-    return await this.prisma.topic.update({
-      where: {
-        id: topicId,
-      },
-      data: {
-        title: dto.title,
-        description: dto.description,
-        icon: dto.icon,
-        level: dto.level,
-        updatedAt: new Date(),
-      },
-    });
   }
 }
