@@ -46,4 +46,8 @@ class ClozeRepository {
     suspend fun deleteClozeQuestion(id: Int) {
         api.deleteQuestion(id)
     }
+
+    suspend fun updateClozeQuestion(id: Int, request: CreateClozeQuestionRequest): ClozeQuestion {
+        return api.updateQuestion(id, request)
+    }
 }

@@ -6,6 +6,7 @@ data class ClozeQuestion(
     val topicId: String = "",
     @SerializedName("id") val questionID: Int = -1,
     @SerializedName("sentence") val question: String = "",
+    @SerializedName("ClozeOptions") val clozeOptions: List<ClozeOption> = emptyList()
 )
 
 data class CreateClozeOptionRequest(

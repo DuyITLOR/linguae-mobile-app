@@ -19,7 +19,7 @@ data class ClozeOptionInput(
     val blankIndex: Int = 1
 )
 
-enum class ClozeManageMode { LIST, CREATE }
+enum class ClozeManageMode { LIST, CREATE, EDIT }
 
 class ManageClozeViewModel(
     val scopedTopicId: String,
@@ -34,6 +34,7 @@ class ManageClozeViewModel(
     // Form fields
     var sentence by mutableStateOf("")
     val options = mutableStateListOf<ClozeOptionInput>()
+    var editingQuestionId by mutableStateOf<Int?>(null)
 
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
@@ -64,8 +65,23 @@ class ManageClozeViewModel(
         mode = ClozeManageMode.CREATE
     }
 
+    fun startEdit(question: ClozeQuestion) {
+        editingQuestionId = question.questionID
+        sentence = question.question
+        options.clear()
+        question.clozeOptions.forEach { opt ->
+            options.add(ClozeOptionInput(opt.optionText, opt.isCorrect!!, opt.blankIndex))
+        }
+        // Ensure at least 4 options for UI consistency if needed, or just use what exists
+        while (options.size < 4) {
+            options.add(ClozeOptionInput())
+        }
+        mode = ClozeManageMode.EDIT
+    }
+
     fun cancelForm() {
         mode = ClozeManageMode.LIST
+        editingQuestionId = null
     }
 
     fun updateOption(index: Int, text: String, isCorrect: Boolean) {
@@ -106,11 +122,19 @@ class ManageClozeViewModel(
                         )
                     }
                 )
-                clozeRepository.createClozeQuestion(request)
+
+                if (mode == ClozeManageMode.EDIT) {
+                    val id = editingQuestionId ?: return@launch
+                    clozeRepository.updateClozeQuestion(id, request)
+                } else {
+                    clozeRepository.createClozeQuestion(request)
+                }
+
                 mode = ClozeManageMode.LIST
+                editingQuestionId = null
                 loadQuestions()
             } catch (e: Exception) {
-                error = e.message ?: "Failed to create question"
+                error = e.message ?: "Failed to save question"
             } finally {
                 isLoading = false
             }

@@ -4,8 +4,11 @@ import com.penguin.linguae.data.model.ClozeOption
 import com.penguin.linguae.data.model.ClozeQuestion
 import com.penguin.linguae.data.model.CreateClozeQuestionRequest
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -33,8 +36,14 @@ interface ClozeApi {
         @Body request: CreateClozeQuestionRequest
     ): ClozeQuestion
 
-    @retrofit2.http.DELETE("cloze/{id}")
+    @DELETE("cloze/{id}")
     suspend fun deleteQuestion(
-        @retrofit2.http.Path("id") id: Int
+        @Path("id") id: Int
     )
+
+    @PUT("cloze/{id}")
+    suspend fun updateQuestion(
+        @Path("id") id: Int,
+        @Body request: CreateClozeQuestionRequest
+    ): ClozeQuestion
 }

@@ -49,7 +49,7 @@ fun ClozeOptions(
     ) {
         options.forEach { option ->
             OptionItem(
-                text = option.answer,
+                text = option.optionText,
                 isSelected = selectedId == option.id,
                 isCorrect = if (isAnswered) option.isCorrect else null,
                 onClick = { viewModel.onOptionSelected(option.id) }
