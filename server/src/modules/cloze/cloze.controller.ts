@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, Delete, Param, ParseIntPipe } from "@nestjs/common";
+import { Controller, Get, Post, Query, Body, Delete, Param, ParseIntPipe, Put } from "@nestjs/common";
 import { ClozeService } from "./cloze.service";
 import { CreateClozeQuestionDto } from "./dto/create-cloze.dto";
 
@@ -34,5 +34,10 @@ export class ClozeController {
   @Delete(':id')
   deleteClozeQuestion(@Param('id', ParseIntPipe) id: number) {
     return this.clozeService.deleteClozeQuestion(id);
+  }
+
+  @Put(':id')
+  updateClozeQuestion(@Param('id', ParseIntPipe) id: number, @Body() data: CreateClozeQuestionDto) {
+    return this.clozeService.updateClozeQuestion(id, data);
   }
 }

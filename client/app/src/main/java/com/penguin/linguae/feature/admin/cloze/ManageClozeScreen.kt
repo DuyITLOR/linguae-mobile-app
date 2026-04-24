@@ -2,6 +2,7 @@ package com.penguin.linguae.feature.admin.cloze
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -66,7 +67,8 @@ fun ManageClozeScreen(
 
     Scaffold(
         containerColor = AppBackground,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -97,6 +99,7 @@ fun ManageClozeScreen(
                             text = when (viewModel.mode) {
                                 ClozeManageMode.LIST -> "Cloze: $topicTitle"
                                 ClozeManageMode.CREATE -> "New Cloze Question"
+                                ClozeManageMode.EDIT -> "Edit Question"
                             },
                             color = SurfaceColor,
                             fontSize = 20.sp,
@@ -106,6 +109,7 @@ fun ManageClozeScreen(
                             text = when (viewModel.mode) {
                                 ClozeManageMode.LIST -> "${viewModel.questions.size} questions"
                                 ClozeManageMode.CREATE -> "Fill the sentence and options"
+                                ClozeManageMode.EDIT -> "Update sentence and options"
                             },
                             color = SurfaceColor.copy(alpha = 0.75f),
                             fontSize = 13.sp
@@ -119,9 +123,10 @@ fun ManageClozeScreen(
                     questions = viewModel.questions,
                     isLoading = viewModel.isLoading,
                     onAdd = { viewModel.startCreate() },
+                    onEdit = { viewModel.startEdit(it) },
                     onDelete = { viewModel.confirmDelete(it) }
                 )
-                ClozeManageMode.CREATE -> ClozeFormContent(viewModel = viewModel)
+                else -> ClozeFormContent(viewModel = viewModel)
             }
         }
     }
@@ -132,6 +137,7 @@ private fun ClozeListContent(
     questions: List<ClozeQuestion>,
     isLoading: Boolean,
     onAdd: () -> Unit,
+    onEdit: (ClozeQuestion) -> Unit,
     onDelete: (Int) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -164,6 +170,7 @@ private fun ClozeListContent(
                 items(questions) { question ->
                     ClozeManageCard(
                         question = question,
+                        onEdit = { onEdit(question) },
                         onDelete = { onDelete(question.questionID) }
                     )
                 }
@@ -174,7 +181,7 @@ private fun ClozeListContent(
 }
 
 @Composable
-private fun ClozeManageCard(question: ClozeQuestion, onDelete: () -> Unit) {
+private fun ClozeManageCard(question: ClozeQuestion, onEdit: () -> Unit, onDelete: () -> Unit) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(18.dp),
@@ -193,6 +200,9 @@ private fun ClozeManageCard(question: ClozeQuestion, onDelete: () -> Unit) {
                 Text("ID: ${question.questionID}", color = TextGray, fontSize = 12.sp)
             }
 
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = PurplePrimary, modifier = Modifier.size(20.dp))
+            }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFE74C3C), modifier = Modifier.size(20.dp))
             }
@@ -225,29 +235,56 @@ private fun ClozeFormContent(viewModel: ManageClozeViewModel) {
 
         // Options Input
         ClozeFormSection(title = "Options") {
-            Text("Mark the correct answer using the radio button.", color = TextGray, fontSize = 12.sp)
-            Spacer(Modifier.height(4.dp))
+            Text("Select the correct answer and fill in the text.", color = TextGray, fontSize = 12.sp)
+            Spacer(Modifier.height(8.dp))
+            
             viewModel.options.forEachIndexed { index, opt ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                val borderColor = if (opt.isCorrect) PurplePrimary else BorderGray
+                val backgroundColor = if (opt.isCorrect) PurpleLight.copy(alpha = 0.2f) else Color.Transparent
+
+                Surface(
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(if (opt.isCorrect) 2.dp else 1.dp, borderColor),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.updateOption(index, opt.optionText, true) }
                 ) {
-                    RadioButton(
-                        selected = opt.isCorrect,
-                        onClick = { viewModel.updateOption(index, opt.optionText, true) },
-                        colors = RadioButtonDefaults.colors(selectedColor = PurplePrimary)
-                    )
-                    OutlinedTextField(
-                        value = opt.optionText,
-                        onValueChange = { viewModel.updateOption(index, it, opt.isCorrect) },
-                        placeholder = { Text("Option ${index + 1}", color = TextGray) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
-                        colors = clozeFieldColors(),
-                        modifier = Modifier.weight(1f)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = opt.isCorrect,
+                            onClick = { viewModel.updateOption(index, opt.optionText, true) },
+                            colors = RadioButtonDefaults.colors(selectedColor = PurplePrimary)
+                        )
+                        OutlinedTextField(
+                            value = opt.optionText,
+                            onValueChange = { viewModel.updateOption(index, it, opt.isCorrect) },
+                            placeholder = { Text("Option ${index + 1}", color = TextGray) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PurplePrimary,
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.8f)
+                            ),
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (opt.isCorrect) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = PurplePrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
                 }
+                Spacer(Modifier.height(8.dp))
             }
         }
 
@@ -263,7 +300,11 @@ private fun ClozeFormContent(viewModel: ManageClozeViewModel) {
             if (viewModel.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
             } else {
-                Text("Create Question", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(
+                    text = if (viewModel.mode == ClozeManageMode.EDIT) "Update Question" else "Create Question",
+                    fontWeight = FontWeight.SemiBold, 
+                    fontSize = 16.sp
+                )
             }
         }
 

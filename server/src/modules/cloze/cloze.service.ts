@@ -93,4 +93,30 @@ export class ClozeService {
             where: { id }
         });
     }
+
+    async updateClozeQuestion(id: number, data: any) {
+        // Delete old options
+        await this.prismaService.clozeOptions.deleteMany({
+            where: { questionId: id }
+        });
+
+        // Update question and create new options
+        return this.prismaService.clozeQuestion.update({
+            where: { id },
+            data: {
+                sentence: data.sentence,
+                ClozeOptions: {
+                    create: data.options.map((opt: any, index: number) => ({
+                        id: index + 1,
+                        optionText: opt.optionText,
+                        isCorrect: opt.isCorrect,
+                        blankIndex: opt.blankIndex
+                    }))
+                }
+            },
+            include: {
+                ClozeOptions: true
+            }
+        });
+    }
 }
