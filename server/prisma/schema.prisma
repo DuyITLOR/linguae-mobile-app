@@ -145,14 +145,14 @@ model Reminder {
 }
 
 model Topic {
-  id                  String             @id @default(uuid())
-  title               String             @unique
+  id                  String                @id @default(uuid())
+  title               String                @unique
   description         String?
   icon                String?
-  level               Level              @default(BEGINNER)
-  displayOrder        Int                @default(0)
-  isActive            Boolean            @default(true)
-  createdAt           DateTime           @default(now())
+  level               Level                 @default(BEGINNER)
+  displayOrder        Int                   @default(0)
+  isActive            Boolean               @default(true)
+  createdAt           DateTime              @default(now())
   updatedAt           DateTime
   FlashcardSession    FlashcardSession[]
   LearningHistory     LearningHistory[]
@@ -278,10 +278,10 @@ model VocabularyExample {
 }
 
 model TopicPracticeConfig {
-  id        String   @id @default(uuid())
-  topicId   String
-  questionType  String[]
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  topicId      String
+  questionType String[]
+  createdAt    DateTime @default(now())
 
   Topic Topic @relation(fields: [topicId], references: [id])
 }
@@ -315,8 +315,8 @@ model MatchingQuestion {
   title     String
   createdAt DateTime @default(now())
 
-  Topic         Topic          @relation(fields: [topicId], references: [id])
-  MatchingPair  MatchingPair[]
+  Topic        Topic          @relation(fields: [topicId], references: [id])
+  MatchingPair MatchingPair[]
 
   @@index([topicId])
 }
