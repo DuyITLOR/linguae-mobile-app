@@ -1,7 +1,7 @@
 package com.penguin.linguae.feature.learning
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +9,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,25 +20,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.speech.tts.TextToSpeech
-import java.util.Locale
+import com.penguin.linguae.core.ui.theme.AppBackground
+import com.penguin.linguae.core.ui.theme.PurpleDark
+import com.penguin.linguae.core.ui.theme.PurpleDeep
+import com.penguin.linguae.core.ui.theme.PurpleLight
+import com.penguin.linguae.core.ui.theme.PurplePrimary
+import com.penguin.linguae.core.ui.theme.SurfaceColor
+import com.penguin.linguae.core.ui.theme.TextDark
+import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
+import java.util.Locale
 
-val GradientTop = Color(0xFF6E68D1)
-val GradientBottom = Color(0xFF534192)
-val CardBackground = Color(0xFFF6F5FB)
-val PrimaryPurple = Color(0xFF7B61FF)
-val TextGrayTitle = Color(0xFF8A8A99)
-val TextDarkMain = Color(0xFF2D2D3A)
+private fun difficultyLabel(level: Int): String = when (level) {
+    1 -> "Beginner"
+    2 -> "Intermediate"
+    else -> "Advanced"
+}
+
+private fun difficultyColor(level: Int): Color = when (level) {
+    1 -> Color(0xFF27AE60)
+    2 -> Color(0xFFE67E22)
+    else -> Color(0xFFE74C3C)
+}
 
 @Composable
 fun VocabularyScreen(
@@ -68,191 +83,246 @@ fun VocabularyScreen(
 
     if (vocabulary == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = PrimaryPurple)
+            CircularProgressIndicator(color = PurplePrimary)
         }
         return
     }
 
     val vocab = vocabulary!!
+    val isFavorite = vocab.id in favoriteIds
+    val diffColor = difficultyColor(vocab.difficulty)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(AppBackground)
             .verticalScroll(rememberScrollState())
     ) {
-        HeaderSection(
-            word = vocab.word,
-            pronunciation = vocab.pronunciationText,
-            partOfSpeech = vocab.partOfSpeech ?: "",
-            onNavigateBack = onNavigateBack,
-            onPlayAudio = {
-                tts?.speak(vocab.word, TextToSpeech.QUEUE_FLUSH, null, null)
-            }
-        )
-
-        Column(
+        // ── Header ──────────────────────────────────────────────────────────
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 24.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+                .background(Brush.verticalGradient(listOf(PurplePrimary, PurpleDark, PurpleDeep)))
+                .padding(top = 48.dp, bottom = 36.dp, start = 8.dp, end = 20.dp)
         ) {
-            SectionTitle("NGHĨA")
-            MeaningCard(
-                meaning = vocab.meaning
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            SectionTitle("VÍ DỤ")
-
-            if (vocab.VocabularyExample.isEmpty()) {
-                Text(
-                    text = "Chưa có ví dụ",
-                    color = TextGrayTitle
-                )
-            } else {
-                vocab.VocabularyExample.forEach { example ->
-                    ExampleCard(
-                        fullSentence = example.sentence,
-                        targetWord = vocab.word,
-                        translation = example.translation ?: ""
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Back button row
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = SurfaceColor
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            FavoriteButton(
-                isFavorite = vocab.id in favoriteIds,
-                onToggle = {
-                    if (vocab.id in favoriteIds) {
-                        favoriteViewModel.removeFavorite(vocab.id)
-                    } else {
-                        favoriteViewModel.addFavorite(vocab.id)
+                // Word + difficulty + audio
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = vocab.word,
+                            fontSize = 38.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = SurfaceColor
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = vocab.pronunciationText,
+                                fontSize = 15.sp,
+                                color = SurfaceColor.copy(alpha = 0.8f)
+                            )
+                            if (!vocab.partOfSpeech.isNullOrBlank()) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(SurfaceColor.copy(alpha = 0.2f))
+                                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                                ) {
+                                    Text(
+                                        text = vocab.partOfSpeech,
+                                        fontSize = 12.sp,
+                                        color = SurfaceColor,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(diffColor.copy(alpha = 0.25f))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = difficultyLabel(vocab.difficulty),
+                                fontSize = 12.sp,
+                                color = SurfaceColor,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+
+                    // Audio button
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(SurfaceColor.copy(alpha = 0.2f))
+                            .clickable { tts?.speak(vocab.word, TextToSpeech.QUEUE_FLUSH, null, null) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.VolumeUp,
+                            contentDescription = "Play audio",
+                            tint = SurfaceColor,
+                            modifier = Modifier.size(28.dp)
+                        )
                     }
                 }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            FlashcardButton()
+            }
         }
-    }
-}
 
-@Composable
-fun HeaderSection(
-    word: String,
-    pronunciation: String,
-    partOfSpeech: String,
-    onNavigateBack: () -> Unit,
-    onPlayAudio: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(GradientTop, GradientBottom)
-                )
-            )
-            .padding(top = 48.dp, bottom = 40.dp, start = 20.dp, end = 20.dp)
-    ) {
+        // ── Body ─────────────────────────────────────────────────────────────
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Back",
-                    color = Color.White,
-                    modifier = Modifier.clickable { onNavigateBack() }
-                )
-                Text(
-                    text = "",
-                    color = Color.White
-                )
+            // Meaning
+            VocabSection(title = "MEANING") {
+                Surface(
+                    color = SurfaceColor,
+                    shape = RoundedCornerShape(18.dp),
+                    tonalElevation = 0.dp,
+                    shadowElevation = 1.dp,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(18.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(PurpleLight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("💡", fontSize = 20.sp)
+                        }
+                        Text(
+                            text = vocab.meaning,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextDark
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // Examples
+            VocabSection(title = "EXAMPLES") {
+                if (vocab.VocabularyExample.isEmpty()) {
+                    Surface(
+                        color = SurfaceColor,
+                        shape = RoundedCornerShape(18.dp),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier.padding(20.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No examples yet",
+                                color = TextGray,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        vocab.VocabularyExample.forEach { example ->
+                            VocabExampleCard(
+                                fullSentence = example.sentence,
+                                targetWord = vocab.word,
+                                translation = example.translation ?: ""
+                            )
+                        }
+                    }
+                }
+            }
 
-            Text(
-                text = word,
-                fontSize = 42.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "$pronunciation · $partOfSpeech",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Box(
+            // Favorite button
+            Spacer(modifier = Modifier.height(4.dp))
+            Button(
+                onClick = {
+                    if (isFavorite) favoriteViewModel.removeFavorite(vocab.id)
+                    else favoriteViewModel.addFavorite(vocab.id)
+                },
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isFavorite) Color(0xFFE74C3C) else PurplePrimary,
+                    contentColor = SurfaceColor
+                ),
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.2f))
-                    .clickable { onPlayAudio() },
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .height(54.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.VolumeUp,
-                    contentDescription = "Phát âm thanh",
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (isFavorite) "Saved to favourites" else "Save to favourites",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
 @Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Bold,
-        color = TextGrayTitle,
-        letterSpacing = 1.sp,
-        modifier = Modifier.padding(bottom = 12.dp)
-    )
-}
-
-@Composable
-fun MeaningCard(meaning: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(CardBackground)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+private fun VocabSection(title: String, content: @Composable () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(
-            text = meaning,
-            fontSize = 18.sp,
+            text = title,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
-            color = TextDarkMain
+            color = TextGray,
+            letterSpacing = 1.2.sp
         )
+        content()
     }
 }
 
 @Composable
-fun ExampleCard(fullSentence: String, targetWord: String, translation: String) {
+private fun VocabExampleCard(fullSentence: String, targetWord: String, translation: String) {
     val annotatedString = buildAnnotatedString {
         val startIndex = fullSentence.indexOf(targetWord, ignoreCase = true)
         if (startIndex >= 0) {
             append(fullSentence.substring(0, startIndex))
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = TextDarkMain)) {
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = PurplePrimary)) {
                 append(fullSentence.substring(startIndex, startIndex + targetWord.length))
             }
             append(fullSentence.substring(startIndex + targetWord.length))
@@ -261,83 +331,28 @@ fun ExampleCard(fullSentence: String, targetWord: String, translation: String) {
         }
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .clip(RoundedCornerShape(12.dp))
-            .background(CardBackground)
+    Surface(
+        color = SurfaceColor,
+        shape = RoundedCornerShape(18.dp),
+        shadowElevation = 1.dp,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .width(4.dp)
-                .fillMaxHeight()
-                .background(PrimaryPurple)
-        )
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = annotatedString,
-                fontSize = 16.sp,
-                color = TextDarkMain
+        Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(PurplePrimary)
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = translation,
-                fontSize = 15.sp,
-                color = TextGrayTitle
-            )
+            Column(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(text = annotatedString, fontSize = 15.sp, color = TextDark, lineHeight = 22.sp)
+                if (translation.isNotBlank()) {
+                    Text(text = translation, fontSize = 13.sp, color = TextGray, lineHeight = 19.sp)
+                }
+            }
         }
-    }
-}
-
-@Composable
-fun FavoriteButton(isFavorite: Boolean, onToggle: () -> Unit) {
-    val borderColor = if (isFavorite) PrimaryPurple else Color(0xFFE5E5EA)
-    val bgColor = if (isFavorite) Color(0xFFF0EDFF) else Color(0xFFFAFAFC)
-    val textColor = if (isFavorite) PrimaryPurple else TextDarkMain
-    val label = if (isFavorite) "Đã lưu vào yêu thích" else "Lưu vào yêu thích"
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(16.dp))
-            .background(bgColor, shape = RoundedCornerShape(16.dp))
-            .clickable { onToggle() }
-            .padding(vertical = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = label,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = textColor
-        )
-    }
-}
-
-@Composable
-fun FlashcardButton() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(Color(0xFF8871FF), Color(0xFF6A50FF))
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .clickable { }
-            .padding(vertical = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Học bằng Flashcard",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = Color.White
-        )
     }
 }

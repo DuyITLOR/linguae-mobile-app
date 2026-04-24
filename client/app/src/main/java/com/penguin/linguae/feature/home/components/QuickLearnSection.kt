@@ -105,7 +105,7 @@ fun QuickLearn(
             MenuItem(
                 R.drawable.dictionary,
                 "Từ vựng",
-                "12 chủ đề",
+                "Học theo chủ đề",
                 Orange
             ) { onVocabularyClick() },
             MenuItem(
