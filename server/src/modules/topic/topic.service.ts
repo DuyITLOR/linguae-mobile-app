@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
@@ -78,7 +78,7 @@ export class TopicService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new Error('Title already exists');
+        throw new ConflictException('Title already exists');
       }
       throw error;
     }
@@ -128,7 +128,7 @@ export class TopicService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new Error('Title already exists');
+        throw new ConflictException('Title already exists');
       }
       throw error;
     }

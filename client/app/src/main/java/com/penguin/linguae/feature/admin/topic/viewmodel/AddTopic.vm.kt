@@ -21,7 +21,6 @@ class ManageTopicViewModel : ViewModel() {
     var mode by mutableStateOf(TopicManageMode.LIST)
     var editingTopic by mutableStateOf<Topic?>(null)
 
-    // Form fields
     var title by mutableStateOf("")
     var description by mutableStateOf("")
     var icon by mutableStateOf("")
@@ -29,6 +28,7 @@ class ManageTopicViewModel : ViewModel() {
 
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
+    var titleError by mutableStateOf<String?>(null)
     var deleteTarget by mutableStateOf<Topic?>(null)
 
     init {
@@ -62,17 +62,19 @@ class ManageTopicViewModel : ViewModel() {
     fun cancelForm() {
         mode = TopicManageMode.LIST
         editingTopic = null
+        titleError = null
     }
 
     fun submit() {
         if (title.isBlank()) {
-            error = "Title is required"
+            titleError = "Title is required"
             return
         }
 
         viewModelScope.launch {
             isLoading = true
             error = null
+            titleError = null
 
             if (mode == TopicManageMode.CREATE) {
                 val request = CreateTopicRequest(
@@ -84,7 +86,7 @@ class ManageTopicViewModel : ViewModel() {
                 )
                 repository.createTopic(request)
                     .onSuccess { mode = TopicManageMode.LIST; loadTopics() }
-                    .onFailure { error = it.message ?: "Failed to create topic" }
+                    .onFailure { handleSubmitError(it, "Failed to create topic") }
             } else {
                 val topicId = editingTopic?.id ?: return@launch
                 val request = UpdateTopicRequest(
@@ -95,10 +97,19 @@ class ManageTopicViewModel : ViewModel() {
                 )
                 repository.updateTopic(topicId, request)
                     .onSuccess { mode = TopicManageMode.LIST; loadTopics() }
-                    .onFailure { error = it.message ?: "Failed to update topic" }
+                    .onFailure { handleSubmitError(it, "Failed to update topic") }
             }
 
             isLoading = false
+        }
+    }
+
+    private fun handleSubmitError(throwable: Throwable, fallback: String) {
+        val msg = throwable.message ?: fallback
+        if (msg.contains("already exists", ignoreCase = true)) {
+            titleError = "A topic with this title already exists"
+        } else {
+            error = msg
         }
     }
 

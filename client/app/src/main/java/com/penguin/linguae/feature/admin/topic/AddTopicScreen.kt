@@ -342,9 +342,13 @@ private fun TopicFormContent(viewModel: ManageTopicViewModel) {
             TopicFormField(label = "Title *") {
                 OutlinedTextField(
                     value = viewModel.title,
-                    onValueChange = { viewModel.title = it },
+                    onValueChange = { viewModel.title = it; viewModel.titleError = null },
                     placeholder = { Text("e.g. Daily Conversation", color = TextGray) },
                     singleLine = true,
+                    isError = viewModel.titleError != null,
+                    supportingText = viewModel.titleError?.let { msg ->
+                        { Text(msg, color = Color(0xFFE74C3C), fontSize = 12.sp) }
+                    },
                     shape = RoundedCornerShape(18.dp),
                     colors = topicFieldColors(),
                     modifier = Modifier.fillMaxWidth()
