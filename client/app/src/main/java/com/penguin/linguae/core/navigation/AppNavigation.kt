@@ -17,7 +17,7 @@ import com.penguin.linguae.feature.admin.cloze.ManageClozeScreen
 import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
-import com.penguin.linguae.feature.admin.ToeicListScreen
+import com.penguin.linguae.feature.admin.toeic.ToeicListScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen

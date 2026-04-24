@@ -1,6 +1,5 @@
-package com.penguin.linguae.feature.admin
+package com.penguin.linguae.feature.admin.toeic
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,8 +36,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -54,6 +50,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
@@ -63,9 +60,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.TextDark
-import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.data.model.Toeic
-import com.penguin.linguae.feature.admin.viewmodel.ToeicListViewModel
+import com.penguin.linguae.feature.admin.toeic.viewmodel.ToeicListViewModel
 
 // ── Shared palette (consistent with AdminScreen) ──────────────────────────────
 private val HeaderGradientStart = Color(0xFF4F5DE9)
@@ -225,6 +221,7 @@ fun ToeicListScreen(
                 }
 
                 viewModel.error != null -> {
+                    val errorMessage = viewModel.error ?: "An error occurred"
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -236,7 +233,7 @@ fun ToeicListScreen(
                             verticalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
                             Text(
-                                text = viewModel.error ?: "An error occurred",
+                                text = errorMessage,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color(0xFFE53935)
                             )
@@ -472,7 +469,7 @@ private fun StatusBadge(label: String) {
 
 @Composable
 private fun ActionIconButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     contentDescription: String,
     tint: Color,
     onClick: () -> Unit
