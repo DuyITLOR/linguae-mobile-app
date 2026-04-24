@@ -1,9 +1,9 @@
 package com.penguin.linguae.data.repository
 
 import com.penguin.linguae.core.network.RetrofitClient
-import com.penguin.linguae.data.model.adminmatching.CreateMatchingQuestionRequest
-import com.penguin.linguae.data.model.adminmatching.MatchingQuestionUi
-import com.penguin.linguae.data.model.adminmatching.UpdateMatchingQuestionRequest
+import com.penguin.linguae.data.model.CreateMatchingQuestionRequest
+import com.penguin.linguae.data.model.MatchingQuestionUi
+import com.penguin.linguae.data.model.UpdateMatchingQuestionRequest
 import com.penguin.linguae.data.remote.MatchingApi
 
 class MatchingRepository {

@@ -1,4 +1,4 @@
-package com.penguin.linguae.data.model.adminmatching
+package com.penguin.linguae.data.model
 
 import com.google.gson.annotations.SerializedName
 

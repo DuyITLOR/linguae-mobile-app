@@ -37,8 +37,8 @@ import com.penguin.linguae.core.ui.theme.PurpleLight
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
-import com.penguin.linguae.data.model.adminmatching.MatchingDraftPair
-import com.penguin.linguae.data.model.adminmatching.MatchingManageMode
+import com.penguin.linguae.data.model.MatchingDraftPair
+import com.penguin.linguae.data.model.MatchingManageMode
 
 @Composable
 fun MatchingFormContent(

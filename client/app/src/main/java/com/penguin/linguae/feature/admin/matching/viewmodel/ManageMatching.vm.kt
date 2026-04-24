@@ -6,12 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.penguin.linguae.data.model.adminmatching.CreateMatchingQuestionRequest
-import com.penguin.linguae.data.model.adminmatching.MatchingDraftPair
-import com.penguin.linguae.data.model.adminmatching.MatchingManageMode
-import com.penguin.linguae.data.model.adminmatching.MatchingPairRequest
-import com.penguin.linguae.data.model.adminmatching.MatchingQuestionUi
-import com.penguin.linguae.data.model.adminmatching.UpdateMatchingQuestionRequest
+import com.penguin.linguae.data.model.CreateMatchingQuestionRequest
+import com.penguin.linguae.data.model.MatchingDraftPair
+import com.penguin.linguae.data.model.MatchingManageMode
+import com.penguin.linguae.data.model.MatchingPairRequest
+import com.penguin.linguae.data.model.MatchingQuestionUi
+import com.penguin.linguae.data.model.UpdateMatchingQuestionRequest
 import com.penguin.linguae.data.repository.MatchingRepository
 import kotlinx.coroutines.launch
 

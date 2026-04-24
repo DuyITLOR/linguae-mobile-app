@@ -25,7 +25,7 @@ import com.penguin.linguae.core.ui.theme.PurpleDark
 import com.penguin.linguae.core.ui.theme.PurpleDeep
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.SurfaceColor
-import com.penguin.linguae.data.model.adminmatching.MatchingManageMode
+import com.penguin.linguae.data.model.MatchingManageMode
 
 @Composable
 fun MatchingHeader(

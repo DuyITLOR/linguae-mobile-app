@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.AppBackground
-import com.penguin.linguae.data.model.adminmatching.MatchingManageMode
+import com.penguin.linguae.data.model.MatchingManageMode
 import com.penguin.linguae.feature.admin.matching.component.MatchingDeleteDialog
 import com.penguin.linguae.feature.admin.matching.component.MatchingFormContent
 import com.penguin.linguae.feature.admin.matching.component.MatchingHeader

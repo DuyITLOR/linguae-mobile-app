@@ -1,8 +1,8 @@
 package com.penguin.linguae.data.remote
 
-import com.penguin.linguae.data.model.adminmatching.CreateMatchingQuestionRequest
-import com.penguin.linguae.data.model.adminmatching.MatchingQuestionUi
-import com.penguin.linguae.data.model.adminmatching.UpdateMatchingQuestionRequest
+import com.penguin.linguae.data.model.CreateMatchingQuestionRequest
+import com.penguin.linguae.data.model.MatchingQuestionUi
+import com.penguin.linguae.data.model.UpdateMatchingQuestionRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

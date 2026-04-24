@@ -44,7 +44,7 @@ import com.penguin.linguae.core.ui.theme.PurpleLight
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
-import com.penguin.linguae.data.model.adminmatching.MatchingQuestionUi
+import com.penguin.linguae.data.model.MatchingQuestionUi
 
 @Composable
 fun MatchingListContent(
