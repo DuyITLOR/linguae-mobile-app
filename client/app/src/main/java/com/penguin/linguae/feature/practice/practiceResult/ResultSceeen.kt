@@ -62,6 +62,11 @@ fun ResultScreen(
             data.total,
             data.topicId
         )
+        is ResultData.MatchingResult -> Triple(
+            data.score,
+            data.total,
+            data.topicId
+        )
         else -> Triple(0, 0, "")
     }
 
@@ -75,6 +80,13 @@ fun ResultScreen(
             when(route) {
                 Screen.Cloze.route -> {
                     navController.navigate(Screen.Cloze.createRoute(topicId = topicId)) {
+                        popUpTo(Screen.ResultScreen.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+                Screen.Matching.route -> {
+                    navController.navigate(Screen.Matching.createRoute(topicId = topicId)) {
                         popUpTo(Screen.ResultScreen.route) {
                             inclusive = true
                         }

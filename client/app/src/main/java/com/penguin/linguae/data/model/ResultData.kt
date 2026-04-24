@@ -6,4 +6,10 @@ sealed class ResultData {
         val total: Int,
         val topicId: String
     ) : ResultData()
+
+    data class MatchingResult(
+        val score: Int,
+        val total: Int,
+        val topicId: String
+    ) : ResultData()
 }

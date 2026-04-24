@@ -24,12 +24,12 @@ export class MatchingService {
     });
 
     if (config) {
-      if (!config.questionType.includes('MATCHING')) {
+      if (!config.questionType.includes('Matching')) {
         await this.prisma.topicPracticeConfig.update({
           where: { id: config.id },
           data: {
             questionType: {
-              push: 'MATCHING',
+              push: 'Matching',
             },
           },
         });
@@ -41,7 +41,7 @@ export class MatchingService {
     await this.prisma.topicPracticeConfig.create({
       data: {
         topicId,
-        questionType: ['MATCHING'],
+        questionType: ['Matching'],
       },
     });
   }
@@ -70,6 +70,23 @@ export class MatchingService {
         },
       },
     });
+  }
+
+  async getMatchingQuestionById(id: string) {
+    const question = await this.prisma.matchingQuestion.findUnique({
+      where: { id },
+      include: {
+        MatchingPair: {
+          orderBy: { displayOrder: 'asc' },
+        },
+      },
+    });
+
+    if (!question) {
+      throw new NotFoundException('Matching question not found');
+    }
+
+    return question;
   }
 
   async createMatchingQuestion(dto: CreateMatchingQuestionDto) {

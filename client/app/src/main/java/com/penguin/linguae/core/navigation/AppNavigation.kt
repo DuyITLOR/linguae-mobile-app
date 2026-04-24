@@ -23,6 +23,7 @@ import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.practice.cloze.ClozeScreen
+import com.penguin.linguae.feature.practice.matching.MatchingScreen
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
@@ -353,6 +354,22 @@ fun AppNavigation(
         ) { backStackEntry ->
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
             ClozeScreen(
+                navController = navController,
+                topicId = topicId,
+                onReturn = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.Matching.route,
+            arguments = listOf(
+                navArgument("topicId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            MatchingScreen(
                 navController = navController,
                 topicId = topicId,
                 onReturn = { navController.popBackStack() }

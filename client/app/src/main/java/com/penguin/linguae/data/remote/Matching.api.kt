@@ -17,6 +17,11 @@ interface MatchingApi {
         @Query("topicId") topicId: String? = null
     ): List<MatchingQuestionUi>
 
+    @GET("matching/{id}")
+    suspend fun getMatchingQuestionById(
+        @Path("id") id: String
+    ): MatchingQuestionUi
+
     @POST("matching")
     suspend fun createMatchingQuestion(
         @Body request: CreateMatchingQuestionRequest

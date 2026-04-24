@@ -25,6 +25,11 @@ export class MatchingController {
     return this.matchingService.getMatchingQuestions(topicId);
   }
 
+  @Get(':id')
+  async getMatchingQuestionById(@Param('id') id: string) {
+    return this.matchingService.getMatchingQuestionById(id);
+  }
+
   @Post()
   @UseGuards(AdminGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

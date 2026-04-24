@@ -18,6 +18,14 @@ class MatchingRepository {
         }
     }
 
+    suspend fun getMatchingQuestionById(id: String): Result<MatchingQuestionUi> {
+        return try {
+            Result.success(api.getMatchingQuestionById(id))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun createMatchingQuestion(
         request: CreateMatchingQuestionRequest
     ): Result<MatchingQuestionUi> {

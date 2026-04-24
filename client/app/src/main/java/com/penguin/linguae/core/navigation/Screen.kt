@@ -46,6 +46,12 @@ sealed class Screen(val route: String) {
         }
     }
 
+    object Matching: Screen("matching_screen/{topicId}") {
+        fun createRoute(topicId: String): String {
+            return "matching_screen/$topicId"
+        }
+    }
+
     object ResultScreen: Screen("result_screen")
     object PracticeTopic: Screen("practice_topic_screen")
     object TopicPracticeConfig: Screen("topic_practice_config/{topicId}") {
