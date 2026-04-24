@@ -40,8 +40,19 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val bottomBarRoutes = Destination.entries.map { it.route }
+    val authRoutes = setOf(
+        Screen.Login.route,
+        Screen.Register.route,
+        Screen.forogtPassword.route
+    )
+    val isAdminRoute =
+        currentRoute == Screen.Admin.route || currentRoute?.startsWith("admin/") == true
     val isAdminProfileRoute =
         currentRoute == Screen.Profile.route && UserManager.getUser()?.role == UserRole.ADMIN
+    val shouldShowChat =
+        currentRoute !in authRoutes &&
+            !isAdminRoute &&
+            !isAdminProfileRoute
 
     Scaffold(
         modifier = modifier,
@@ -84,5 +95,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(contentPadding)
         )
     }
-    ChatScreen()
+    if (shouldShowChat) {
+        ChatScreen()
+    }
 }
