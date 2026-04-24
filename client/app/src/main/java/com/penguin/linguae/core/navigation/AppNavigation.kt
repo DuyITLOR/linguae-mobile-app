@@ -19,6 +19,7 @@ import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
 import com.penguin.linguae.feature.admin.toeic.ToeicListScreen
+import com.penguin.linguae.feature.admin.toeic.editor.ToeicEditorScreen
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
@@ -113,7 +114,29 @@ fun AppNavigation(
         composable(Screen.ToeicList.route) {
             ToeicListScreen(
                 onBack = { navController.popBackStack() },
-                onAddExam = { }
+                onAddExam = {
+                    navController.navigate(Screen.ToeicEditorCreate.route)
+                },
+                onEditExam = { toeicId ->
+                    navController.navigate(Screen.ToeicEditorEdit.createRoute(toeicId))
+                }
+            )
+        }
+
+        composable(Screen.ToeicEditorCreate.route) {
+            ToeicEditorScreen(
+                toeicId = null,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.ToeicEditorEdit.route,
+            arguments = listOf(navArgument("toeicId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            ToeicEditorScreen(
+                toeicId = backStackEntry.arguments?.getString("toeicId"),
+                onBack = { navController.popBackStack() }
             )
         }
 

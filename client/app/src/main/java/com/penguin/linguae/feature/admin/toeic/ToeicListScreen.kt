@@ -74,6 +74,7 @@ private val DividerLight = Color(0xFFF0EEFF)
 fun ToeicListScreen(
     onBack: () -> Unit,
     onAddExam: () -> Unit = {},
+    onEditExam: (String) -> Unit = {},
     viewModel: ToeicListViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -282,7 +283,10 @@ fun ToeicListScreen(
                                 ignoreCase = true
                             )
                         }) { exam ->
-                            ExamCard(exam = exam)
+                            ExamCard(
+                                exam = exam,
+                                onEdit = { onEditExam(exam.id) }
+                            )
                         }
                     }
                 }
@@ -294,7 +298,10 @@ fun ToeicListScreen(
 // ── Exam card ────────────────────────────────────────────────────────────────
 
 @Composable
-private fun ExamCard(exam: Toeic) {
+private fun ExamCard(
+    exam: Toeic,
+    onEdit: () -> Unit,
+) {
     var isLive by remember { mutableStateOf(true) }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -406,7 +413,7 @@ private fun ExamCard(exam: Toeic) {
                         icon = Icons.Filled.Edit,
                         contentDescription = "Edit",
                         tint = PurplePrimary.copy(alpha = 0.8f),
-                        onClick = { }
+                        onClick = onEdit
                     )
                     ActionIconButton(
                         icon = Icons.Filled.Delete,
