@@ -105,6 +105,7 @@ fun TopicPracticeConfigScreen(
                             when (type.uppercase()) {
                                 "CLOZE" -> navController.navigate(Screen.Cloze.createRoute(topicId))
                                 "FLASHCARD" -> navController.navigate(Screen.Flashcard.createRoute(topicId))
+                                "MATCHING" -> navController.navigate(Screen.Matching.createRoute(topicId))
                                 // Add other mappings as they are implemented
                             }
                         }
