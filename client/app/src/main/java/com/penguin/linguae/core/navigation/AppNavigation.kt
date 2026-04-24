@@ -14,6 +14,7 @@ import com.penguin.linguae.data.model.ProfileUiState
 import com.penguin.linguae.data.model.UserRole
 import com.penguin.linguae.feature.admin.topic.ManageTopicScreen
 import com.penguin.linguae.feature.admin.cloze.ManageClozeScreen
+import com.penguin.linguae.feature.admin.matching.MatchingScreen
 import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
@@ -102,6 +103,9 @@ fun AppNavigation(
                 },
                 onManageCloze = {
                     navController.navigate(Screen.ManageCloze.createRoute(topicId, topicTitle))
+                },
+                onManageMatching = {
+                    navController.navigate(Screen.ManageMatching.createRoute(topicId, topicTitle))
                 }
             )
         }
@@ -139,6 +143,22 @@ fun AppNavigation(
             val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
             val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: ""
             ManageClozeScreen(
+                topicId = topicId,
+                topicTitle = topicTitle,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.ManageMatching.route,
+            arguments = listOf(
+                navArgument("topicId") { type = NavType.StringType },
+                navArgument("topicTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+            val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: ""
+            MatchingScreen(
                 topicId = topicId,
                 topicTitle = topicTitle,
                 onBack = { navController.popBackStack() }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
@@ -28,7 +29,8 @@ fun TopicContentMenuScreen(
     topicTitle: String,
     onBack: () -> Unit = {},
     onManageVocab: () -> Unit = {},
-    onManageCloze: () -> Unit = {}
+    onManageCloze: () -> Unit = {},
+    onManageMatching: () -> Unit = {}
 ) {
     Scaffold(
         containerColor = AppBackground,
@@ -94,6 +96,15 @@ fun TopicContentMenuScreen(
                     iconBackground = Color(0xFFE7F9EF),
                     iconTint = Color(0xFF27AE60),
                     onClick = onManageCloze
+                )
+
+                MenuActionCard(
+                    title = "Manage Matching Practice",
+                    subtitle = "Build two-column matching activities",
+                    icon = Icons.Default.CompareArrows,
+                    iconBackground = Color(0xFFECE9FF),
+                    iconTint = Color(0xFF6D5CE7),
+                    onClick = onManageMatching
                 )
             }
         }
