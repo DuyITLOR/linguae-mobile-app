@@ -8,15 +8,11 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  CreatePart5QuestionPayloadDto,
-  CreatePart6PassagePayloadDto,
   CreateReadingPart5QuestionDto,
   CreateReadingPart6QuestionDto,
   CreateToeicDto,
 } from './dto/createToeic.dto';
 import {
-  UpdatePart5QuestionPayloadDto,
-  UpdatePart6PassagePayloadDto,
   UpdateReadingPart5QuestionDto,
   UpdateToeicDto,
 } from './dto/updateToeic.dto';
@@ -44,25 +40,6 @@ export class ToeicService {
     try {
       const toeic = await this.prisma.toeic.findUnique({
         where: { id },
-        include: {
-          readingPart5Questions: {
-            orderBy: {
-              createdAt: 'asc',
-            },
-          },
-          readingPart6Questions: {
-            include: {
-              readingPart6Options: {
-                orderBy: {
-                  title: 'asc',
-                },
-              },
-            },
-            orderBy: {
-              createdAt: 'asc',
-            },
-          },
-        },
       });
 
       if (!toeic) {
@@ -123,50 +100,17 @@ export class ToeicService {
 
   async createToeic(dto: CreateToeicDto) {
     await this.checkPermission(dto.userId);
-    const part5Questions = this.normalizePart5Questions(dto.part5Questions);
-    const part6Passages = this.normalizePart6Passages(dto.part6Passages);
 
-    const toeic = await this.prisma.$transaction(async (tx) => {
-      const createdToeic = await tx.toeic.create({
-        data: {
-          title: dto.title,
-          level: dto.level,
-        },
-        select: {
-          id: true,
-          title: true,
-          level: true,
-        },
-      });
-
-      if (part5Questions.length > 0) {
-        await tx.readingPart5Question.createMany({
-          data: part5Questions.map((item) => ({
-            toeicId: createdToeic.id,
-            question: item.question,
-            options: item.options,
-            answer: item.answerIndex,
-          })),
-        });
-      }
-
-      for (const passage of part6Passages) {
-        await tx.readingPart6Question.create({
-          data: {
-            toeicId: createdToeic.id,
-            question: passage.passage,
-            readingPart6Options: {
-              create: passage.questions.map((question) => ({
-                title: question.title,
-                option: question.options,
-                answer: question.answerIndex,
-              })),
-            },
-          },
-        });
-      }
-
-      return createdToeic;
+    const toeic = await this.prisma.toeic.create({
+      data: {
+        title: dto.title,
+        level: dto.level,
+      },
+      select: {
+        id: true,
+        title: true,
+        level: true,
+      },
     });
 
     return toeic;
@@ -265,16 +209,13 @@ export class ToeicService {
         string,
         { correctAnswer: number; optionCount: number }
       >(
-        toeic.readingPart5Questions.map(
-          (question) =>
-            [
-              question.id,
-              {
-                correctAnswer: question.answer,
-                optionCount: question.options.length,
-              },
-            ] as const,
-        ),
+        toeic.readingPart5Questions.map((question) => [
+          question.id,
+          {
+            correctAnswer: question.answer,
+            optionCount: question.options.length,
+          },
+        ] as const),
       );
       const part6AnswerKey = new Map<
         string,
@@ -372,8 +313,6 @@ export class ToeicService {
   async updateToeic(dto: UpdateToeicDto) {
     try {
       await this.checkPermission(dto.userId);
-      const part5Questions = this.normalizePart5Questions(dto.part5Questions);
-      const part6Passages = this.normalizePart6Passages(dto.part6Passages);
       const existingToeic = await this.prisma.toeic.findUnique({
         where: { id: dto.id },
       });
@@ -382,55 +321,12 @@ export class ToeicService {
         throw new NotFoundException('Toeic not found');
       }
 
-      const toeic = await this.prisma.$transaction(async (tx) => {
-        const updated = await tx.toeic.update({
-          where: { id: dto.id },
-          data: {
-            title: dto.title,
-            level: dto.level,
-          },
-        });
-
-        if (dto.part5Questions) {
-          await tx.readingPart5Question.deleteMany({
-            where: { toeicId: dto.id },
-          });
-
-          if (part5Questions.length > 0) {
-            await tx.readingPart5Question.createMany({
-              data: part5Questions.map((item) => ({
-                toeicId: dto.id,
-                question: item.question,
-                options: item.options,
-                answer: item.answerIndex,
-              })),
-            });
-          }
-        }
-
-        if (dto.part6Passages) {
-          await tx.readingPart6Question.deleteMany({
-            where: { toeicId: dto.id },
-          });
-
-          for (const passage of part6Passages) {
-            await tx.readingPart6Question.create({
-              data: {
-                toeicId: dto.id,
-                question: passage.passage,
-                readingPart6Options: {
-                  create: passage.questions.map((question) => ({
-                    title: question.title,
-                    option: question.options,
-                    answer: question.answerIndex,
-                  })),
-                },
-              },
-            });
-          }
-        }
-
-        return updated;
+      const toeic = await this.prisma.toeic.update({
+        where: { id: dto.id },
+        data: {
+          title: dto.title,
+          level: dto.level,
+        },
       });
 
       return toeic;
@@ -498,124 +394,23 @@ export class ToeicService {
     }
   }
 
-  async deletePart6Passage(toeicId: string, passageId: string, userId: string) {
-    await this.checkPermission(userId);
-
-    const passage = await this.prisma.readingPart6Question.findFirst({
-      where: {
-        id: passageId,
-        toeicId,
-      },
-      select: { id: true },
-    });
-
-    if (!passage) {
-      throw new NotFoundException('Part 6 passage not found');
-    }
-
-    await this.prisma.readingPart6Question.delete({
-      where: { id: passageId },
-    });
-
-    return { message: 'Part 6 passage deleted successfully' };
-  }
-
-  async deletePart6Question(
-    toeicId: string,
-    passageId: string,
-    questionId: string,
-    userId: string,
-  ) {
-    await this.checkPermission(userId);
-
-    const passage = await this.prisma.readingPart6Question.findFirst({
-      where: {
-        id: passageId,
-        toeicId,
-      },
-      select: { id: true },
-    });
-
-    if (!passage) {
-      throw new NotFoundException('Part 6 passage not found');
-    }
-
-    const option = await this.prisma.readingPart6Option.findFirst({
-      where: {
-        id: questionId,
-        questionId: passageId,
-      },
-      select: { id: true },
-    });
-
-    if (!option) {
-      throw new NotFoundException('Part 6 question not found');
-    }
-
-    await this.prisma.readingPart6Option.delete({
-      where: { id: questionId },
-    });
-
-    return { message: 'Part 6 question deleted successfully' };
-  }
-
   // ==================== Helper functions ======================
   async checkPermission(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      if (user.role !== 'ADMIN') {
+        throw new ForbiddenException('User is not an admin');
+      }
+    } catch (error) {
+      const msg =
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException;
+      throw new InternalServerErrorException(msg);
     }
-
-    if (user.role !== 'ADMIN') {
-      throw new ForbiddenException('User is not an admin');
-    }
-  }
-
-  private normalizePart5Questions(
-    questions?: Array<
-      CreatePart5QuestionPayloadDto | UpdatePart5QuestionPayloadDto
-    >,
-  ) {
-    return (questions ?? []).map((question) => ({
-      ...question,
-      options: question.options.map((option) => option.trim()),
-      question: question.question.trim(),
-    }));
-  }
-
-  private normalizePart6Passages(
-    passages?: Array<
-      CreatePart6PassagePayloadDto | UpdatePart6PassagePayloadDto
-    >,
-  ) {
-    return (passages ?? []).map((passage) => {
-      const seenTitles = new Set<number>();
-      const sortedQuestions = [...passage.questions]
-        .sort((a, b) => a.title - b.title)
-        .map((question) => {
-          if (seenTitles.has(question.title)) {
-            throw new BadRequestException(
-              'Duplicate title is not allowed in the same Part 6 passage',
-            );
-          }
-
-          seenTitles.add(question.title);
-          return {
-            ...question,
-            question: question.question.trim(),
-            options: question.options.map((option) => option.trim()),
-          };
-        });
-
-      return {
-        ...passage,
-        passage: passage.passage.trim(),
-        questions: sortedQuestions,
-      };
-    });
   }
 }

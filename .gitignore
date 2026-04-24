@@ -2,14 +2,6 @@
 .gradle/
 build/
 
-# Speckit
-.specify
-.python-version
-main.py
-pyproject.toml
-settings.json
-specs/
-
 # Local config
 local.properties
 
