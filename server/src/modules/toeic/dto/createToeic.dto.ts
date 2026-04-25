@@ -1,14 +1,21 @@
 import { ToeicLevel } from '@prisma/client';
 
-export interface CreateToeicRequestDto {
+export interface CreateToeicDto {
   title: string;
   level: ToeicLevel;
+  part5: Part5[];
+  part6: Part6[];
 }
 
-export interface CreateToeicDto {
-  userId: string;
-  title: string;
-  level: ToeicLevel;
+export interface Part5 {
+  question: string;
+  options: string[];
+  answer: number;
+}
+
+export interface Part6 {
+  question: string;
+  options: Part6Option[];
 }
 
 export interface Part6Option {

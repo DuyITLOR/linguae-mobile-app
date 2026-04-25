@@ -98,22 +98,61 @@ export class ToeicService {
 
   // ==================== Create section ======================
 
-  async createToeic(dto: CreateToeicDto) {
-    await this.checkPermission(dto.userId);
+  async createToeic(dto: CreateToeicDto, userId: string) {
+    await this.checkPermission(userId);
 
-    const toeic = await this.prisma.toeic.create({
-      data: {
-        title: dto.title,
-        level: dto.level,
-      },
-      select: {
-        id: true,
-        title: true,
-        level: true,
-      },
-    });
+    try {
+      const result = await this.prisma.toeic.create({
+        data: {
+          title: dto.title,
+          level: dto.level,
 
-    return toeic;
+          // ✅ Part 5
+          readingPart5Questions: {
+            create: dto.part5.map((q) => ({
+              question: q.question,
+              options: q.options,
+              answer: q.answer,
+            })),
+          },
+
+          // ✅ Part 6
+          readingPart6Questions: {
+            create: dto.part6.map((q) => ({
+              question: q.question,
+              readingPart6Options: {
+                create: q.options.map((opt) => ({
+                  title: opt.title,
+                  option: opt.options,
+                  answer: opt.answer,
+                })),
+              },
+            })),
+          },
+        },
+        include: {
+          readingPart5Questions: true,
+          readingPart6Questions: {
+            include: {
+              readingPart6Options: true,
+            },
+          },
+        },
+      });
+
+      return {
+        message: 'Toeic created successfully',
+        id: result.id,
+      };
+    } catch (error) {
+      const msg =
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+          ? 'Permission denied or related user not found'
+          : 'Error at creating toeic service';
+
+      throw new InternalServerErrorException(msg);
+    }
   }
 
   // Part 5
@@ -209,13 +248,16 @@ export class ToeicService {
         string,
         { correctAnswer: number; optionCount: number }
       >(
-        toeic.readingPart5Questions.map((question) => [
-          question.id,
-          {
-            correctAnswer: question.answer,
-            optionCount: question.options.length,
-          },
-        ] as const),
+        toeic.readingPart5Questions.map(
+          (question) =>
+            [
+              question.id,
+              {
+                correctAnswer: question.answer,
+                optionCount: question.options.length,
+              },
+            ] as const,
+        ),
       );
       const part6AnswerKey = new Map<
         string,

@@ -82,4 +82,31 @@ sealed class Screen(val route: String) {
             "admin/topic/$topicId/menu/${android.net.Uri.encode(topicTitle)}"
     }
     object ToeicList : Screen("admin/toeic_list")
+    object ToeicExamInfoEditor : Screen("admin/toeic/exam_info_editor?toeicId={toeicId}") {
+        fun createRoute(toeicId: String? = null): String {
+            return if (toeicId.isNullOrBlank()) {
+                "admin/toeic/exam_info_editor"
+            } else {
+                "admin/toeic/exam_info_editor?toeicId=${android.net.Uri.encode(toeicId)}"
+            }
+        }
+    }
+    object ToeicPart5Editor : Screen("admin/toeic/part5_editor?toeicId={toeicId}") {
+        fun createRoute(toeicId: String? = null): String {
+            return if (toeicId.isNullOrBlank()) {
+                "admin/toeic/part5_editor"
+            } else {
+                "admin/toeic/part5_editor?toeicId=${android.net.Uri.encode(toeicId)}"
+            }
+        }
+    }
+    object ToeicPart6Editor : Screen("admin/toeic/part6_editor?toeicId={toeicId}") {
+        fun createRoute(toeicId: String? = null): String {
+            return if (toeicId.isNullOrBlank()) {
+                "admin/toeic/part6_editor"
+            } else {
+                "admin/toeic/part6_editor?toeicId=${android.net.Uri.encode(toeicId)}"
+            }
+        }
+    }
 }

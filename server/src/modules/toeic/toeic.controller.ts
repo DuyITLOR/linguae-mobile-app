@@ -15,7 +15,6 @@ import type {
   CreateReadingPart5QuestionDto,
   CreateReadingPart6QuestionDto,
   CreateToeicDto,
-  CreateToeicRequestDto,
 } from './dto/createToeic.dto';
 import type {
   UpdateReadingPart5QuestionDto,
@@ -55,14 +54,10 @@ export class ToeicController {
 
   @Post()
   async createToeic(
-    @Body() body: CreateToeicRequestDto,
+    @Body() body: CreateToeicDto,
     @UserId() userId: string,
   ) {
-    const dto = {
-      userId,
-      ...body,
-    } as CreateToeicDto;
-    return await this.toeicService.createToeic(dto);
+    return await this.toeicService.createToeic(body, userId);
   }
 
   @Post('reading-part-5-questions')

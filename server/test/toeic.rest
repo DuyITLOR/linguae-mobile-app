@@ -3,7 +3,8 @@ GET http://localhost:4000/toeic
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
 
 ### Get Toeic
-GET http://localhost:4000/toeic/e9c6b5eb-430b-47dd-b6de-8e700e8ea861
+GET http://localhost:4000/toeic/fbc04e83-d751-4cfe-a97a-18ee38c38f5b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
 
 ### Get Toeic Part 5 Questions
 GET http://localhost:4000/toeic/reading-part-5-questions/fbc04e83-d751-4cfe-a97a-18ee38c38f5b
@@ -15,14 +16,73 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
 
 # ======================== Create =========================
 ### Create Toeic
+
 POST http://localhost:4000/toeic
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
 
 {
-    "title": "Toeic Test 1",
-    "description": "This is a sample Toeic test",
-    "level": "BEGINNER"
+    "title": "Toeic Test 2",
+    "level": "BEGINNER",
+    "part5": [
+        {
+            "question": "When filling out the order form, please _____ your address clearly to prevent delays.",
+            "options": [
+                "fix",
+                "write",
+                "send",
+                "direct"
+            ],
+            "answer": 1
+        }
+    ],
+    "part6": [
+        {
+            "question": "<p><strong>To:</strong> samsmith@digitalIT.com</p><p><strong>From:</strong> sharronb@email.com</p><p><strong>Date:</strong> September 24</p><p><strong>Subject:</strong> Business Contract</p><p>Dear Mr. Smith,</p><p>I am Sharron Biggs, CEO and founder of Biggs Graphics. I recently came across your advertisement <strong>(131)</strong> the partnership of a graphic design company for a number of your projects.</p><p>Biggs Graphics has <strong>(132)</strong> experience working with various small businesses and companies in designing advertising campaigns, logos, and websites.</p><p><strong>(133)</strong> Our website www.biggs-graphics.com also has some information about our company.</p><p>I'm interested in working with your company on your projects and hope we can build a beneficial partnership. I look forward <strong>(134)</strong> your reply.</p><p>Sincerely,</p><p>Sharron Biggs</p><p><strong>CEO, Biggs Graphics</strong></p>",
+            "options": [
+                {
+                    "title": 131,
+                    "options": [
+                        "seek",
+                        "to seek",
+                        "seeking",
+                        "are seeking"
+                    ],
+                    "answer": 2
+                },
+                {
+                    "title": 132,
+                    "options": [
+                        "extensive",
+                        "restricted",
+                        "generous",
+                        "limitless"
+                    ],
+                    "answer": 0
+                }, 
+                {
+                    "title": 133,
+                    "options": [
+                        "I would really appreciate the opportunity to work with you.",
+                        "I heard that DigitalIT is a great company.",
+                        "In fact, our designs are often copied by other companies.",
+                        "I have attached a number of our past designs to illustrate what we specialize in."
+                    ],
+                    "answer": 3
+                },
+                {
+                    "title": 134,
+                    "options": [
+                        "at",
+                        "to",
+                        "with",
+                        "from"
+                    ],
+                    "answer": 1
+                }
+            ]
+        }
+    ]
 }
 
 ### Create Toeic Part 5 Questions

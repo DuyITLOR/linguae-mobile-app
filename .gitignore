@@ -6,7 +6,7 @@ build/
 local.properties
 
 .github/
-
+AGENTS.md
 client/rule.md
 
 # IDE (Android Studio / IntelliJ)
