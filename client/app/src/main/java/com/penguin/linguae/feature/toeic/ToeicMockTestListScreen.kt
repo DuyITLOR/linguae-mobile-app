@@ -21,16 +21,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.penguin.linguae.core.ui.theme.PageBg
@@ -47,6 +55,7 @@ import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.data.model.Toeic
 import com.penguin.linguae.data.repository.ToeicRepository
+import kotlinx.coroutines.launch
 
 @Composable
 fun ToeicMockTestListScreen(
@@ -54,23 +63,42 @@ fun ToeicMockTestListScreen(
     onMockTestClick: (String) -> Unit = {}
 ) {
     val repository = remember { ToeicRepository() }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
     var mockTests by remember { mutableStateOf<List<Toeic>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
-        repository.getAllToeic()
-            .onSuccess { data ->
-                mockTests = data
-                errorMessage = null
-            }
-            .onFailure { throwable ->
-                errorMessage = throwable.message ?: "Failed to load TOEIC tests"
-            }
-        isLoading = false
+    suspend fun fetchMockTests() {
+        isLoading = true
+        errorMessage = null
+
+        try {
+            repository.getAllToeic()
+                .onSuccess { data ->
+                    mockTests = data
+                    errorMessage = null
+                }
+                .onFailure { throwable ->
+                    throw throwable
+                }
+        } catch (throwable: Throwable) {
+            val message = resolveToeicListErrorMessage(throwable)
+            errorMessage = message
+            snackbarHostState.showSnackbar(message)
+        } finally {
+            isLoading = false
+        }
     }
 
-    Scaffold(containerColor = PageBg) { paddingValues ->
+    LaunchedEffect(Unit) {
+        fetchMockTests()
+    }
+
+    Scaffold(
+        containerColor = PageBg,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -114,11 +142,13 @@ fun ToeicMockTestListScreen(
 
                 errorMessage != null -> {
                     item {
-                        Text(
-                            text = errorMessage.orEmpty(),
-                            color = Color(0xFFD64545),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                        ToeicListErrorState(
+                            message = errorMessage.orEmpty(),
+                            onRetry = {
+                                coroutineScope.launch {
+                                    fetchMockTests()
+                                }
+                            }
                         )
                     }
                 }
@@ -134,6 +164,78 @@ fun ToeicMockTestListScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ToeicListErrorState(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFFFE9E9)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                tint = Color(0xFFD64545),
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        Text(
+            text = "Kết nối có vấn đề",
+            color = TextDark,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = message,
+            color = Color(0xFF8A8A94),
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
+        )
+        Button(
+            onClick = onRetry,
+            colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = null,
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = "Try again",
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+private fun resolveToeicListErrorMessage(throwable: Throwable): String {
+    val rawMessage = throwable.message.orEmpty().lowercase()
+    val isConnectionIssue = rawMessage.contains("failed to connect") ||
+        rawMessage.contains("timeout") ||
+        rawMessage.contains("unable to resolve host") ||
+        rawMessage.contains("network")
+
+    return if (isConnectionIssue) {
+        "Vui lòng kiểm tra kết nối mạng và thử lại."
+    } else {
+        "Không thể tải danh sách đề thi. Vui lòng thử lại."
     }
 }
 

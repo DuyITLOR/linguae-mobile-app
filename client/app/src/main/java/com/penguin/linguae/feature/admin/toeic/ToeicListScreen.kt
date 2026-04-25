@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
@@ -40,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,10 +54,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.core.ui.theme.PurplePrimary
@@ -77,6 +83,20 @@ fun ToeicListScreen(
     viewModel: ToeicListViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START || event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadToeicTests()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Surface(
         color = AppBackground,
@@ -221,7 +241,7 @@ fun ToeicListScreen(
                 }
 
                 viewModel.error != null -> {
-                    val errorMessage = viewModel.error ?: "An error occurred"
+                    val errorMessage = resolveToeicAdminErrorMessage(viewModel.error)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -232,10 +252,31 @@ fun ToeicListScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .background(Color(0xFFFFE9E9), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = null,
+                                    tint = Color(0xFFE53935),
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                            Text(
+                                text = "Kết nối có vấn đề",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = TextDark
+                            )
                             Text(
                                 text = errorMessage,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFE53935)
+                                color = SubtleText,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 24.dp)
                             )
                             Card(
                                 shape = RoundedCornerShape(10.dp),
@@ -291,6 +332,20 @@ fun ToeicListScreen(
     }
 }
 
+private fun resolveToeicAdminErrorMessage(rawError: String?): String {
+    val message = rawError.orEmpty().lowercase()
+    val isConnectionIssue = message.contains("failed to connect") ||
+        message.contains("timeout") ||
+        message.contains("unable to resolve host") ||
+        message.contains("network")
+
+    return if (isConnectionIssue) {
+        "Vui lòng kiểm tra kết nối mạng và thử lại."
+    } else {
+        "Không thể tải danh sách đề thi. Vui lòng thử lại."
+    }
+}
+
 // ── Exam card ────────────────────────────────────────────────────────────────
 
 @Composable
@@ -328,7 +383,6 @@ private fun ExamCard(exam: Toeic) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 LevelBadge(level = exam.level)
-                StatusBadge(label = "PUBLISHED")
             }
 
             // ── Title ───────────────────────────────────────────────────

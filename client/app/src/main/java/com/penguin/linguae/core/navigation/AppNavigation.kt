@@ -1,6 +1,7 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -18,7 +19,11 @@ import com.penguin.linguae.feature.admin.matching.MatchingScreen
 import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
 import com.penguin.linguae.feature.admin.AdminScreen
 import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
+import com.penguin.linguae.feature.admin.toeic.ToeicExamInfoScreen
 import com.penguin.linguae.feature.admin.toeic.ToeicListScreen
+import com.penguin.linguae.feature.admin.toeic.ToeicPart5EditorScreen
+import com.penguin.linguae.feature.admin.toeic.ToeicPart6EditorScreen
+import com.penguin.linguae.feature.admin.toeic.viewmodel.ToeicEditorViewModel
 import com.penguin.linguae.feature.auth.ForgotPasswordScreen
 import com.penguin.linguae.feature.auth.LoginScreen
 import com.penguin.linguae.feature.auth.RegisterScreen
@@ -114,7 +119,110 @@ fun AppNavigation(
         composable(Screen.ToeicList.route) {
             ToeicListScreen(
                 onBack = { navController.popBackStack() },
-                onAddExam = { }
+                onAddExam = {
+                    navController.navigate(Screen.ToeicExamInfoEditor.route)
+                }
+            )
+        }
+
+        composable(Screen.ToeicExamInfoEditor.route) { backStackEntry ->
+            val toeicListEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.ToeicList.route)
+            }
+            val editorViewModel: ToeicEditorViewModel = viewModel(toeicListEntry)
+            ToeicExamInfoScreen(
+                onBack = {
+                    editorViewModel.clearAllDrafts()
+                    navController.navigate(Screen.ToeicList.route) {
+                        popUpTo(Screen.ToeicList.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigatePart5 = {
+                    navController.navigate(Screen.ToeicPart5Editor.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigatePart6 = {
+                    navController.navigate(Screen.ToeicPart6Editor.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onSaveExam = {
+                    navController.navigate(Screen.ToeicList.route) {
+                        popUpTo(Screen.ToeicList.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                viewModel = editorViewModel
+            )
+        }
+
+        composable(Screen.ToeicPart5Editor.route) { backStackEntry ->
+            val toeicListEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.ToeicList.route)
+            }
+            val editorViewModel: ToeicEditorViewModel = viewModel(toeicListEntry)
+            ToeicPart5EditorScreen(
+                onBack = {
+                    editorViewModel.clearAllDrafts()
+                    navController.navigate(Screen.ToeicList.route) {
+                        popUpTo(Screen.ToeicList.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                toeicId = null,
+                onInfoClick = {
+                    navController.navigate(Screen.ToeicExamInfoEditor.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onPart6Click = {
+                    navController.navigate(Screen.ToeicPart6Editor.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onSaveExam = {
+                    navController.navigate(Screen.ToeicList.route) {
+                        popUpTo(Screen.ToeicList.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                viewModel = editorViewModel
+            )
+        }
+
+        composable(Screen.ToeicPart6Editor.route) { backStackEntry ->
+            val toeicListEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.ToeicList.route)
+            }
+            val editorViewModel: ToeicEditorViewModel = viewModel(toeicListEntry)
+            ToeicPart6EditorScreen(
+                onBack = {
+                    editorViewModel.clearAllDrafts()
+                    navController.navigate(Screen.ToeicList.route) {
+                        popUpTo(Screen.ToeicList.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                toeicId = null,
+                onInfoClick = {
+                    navController.navigate(Screen.ToeicExamInfoEditor.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onPart5Click = {
+                    navController.navigate(Screen.ToeicPart5Editor.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onSaveExam = {
+                    navController.navigate(Screen.ToeicList.route) {
+                        popUpTo(Screen.ToeicList.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                viewModel = editorViewModel
             )
         }
 
