@@ -9,6 +9,7 @@ import com.penguin.linguae.data.model.ReadingPart5Question
 import com.penguin.linguae.data.model.ReadingPart6Question
 import com.penguin.linguae.data.model.SubmitToeicAnswerRequest
 import com.penguin.linguae.data.model.SubmitToeicAnswerResponse
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Body
 import retrofit2.http.Path
@@ -35,4 +36,7 @@ interface ToeicApi {
 
     @POST("toeic/test/submit-answer")
     suspend fun submitToeicAnswer(@Body request: SubmitToeicAnswerRequest): SubmitToeicAnswerResponse
+
+    @DELETE("toeic/{toeicId}")
+    suspend fun deleteToeic(@Path("toeicId") toeicId: String)
 }

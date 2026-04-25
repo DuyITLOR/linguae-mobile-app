@@ -1,5 +1,7 @@
 package com.penguin.linguae.feature.admin.toeic
 
+import android.widget.Toast
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -83,6 +85,7 @@ fun ToeicListScreen(
     viewModel: ToeicListViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    val context = androidx.compose.ui.platform.LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -323,7 +326,14 @@ fun ToeicListScreen(
                                 ignoreCase = true
                             )
                         }) { exam ->
-                            ExamCard(exam = exam)
+                            ExamCard(
+                                exam = exam,
+                                onDelete = {
+                                    viewModel.deleteToeic(exam.id) {
+                                        Toast.makeText(context, "Xóa thành công", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            )
                         }
                     }
                 }
@@ -349,7 +359,10 @@ private fun resolveToeicAdminErrorMessage(rawError: String?): String {
 // ── Exam card ────────────────────────────────────────────────────────────────
 
 @Composable
-private fun ExamCard(exam: Toeic) {
+private fun ExamCard(
+    exam: Toeic,
+    onDelete: () -> Unit
+) {
     var isLive by remember { mutableStateOf(true) }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -466,7 +479,7 @@ private fun ExamCard(exam: Toeic) {
                         icon = Icons.Filled.Delete,
                         contentDescription = "Delete",
                         tint = Color(0xFFE53935).copy(alpha = 0.75f),
-                        onClick = { }
+                        onClick = onDelete
                     )
                 }
             }

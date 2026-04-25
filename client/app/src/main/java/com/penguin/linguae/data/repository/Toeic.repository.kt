@@ -75,4 +75,12 @@ class ToeicRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun deleteToeic(toeicId: String): Result<Unit> {
+        return try {
+            Result.success(api.deleteToeic(toeicId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

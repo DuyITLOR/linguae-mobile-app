@@ -34,4 +34,15 @@ class ToeicListViewModel : ViewModel() {
     fun retry() {
         loadToeicTests()
     }
+
+    fun deleteToeic(toeicId: String, onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            repository.deleteToeic(toeicId)
+                .onSuccess {
+                    toeicTests = toeicTests.filterNot { it.id == toeicId }
+                    onSuccess()
+                }
+                .onFailure { error = it.message ?: "Failed to delete test" }
+        }
+    }
 }
