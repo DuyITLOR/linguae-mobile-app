@@ -21,6 +21,12 @@ class PracticeTopicViewModel (
     private val _topic = MutableStateFlow<List<Topic>?>(null)
     val topic = _topic.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
     private val _query = MutableStateFlow("")
 
     init {
@@ -35,7 +41,15 @@ class PracticeTopicViewModel (
         }
     }
 
-    private suspend fun getTopicByName(name: String = "") {
+    fun refresh() {
+        viewModelScope.launch {
+            getTopicByName(_query.value)
+        }
+    }
+
+    suspend fun getTopicByName(name: String = "") {
+        _isLoading.value = true
+        _error.value = null
         val result = _topicRepository.getAllTopic(name)
 
         result
@@ -44,9 +58,10 @@ class PracticeTopicViewModel (
                 Log.d("PRACTICEVM", "FETCHED TOPICS: ${_topic.value}")
             }
             .onFailure { e ->
-                _topic.value = emptyList<Topic>()
+                _error.value = e.message ?: "Failed to fetch topics"
                 Log.d("PRACTICEVM", "ERROR FETCHING TOPIC: $e")
             }
+        _isLoading.value = false
     }
 
     var onTopicClicked: (Topic?) -> Unit = {}

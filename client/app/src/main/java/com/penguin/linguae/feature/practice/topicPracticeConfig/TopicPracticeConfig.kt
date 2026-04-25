@@ -96,7 +96,7 @@ fun TopicPracticeConfigScreen(
                 }
 
                 // Flatten all question types from all TopicPracticeConfig records for this topic
-                val allQuestionTypes = practiceConfigs.flatMap { it.questionType }.distinct()
+                val allQuestionTypes = practiceConfigs.flatMap { it.questionType.sorted() }.distinct()
 
                 items(allQuestionTypes) { type ->
                     TopicPracticeConfigCard(
@@ -104,7 +104,6 @@ fun TopicPracticeConfigScreen(
                         onClick = {
                             when (type.uppercase()) {
                                 "CLOZE" -> navController.navigate(Screen.Cloze.createRoute(topicId))
-                                "FLASHCARD" -> navController.navigate(Screen.Flashcard.createRoute(topicId))
                                 "MATCHING" -> navController.navigate(Screen.Matching.createRoute(topicId))
                                 // Add other mappings as they are implemented
                             }

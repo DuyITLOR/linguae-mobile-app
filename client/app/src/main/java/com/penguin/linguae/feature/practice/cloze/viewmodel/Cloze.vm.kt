@@ -71,7 +71,7 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
             _isAnswered.value = false
         }
 
-        private fun fetchQuestionsWithOptionsByTopic(topicId: String) {
+        fun fetchQuestionsWithOptionsByTopic(topicId: String) {
             viewModelScope.launch {
                 try {
                     _isLoading.value = true
@@ -84,6 +84,9 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
                             question = question,
                             options = groupedOptions[question.questionID] ?: emptyList()
                         )
+                    }
+                    if (_questionsWithOptions.value.size == 1){
+                        _isLastQuestion.value = true
                     }
                 } catch (e: Exception) {
                     _error.value = e.message

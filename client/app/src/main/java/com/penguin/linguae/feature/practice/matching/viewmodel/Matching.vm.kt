@@ -62,7 +62,7 @@ class MatchingViewModel(
         fetchMatchingQuestions(topicId)
     }
 
-    private fun fetchMatchingQuestions(topicId: String) {
+    fun fetchMatchingQuestions(topicId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             repository.getMatchingQuestions(topicId)

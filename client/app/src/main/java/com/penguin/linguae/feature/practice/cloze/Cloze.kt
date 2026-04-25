@@ -24,6 +24,7 @@ import com.penguin.linguae.feature.practice.cloze.component.ClozeOptions
 import com.penguin.linguae.feature.practice.cloze.component.Header
 import com.penguin.linguae.feature.practice.cloze.component.QuestionHolder
 import com.penguin.linguae.feature.practice.cloze.viewmodel.ClozeViewModel
+import com.penguin.linguae.core.ui.component.ErrorView
 
 @Composable
 fun ClozeScreen(
@@ -67,12 +68,10 @@ fun ClozeScreen(
 
             // Có lỗi
             error != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "Lỗi: $error")
-                }
+                ErrorView(
+                    message = error ?: "Unknown error",
+                    onRetry = { viewModel.fetchQuestionsWithOptionsByTopic(topicId) }
+                )
             }
 
             // List rỗng sau khi load xong
@@ -93,7 +92,7 @@ fun ClozeScreen(
                     verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    item { Header(currentIndex, onClick = onReturn) }
+                    item { Header(currentIndex, questionsWithOptions.size, onClick = onReturn) }
                     item { QuestionHolder(current.question) }
                     item {
                         Text(

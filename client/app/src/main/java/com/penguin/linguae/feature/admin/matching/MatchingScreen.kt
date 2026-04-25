@@ -76,6 +76,8 @@ fun MatchingScreen(
                     questions = viewModel.questions,
                     searchQuery = searchQuery,
                     isLoading = viewModel.isLoading,
+                    error = viewModel.error,
+                    onRetry = { viewModel.loadMatchingQuestions() },
                     onSearchQueryChange = { searchQuery = it },
                     onAdd = { viewModel.startCreate() },
                     onEdit = { viewModel.startEdit(it) },

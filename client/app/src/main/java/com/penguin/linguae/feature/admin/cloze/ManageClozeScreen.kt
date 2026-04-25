@@ -27,6 +27,7 @@ import com.penguin.linguae.data.model.ClozeQuestion
 import com.penguin.linguae.feature.admin.cloze.viewmodel.ClozeManageMode
 import com.penguin.linguae.feature.admin.cloze.viewmodel.ManageClozeViewModel
 import com.penguin.linguae.feature.admin.cloze.viewmodel.ManageClozeViewModelFactory
+import com.penguin.linguae.core.ui.component.ErrorView
 
 @Composable
 fun ManageClozeScreen(
@@ -122,6 +123,8 @@ fun ManageClozeScreen(
                 ClozeManageMode.LIST -> ClozeListContent(
                     questions = viewModel.questions,
                     isLoading = viewModel.isLoading,
+                    error = viewModel.error,
+                    onRetry = { viewModel.loadQuestions() },
                     onAdd = { viewModel.startCreate() },
                     onEdit = { viewModel.startEdit(it) },
                     onDelete = { viewModel.confirmDelete(it) }
@@ -136,6 +139,8 @@ fun ManageClozeScreen(
 private fun ClozeListContent(
     questions: List<ClozeQuestion>,
     isLoading: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
     onAdd: () -> Unit,
     onEdit: (ClozeQuestion) -> Unit,
     onDelete: (Int) -> Unit
@@ -162,6 +167,11 @@ private fun ClozeListContent(
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PurplePrimary)
             }
+        } else if (error != null && questions.isEmpty()) {
+            ErrorView(
+                message = error,
+                onRetry = onRetry
+            )
         } else {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
