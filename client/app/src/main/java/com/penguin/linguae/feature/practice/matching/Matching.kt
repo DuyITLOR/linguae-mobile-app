@@ -23,6 +23,7 @@ import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.feature.practice.matching.component.MatchingHeader
 import com.penguin.linguae.feature.practice.matching.viewmodel.MatchingItem
 import com.penguin.linguae.feature.practice.matching.viewmodel.MatchingViewModel
+import com.penguin.linguae.core.ui.component.ErrorView
 
 @Composable
 fun MatchingScreen(
@@ -57,9 +58,10 @@ fun MatchingScreen(
                 }
             }
             error != null -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Lỗi: $error", color = Color.Red)
-                }
+                ErrorView(
+                    message = error ?: "Unknown error",
+                    onRetry = { viewModel.fetchMatchingQuestions(topicId) }
+                )
             }
             questions.isEmpty() -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Topic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -27,6 +29,7 @@ import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.feature.practice.practiceTopic.viewmodel.PracticeTopicViewModel
+import com.penguin.linguae.core.ui.component.ErrorView
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 @Composable
@@ -36,6 +39,8 @@ fun PracticeTopicScreen(
     onReturn: () -> Unit = {},
 ) {
     val topics by viewModel.topic.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
     var query by remember { mutableStateOf("") }
 
     val filtered = remember(query) {
@@ -119,44 +124,56 @@ fun PracticeTopicScreen(
         }
 
         // ── List ────────────────────────────────────────────────────────
-        LazyColumn(
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // "All topics" special card
-            item {
-                AllTopicsCard(onClick = { viewModel.onTopicClicked(null) })
+        if (isLoading && (topics == null || topics!!.isEmpty())) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Primary)
             }
-
-            // Section label
-            item {
-                Text(
-                    "CHỌN CHỦ ĐỀ",
-                    color = TextSecond,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.sp,
-                    modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
-                )
-            }
-
-            if (filtered === null){
-                items(topics ?: emptyList(), key = { it.id }) { topic ->
-                    TopicCard(topic = topic, onClick = { viewModel.onTopicClicked(topic) })
-                }
-            }
-            else if (filtered.isEmpty() ?: false) {
+        } else if (error != null && (topics == null || topics!!.isEmpty())) {
+            ErrorView(
+                message = error ?: "Unknown error",
+                onRetry = { viewModel.refresh() }
+            )
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // "All topics" special card
                 item {
-                    Box(
-                        Modifier.fillMaxWidth().padding(vertical = 40.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Không tìm thấy chủ đề 🥲", color = TextSecond, fontSize = 14.sp)
-                    }
+                    AllTopicsCard(onClick = { viewModel.onTopicClicked(null) })
                 }
-            } else {
-                items(filtered, key = { it.id }) { topic ->
-                    TopicCard(topic = topic, onClick = { viewModel.onTopicClicked(topic) })
+
+                // Section label
+                item {
+                    Text(
+                        "CHỌN CHỦ ĐỀ",
+                        color = TextSecond,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.sp,
+                        modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
+                    )
+                }
+
+                if (filtered === null) {
+                    items(topics ?: emptyList(), key = { it.id }) { topic ->
+                        TopicCard(topic = topic, onClick = { viewModel.onTopicClicked(topic) })
+                    }
+                } else if (filtered.isEmpty()) {
+                    item {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 40.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Không tìm thấy chủ đề 🥲", color = TextSecond, fontSize = 14.sp)
+                        }
+                    }
+                } else {
+                    items(filtered, key = { it.id }) { topic ->
+                        TopicCard(topic = topic, onClick = { viewModel.onTopicClicked(topic) })
+                    }
                 }
             }
         }
@@ -223,6 +240,10 @@ fun TopicCard(topic: Topic, onClick: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
 //            Text(topic.emoji, fontSize = 24.sp)
+            Icon(
+                Icons.Default.Topic,
+                contentDescription = null
+            )
         }
 
         Spacer(Modifier.width(14.dp))

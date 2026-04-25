@@ -44,6 +44,7 @@ import com.penguin.linguae.core.ui.theme.PurpleLight
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
+import com.penguin.linguae.core.ui.component.ErrorView
 import com.penguin.linguae.data.model.MatchingQuestionUi
 
 @Composable
@@ -52,6 +53,8 @@ fun MatchingListContent(
     questions: List<MatchingQuestionUi>,
     searchQuery: String,
     isLoading: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onAdd: () -> Unit,
     onEdit: (MatchingQuestionUi) -> Unit,
@@ -159,6 +162,11 @@ fun MatchingListContent(
             ) {
                 CircularProgressIndicator(color = PurplePrimary)
             }
+        } else if (error != null && questions.isEmpty()) {
+            ErrorView(
+                message = error,
+                onRetry = onRetry
+            )
         } else if (filteredQuestions.isEmpty()) {
             MatchingEmptyState(
                 hasQuestions = questions.isNotEmpty(),

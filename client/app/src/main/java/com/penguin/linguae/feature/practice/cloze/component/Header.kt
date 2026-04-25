@@ -28,6 +28,7 @@ import com.penguin.linguae.core.ui.theme.SurfaceColor
 @Composable
 fun Header(
     questionNo: Int,
+    questionCount: Int,
     onClick: () -> Unit = {}
 ){
     Box(modifier = Modifier
@@ -66,7 +67,7 @@ fun Header(
                         color = SurfaceColor,
                     )
                     Text(
-                        text = "Câu ${questionNo + 1} / 10",
+                        text = "Câu ${questionNo + 1} / $questionCount",
                         color = SurfaceColor,
                         fontSize = 16.sp,
                     )
@@ -74,10 +75,4 @@ fun Header(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun Test(){
-    Header(1)
 }
