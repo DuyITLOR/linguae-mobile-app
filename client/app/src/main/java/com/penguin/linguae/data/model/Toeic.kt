@@ -4,5 +4,5 @@ data class Toeic(
     val id: String,
     val title: String,
     val level: String,
-    val createAt: String = ""
+    val createdAt: String = ""
 )

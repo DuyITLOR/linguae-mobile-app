@@ -82,6 +82,7 @@ private val DividerLight = Color(0xFFF0EEFF)
 fun ToeicListScreen(
     onBack: () -> Unit,
     onAddExam: () -> Unit = {},
+    onEditExam: (String) -> Unit = {},
     viewModel: ToeicListViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -328,6 +329,7 @@ fun ToeicListScreen(
                         }) { exam ->
                             ExamCard(
                                 exam = exam,
+                                onEdit = { onEditExam(exam.id) },
                                 onDelete = {
                                     viewModel.deleteToeic(exam.id) {
                                         Toast.makeText(context, "Xóa thành công", Toast.LENGTH_SHORT).show()
@@ -361,6 +363,7 @@ private fun resolveToeicAdminErrorMessage(rawError: String?): String {
 @Composable
 private fun ExamCard(
     exam: Toeic,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     var isLive by remember { mutableStateOf(true) }
@@ -473,7 +476,7 @@ private fun ExamCard(
                         icon = Icons.Filled.Edit,
                         contentDescription = "Edit",
                         tint = PurplePrimary.copy(alpha = 0.8f),
-                        onClick = { }
+                        onClick = onEdit
                     )
                     ActionIconButton(
                         icon = Icons.Filled.Delete,

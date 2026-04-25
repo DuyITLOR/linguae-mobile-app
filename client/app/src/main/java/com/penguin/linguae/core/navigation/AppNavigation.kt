@@ -1,6 +1,7 @@
 package com.penguin.linguae.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -120,16 +121,36 @@ fun AppNavigation(
             ToeicListScreen(
                 onBack = { navController.popBackStack() },
                 onAddExam = {
-                    navController.navigate(Screen.ToeicExamInfoEditor.route)
+                    navController.navigate(Screen.ToeicExamInfoEditor.createRoute())
+                },
+                onEditExam = { toeicId ->
+                    navController.navigate(Screen.ToeicExamInfoEditor.createRoute(toeicId))
                 }
             )
         }
 
-        composable(Screen.ToeicExamInfoEditor.route) { backStackEntry ->
+        composable(
+            route = Screen.ToeicExamInfoEditor.route,
+            arguments = listOf(
+                navArgument("toeicId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val toeicId = backStackEntry.arguments?.getString("toeicId")
             val toeicListEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.ToeicList.route)
             }
             val editorViewModel: ToeicEditorViewModel = viewModel(toeicListEntry)
+            LaunchedEffect(toeicId) {
+                if (toeicId.isNullOrBlank()) {
+                    editorViewModel.startCreateDraft()
+                } else {
+                    editorViewModel.loadToeicDraft(toeicId)
+                }
+            }
             ToeicExamInfoScreen(
                 onBack = {
                     editorViewModel.clearAllDrafts()
@@ -139,12 +160,12 @@ fun AppNavigation(
                     }
                 },
                 onNavigatePart5 = {
-                    navController.navigate(Screen.ToeicPart5Editor.route) {
+                    navController.navigate(Screen.ToeicPart5Editor.createRoute(toeicId)) {
                         launchSingleTop = true
                     }
                 },
                 onNavigatePart6 = {
-                    navController.navigate(Screen.ToeicPart6Editor.route) {
+                    navController.navigate(Screen.ToeicPart6Editor.createRoute(toeicId)) {
                         launchSingleTop = true
                     }
                 },
@@ -158,11 +179,28 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.ToeicPart5Editor.route) { backStackEntry ->
+        composable(
+            route = Screen.ToeicPart5Editor.route,
+            arguments = listOf(
+                navArgument("toeicId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val toeicId = backStackEntry.arguments?.getString("toeicId")
             val toeicListEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.ToeicList.route)
             }
             val editorViewModel: ToeicEditorViewModel = viewModel(toeicListEntry)
+            LaunchedEffect(toeicId) {
+                if (toeicId.isNullOrBlank()) {
+                    editorViewModel.startCreateDraft()
+                } else {
+                    editorViewModel.loadToeicDraft(toeicId)
+                }
+            }
             ToeicPart5EditorScreen(
                 onBack = {
                     editorViewModel.clearAllDrafts()
@@ -171,14 +209,14 @@ fun AppNavigation(
                         launchSingleTop = true
                     }
                 },
-                toeicId = null,
+                toeicId = toeicId,
                 onInfoClick = {
-                    navController.navigate(Screen.ToeicExamInfoEditor.route) {
+                    navController.navigate(Screen.ToeicExamInfoEditor.createRoute(toeicId)) {
                         launchSingleTop = true
                     }
                 },
                 onPart6Click = {
-                    navController.navigate(Screen.ToeicPart6Editor.route) {
+                    navController.navigate(Screen.ToeicPart6Editor.createRoute(toeicId)) {
                         launchSingleTop = true
                     }
                 },
@@ -192,11 +230,28 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.ToeicPart6Editor.route) { backStackEntry ->
+        composable(
+            route = Screen.ToeicPart6Editor.route,
+            arguments = listOf(
+                navArgument("toeicId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val toeicId = backStackEntry.arguments?.getString("toeicId")
             val toeicListEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.ToeicList.route)
             }
             val editorViewModel: ToeicEditorViewModel = viewModel(toeicListEntry)
+            LaunchedEffect(toeicId) {
+                if (toeicId.isNullOrBlank()) {
+                    editorViewModel.startCreateDraft()
+                } else {
+                    editorViewModel.loadToeicDraft(toeicId)
+                }
+            }
             ToeicPart6EditorScreen(
                 onBack = {
                     editorViewModel.clearAllDrafts()
@@ -205,14 +260,14 @@ fun AppNavigation(
                         launchSingleTop = true
                     }
                 },
-                toeicId = null,
+                toeicId = toeicId,
                 onInfoClick = {
-                    navController.navigate(Screen.ToeicExamInfoEditor.route) {
+                    navController.navigate(Screen.ToeicExamInfoEditor.createRoute(toeicId)) {
                         launchSingleTop = true
                     }
                 },
                 onPart5Click = {
-                    navController.navigate(Screen.ToeicPart5Editor.route) {
+                    navController.navigate(Screen.ToeicPart5Editor.createRoute(toeicId)) {
                         launchSingleTop = true
                     }
                 },

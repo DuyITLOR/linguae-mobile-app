@@ -2,12 +2,17 @@ package com.penguin.linguae.feature.admin.toeic.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.penguin.linguae.data.model.CreateReadingPart6OptionRequest
 import com.penguin.linguae.data.model.CreateToeicPart5Request
 import com.penguin.linguae.data.model.CreateToeicPart6Request
 import com.penguin.linguae.data.model.CreateToeicRequest
 import com.penguin.linguae.data.repository.ToeicRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 data class ExamInfoDraft(
     val title: String = "",
@@ -38,8 +43,17 @@ class ToeicEditorViewModel : ViewModel() {
 
     private val toeicRepository = ToeicRepository()
 
-    var examInfo: ExamInfoDraft = ExamInfoDraft()
+    var examInfo by mutableStateOf(ExamInfoDraft())
         private set
+
+    var isLoadingDraft by mutableStateOf(false)
+        private set
+
+    var draftLoadError by mutableStateOf<String?>(null)
+        private set
+
+    private var activeToeicId: String? = null
+    private var createDraftStarted = false
 
     fun updateExamInfo(updated: ExamInfoDraft) {
         examInfo = updated
@@ -114,10 +128,86 @@ class ToeicEditorViewModel : ViewModel() {
         }
     }
 
+    fun startCreateDraft() {
+        if (activeToeicId != null || !createDraftStarted) {
+            clearAllDrafts()
+            createDraftStarted = true
+        }
+    }
+
+    suspend fun loadToeicDraft(toeicId: String): String? {
+        if (toeicId.isBlank()) return null
+        if (activeToeicId == toeicId && draftLoadError == null) return null
+
+        isLoadingDraft = true
+        draftLoadError = null
+
+        return try {
+            coroutineScope {
+                val toeicDeferred = async { toeicRepository.getToeicById(toeicId).getOrThrow() }
+                val part5Deferred = async { toeicRepository.getReadingPart5Questions(toeicId).getOrThrow() }
+                val part6Deferred = async { toeicRepository.getReadingPart6Questions(toeicId).getOrThrow() }
+
+                val toeic = toeicDeferred.await()
+                val part5 = part5Deferred.await()
+                val part6 = part6Deferred.await()
+
+                examInfo = ExamInfoDraft(
+                    title = toeic.title,
+                    level = toeic.level
+                )
+
+                part5Questions.clear()
+                part5Questions.addAll(
+                    part5.map { question ->
+                        Part5QuestionDraft(
+                            id = question.id,
+                            sentence = question.question,
+                            options = normalizeOptions(question.options),
+                            answer = question.answer
+                        )
+                    }
+                )
+
+                part6Passages.clear()
+                part6Passages.addAll(
+                    part6.map { passage ->
+                        Part6PassageDraft(
+                            id = passage.id,
+                            passage = normalizePassageForEditor(passage.question),
+                            questions = passage.readingPart6Options
+                                .sortedBy { option -> option.title }
+                                .map { option ->
+                                    Part6QuestionDraft(
+                                        id = option.id,
+                                        title = option.title,
+                                        options = normalizeOptions(option.option),
+                                        answer = option.answer
+                                    )
+                                }
+                        )
+                    }
+                )
+
+                activeToeicId = toeicId
+                createDraftStarted = false
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("ToeicEditorVM", "Load TOEIC draft failed", e)
+            val message = e.message ?: "Khong the tai noi dung de TOEIC"
+            draftLoadError = message
+            message
+        } finally {
+            isLoadingDraft = false
+        }
+    }
+
     suspend fun saveQuestion(): String? {
         validateDrafts()?.let { return it }
 
         return try {
+            val editingToeicId = activeToeicId
             val request = CreateToeicRequest(
                 title = examInfo.title.trim(),
                 level = examInfo.level,
@@ -146,21 +236,29 @@ class ToeicEditorViewModel : ViewModel() {
                 }
             )
 
+            if (editingToeicId != null) {
+                val deleteResult = toeicRepository.deleteToeic(editingToeicId)
+                deleteResult.exceptionOrNull()?.let { error ->
+                    Log.e("ToeicEditorVM", "Delete existing TOEIC failed", error)
+                    return error.message ?: "Khong the xoa de TOEIC cu"
+                }
+            }
+
             val createResult = toeicRepository.createToeic(request)
 
             createResult.fold(
                 onSuccess = { createdToeic ->
-                    Log.d("ToeicEditorVM", "Created TOEIC with questions: ${createdToeic.id}")
+                    Log.d("ToeicEditorVM", "Saved TOEIC with questions: ${createdToeic.id}")
                     clearAllDrafts()
                     null
                 },
                 onFailure = { error ->
-                    Log.e("ToeicEditorVM", "Create TOEIC failed", error)
+                    Log.e("ToeicEditorVM", "Save TOEIC failed", error)
                     error.message ?: "Khong the tao de TOEIC"
                 }
             )
         } catch (e: Exception) {
-            Log.e("ToeicEditorVM", "Create TOEIC failed", e)
+            Log.e("ToeicEditorVM", "Save TOEIC failed", e)
             e.message ?: "Khong the tao de TOEIC"
         }
     }
@@ -208,5 +306,19 @@ class ToeicEditorViewModel : ViewModel() {
         examInfo = ExamInfoDraft()
         part5Questions.clear()
         part6Passages.clear()
+        activeToeicId = null
+        createDraftStarted = false
+        draftLoadError = null
+        isLoadingDraft = false
+    }
+
+    private fun normalizeOptions(options: List<String>): List<String> {
+        return (options + List(4) { "" }).take(4)
+    }
+
+    private fun normalizePassageForEditor(passage: String): String {
+        return passage
+            .replace("<br/>", "\n", ignoreCase = true)
+            .replace("<br>", "\n", ignoreCase = true)
     }
 }

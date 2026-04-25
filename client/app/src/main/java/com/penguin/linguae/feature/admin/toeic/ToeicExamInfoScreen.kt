@@ -34,6 +34,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,6 +85,9 @@ fun ToeicExamInfoScreen(
 
     // Local mutable copy — synced FROM viewModel on first compose, written BACK on any change
     var draft by remember { mutableStateOf(viewModel.examInfo) }
+    LaunchedEffect(viewModel.examInfo) {
+        draft = viewModel.examInfo
+    }
 
     Surface(color = AppBackground, modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {

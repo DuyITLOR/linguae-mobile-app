@@ -19,6 +19,9 @@ interface ToeicApi {
     @GET("toeic")
     suspend fun getAllToeic(): List<Toeic>
 
+    @GET("toeic/{toeicId}")
+    suspend fun getToeicById(@Path("toeicId") toeicId: String): Toeic
+
     @POST("toeic")
     suspend fun createToeic(@Body request: CreateToeicRequest): CreateToeicResponse
 

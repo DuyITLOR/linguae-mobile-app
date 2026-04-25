@@ -24,6 +24,14 @@ class ToeicRepository {
         }
     }
 
+    suspend fun getToeicById(toeicId: String): Result<Toeic> {
+        return try {
+            Result.success(api.getToeicById(toeicId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun createToeic(request: CreateToeicRequest): Result<CreateToeicResponse> {
         return try {
             Result.success(api.createToeic(request))
