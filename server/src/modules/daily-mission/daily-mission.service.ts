@@ -370,12 +370,20 @@ export class DailyMissionService {
       };
     });
 
-    const missionHistory = historyMissions.map((m) => ({
-      date: m.date.toISOString().split('T')[0],
-      status: m.status,
-      completedTasks: m.DailyTask.filter((t) => t.status === TaskStatus.COMPLETED).length,
-      totalTasks: m.DailyTask.length,
-    }));
+    const todayStr = today.toISOString().split('T')[0];
+
+    const missionHistory = historyMissions
+      .filter((m) => {
+        const mDate = m.date.toISOString().split('T')[0];
+        if (mDate === todayStr) return true;
+        return m.status === MissionStatus.COMPLETED;
+      })
+      .map((m) => ({
+        date: m.date.toISOString().split('T')[0],
+        status: m.status,
+        completedTasks: m.DailyTask.filter((t) => t.status === TaskStatus.COMPLETED).length,
+        totalTasks: m.DailyTask.length,
+      }));
 
     return { streak, totalVocabularyLearned, todayProgress, weeklyActivity, missionHistory };
   }
