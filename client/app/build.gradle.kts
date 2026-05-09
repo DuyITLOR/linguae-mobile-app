@@ -14,6 +14,8 @@ val localProperties = Properties().apply {
 }
 
 val googleClientId = localProperties.getProperty("GOOGLE_CLIENT_ID")
+    ?.trim()
+    ?.ifEmpty { null }
     ?: throw GradleException("GOOGLE_CLIENT_ID not found in local.properties")
 
 val baseUrl = localProperties.getProperty("BASE_URL")

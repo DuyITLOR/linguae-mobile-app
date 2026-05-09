@@ -81,9 +81,8 @@ fun LoginScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    // Debug: Kiểm tra xem Client ID có load được không
     LaunchedEffect(Unit) {
-        Log.d("GOOGLE_CONFIG", "Client ID: ${BuildConfig.GOOGLE_CLIENT_ID}")
+        Log.d("GOOGLE_CONFIG", "Google client ID configured=${BuildConfig.GOOGLE_CLIENT_ID.isNotBlank()}")
     }
 
     LaunchedEffect(navigateHome) {
@@ -107,9 +106,10 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
 
     val googleSignInClient = remember {
+        val googleClientId = BuildConfig.GOOGLE_CLIENT_ID.trim()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
-            .requestIdToken(BuildConfig.GOOGLE_CLIENT_ID)
+            .requestIdToken(googleClientId)
             .build()
         GoogleSignIn.getClient(context, gso)
     }
