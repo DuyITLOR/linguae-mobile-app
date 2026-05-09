@@ -16,6 +16,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { ToeicModule } from './modules/toeic/toeic.module';
 import { TopicPracticeConfigModule } from './modules/topic-practice-config/topic-practice-config.module';
 import { MatchingModule } from './modules/matching/matching.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { MatchingModule } from './modules/matching/matching.module';
     ToeicModule,
     TopicPracticeConfigModule,
     MatchingModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -183,6 +183,7 @@ model User {
   PracticeSession        PracticeSession[]
   Reminder               Reminder[]
   UserDailyGoal          UserDailyGoal[]
+  UserDeviceToken        UserDeviceToken[]
   UserLearningPlan       UserLearningPlan[]
   UserSetting            UserSetting[]
   UserVocabularyProgress UserVocabularyProgress[]
@@ -225,6 +226,21 @@ model UserSetting {
   createdAt            DateTime @default(now())
   updatedAt            DateTime
   User                 User     @relation(fields: [userId], references: [id])
+}
+
+model UserDeviceToken {
+  id         String   @id @default(uuid())
+  userId     String
+  token      String   @unique
+  platform   String   @default("android")
+  deviceName String?
+  isActive   Boolean  @default(true)
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  User       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model UserVocabularyProgress {
