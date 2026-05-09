@@ -47,6 +47,7 @@ fun ProfileScreen(
     uiState: ProfileUiState,
     onLogout: () -> Unit,
     onNavigateEditProfile: () -> Unit,
+    onNavigateNotificationSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
@@ -83,7 +84,8 @@ fun ProfileScreen(
                         iconTint = PurplePrimary,
                         iconBackground = PurpleLight,
                         title = "Cài đặt",
-                        subtitle = "Khu vực đặt thông báo, ngôn ngữ và trải nghiệm của app."
+                        subtitle = "Khu vực đặt thông báo, ngôn ngữ và trải nghiệm của app.",
+                        onClick = onNavigateNotificationSettings
                     )
                 }
             }
@@ -139,6 +141,7 @@ private fun ProfileScreenPreview() {
     ProfileScreen(
         uiState = ProfilePreviewData.sample,
         onLogout = {},
-        onNavigateEditProfile = {}
+        onNavigateEditProfile = {},
+        onNavigateNotificationSettings = {}
     )
 }

@@ -21,12 +21,14 @@ import com.penguin.linguae.core.navigation.AppNavigation
 import com.penguin.linguae.core.navigation.Screen
 import com.penguin.linguae.core.network.TokenManager
 import com.penguin.linguae.core.network.UserManager
+import com.penguin.linguae.core.notification.LearningReminderScheduler
 import com.penguin.linguae.feature.chat.ChatScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TokenManager.init(this)
         UserManager.init(this)
+        LearningReminderScheduler.ensureChannel(this)
         setContent{
             MainScreen()
         }

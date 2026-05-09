@@ -43,6 +43,7 @@ import com.penguin.linguae.feature.practice.practiceResult.ResultScreen
 import com.penguin.linguae.feature.practice.practiceTopic.PracticeTopicScreen
 import com.penguin.linguae.feature.practice.topicPracticeConfig.TopicPracticeConfigScreen
 import com.penguin.linguae.feature.profile.ProfileEditScreen
+import com.penguin.linguae.feature.profile.NotificationSettingsScreen
 import com.penguin.linguae.feature.profile.ProfileScreen
 import com.penguin.linguae.feature.statistic.StatisticScreen
 import com.penguin.linguae.feature.toeic.ToeicMockTestListScreen
@@ -387,6 +388,9 @@ fun AppNavigation(
                 onNavigateEditProfile = {
                     navController.navigate(Screen.EditProfile.route)
                 },
+                onNavigateNotificationSettings = {
+                    navController.navigate(Screen.NotificationSettings.route)
+                },
                 onLogout = {
                     TokenManager.clear()
                     UserManager.clearUser()
@@ -408,6 +412,12 @@ fun AppNavigation(
                     email = currentUser?.email ?: "No email",
                     avatarUrl = currentUser?.avatarUrl
                 ),
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.NotificationSettings.route) {
+            NotificationSettingsScreen(
                 onBack = { navController.popBackStack() }
             )
         }
