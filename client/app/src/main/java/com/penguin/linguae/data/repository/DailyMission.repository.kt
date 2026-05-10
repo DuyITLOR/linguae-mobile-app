@@ -1,11 +1,13 @@
 package com.penguin.linguae.data.repository
 
 import com.penguin.linguae.core.network.RetrofitClient
+import com.penguin.linguae.data.model.ClozeQuestion
 import com.penguin.linguae.data.model.CompleteWordRequest
 import com.penguin.linguae.data.model.CompleteWordResponse
 import com.penguin.linguae.data.model.DailyActivityStats
 import com.penguin.linguae.data.model.DailyMission
 import com.penguin.linguae.data.model.DailyMissionSummary
+import com.penguin.linguae.data.model.MatchingPairUi
 import com.penguin.linguae.data.model.StatisticsResponse
 import com.penguin.linguae.data.model.TaskWordsResponse
 import com.penguin.linguae.data.remote.DailyMissionApi
@@ -57,6 +59,30 @@ class DailyMissionRepository {
     suspend fun completeWord(taskId: String, vocabularyId: String): Result<CompleteWordResponse> {
         return try {
             Result.success(api.completeWord(taskId, CompleteWordRequest(vocabularyId)))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getDailyClozeQuestions(taskId: String): Result<List<ClozeQuestion>> {
+        return try {
+            Result.success(api.getDailyClozeQuestions(taskId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getDailyMatchingQuestions(taskId: String): Result<List<MatchingPairUi>> {
+        return try {
+            Result.success(api.getDailyMatchingQuestions(taskId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun completeDailyExercise(taskId: String): Result<CompleteWordResponse> {
+        return try {
+            Result.success(api.completeDailyExercise(taskId))
         } catch (e: Exception) {
             Result.failure(e)
         }

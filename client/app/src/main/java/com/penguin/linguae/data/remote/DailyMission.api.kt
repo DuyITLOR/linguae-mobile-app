@@ -2,9 +2,11 @@ package com.penguin.linguae.data.remote
 
 import com.penguin.linguae.data.model.CompleteWordRequest
 import com.penguin.linguae.data.model.CompleteWordResponse
+import com.penguin.linguae.data.model.ClozeQuestion
 import com.penguin.linguae.data.model.DailyActivityStats
 import com.penguin.linguae.data.model.DailyMission
 import com.penguin.linguae.data.model.DailyMissionSummary
+import com.penguin.linguae.data.model.MatchingPairUi
 import com.penguin.linguae.data.model.StatisticsResponse
 import com.penguin.linguae.data.model.TaskWordsResponse
 import retrofit2.http.Body
@@ -37,4 +39,13 @@ interface DailyMissionApi {
         @Path("taskId") taskId: String,
         @Body body: CompleteWordRequest
     ): CompleteWordResponse
+
+    @GET("daily-mission/task/{taskId}/cloze-questions")
+    suspend fun getDailyClozeQuestions(@Path("taskId") taskId: String): List<ClozeQuestion>
+
+    @GET("daily-mission/task/{taskId}/matching-questions")
+    suspend fun getDailyMatchingQuestions(@Path("taskId") taskId: String): List<MatchingPairUi>
+
+    @POST("daily-mission/task/{taskId}/complete-exercise")
+    suspend fun completeDailyExercise(@Path("taskId") taskId: String): CompleteWordResponse
 }
