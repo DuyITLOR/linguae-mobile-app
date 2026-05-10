@@ -454,6 +454,8 @@ enum UserVocabularyStatus {
 enum DailyTaskType {
   VOCABULARY_LEARN
   FLASHCARD_LEARN
+  CLOZE_LEARN
+  MATCHING_LEARN
 }
 
 enum MissionStatus {

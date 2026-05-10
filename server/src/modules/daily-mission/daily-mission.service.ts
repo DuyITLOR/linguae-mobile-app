@@ -46,6 +46,20 @@ export class DailyMissionService {
     return result.map((r) => r.id);
   }
 
+  private async randomClozeQuestionIds(): Promise<number[]> {
+    const result = await this.prismaService.$queryRaw<{ id: number }[]>`
+      SELECT id FROM "ClozeQuestion" ORDER BY RANDOM() LIMIT 5
+    `;
+    return result.map((r) => Number(r.id));
+  }
+
+  private async randomMatchingPairIds(): Promise<string[]> {
+    const result = await this.prismaService.$queryRaw<{ id: string }[]>`
+      SELECT id FROM "MatchingPair" ORDER BY RANDOM() LIMIT 5
+    `;
+    return result.map((r) => r.id);
+  }
+
   private async updateStreak(userId: string) {
     const today = this.todayOnly(new Date());
     const yesterday = new Date(today);
@@ -109,10 +123,13 @@ export class DailyMissionService {
 
     if (existing) return this.formatMission(existing);
 
-    const [vocabularyIds, fashcardIds] = await Promise.all([
-      this.randomVocabularyIds(),
-      this.randomVocabularyIds(),
-    ]);
+    const [vocabularyIds, flashcardIds, clozeQuestionIds, matchingPairIds] =
+      await Promise.all([
+        this.randomVocabularyIds(),
+        this.randomVocabularyIds(),
+        this.randomClozeQuestionIds(),
+        this.randomMatchingPairIds(),
+      ]);
 
     const mission = await this.prismaService.dailyMission.create({
       data: {
@@ -130,7 +147,19 @@ export class DailyMissionService {
             {
               taskType: DailyTaskType.FLASHCARD_LEARN,
               targetCount: 5,
-              vocabularyIds: fashcardIds,
+              vocabularyIds: flashcardIds,
+              updatedAt: new Date(),
+            },
+            {
+              taskType: DailyTaskType.CLOZE_LEARN,
+              targetCount: 5,
+              vocabularyIds: clozeQuestionIds,
+              updatedAt: new Date(),
+            },
+            {
+              taskType: DailyTaskType.MATCHING_LEARN,
+              targetCount: 5,
+              vocabularyIds: matchingPairIds,
               updatedAt: new Date(),
             },
           ],
@@ -239,7 +268,7 @@ export class DailyMissionService {
       throw new BadRequestException('Vocabulary not in the task');
     }
 
-    console.log(2); 
+    console.log(2);
 
     const alreadyCounted =
       await this.prismaService.dailyTaskCompletion.findUnique({
@@ -255,7 +284,7 @@ export class DailyMissionService {
       return { alreadyCounted: true, task };
     }
 
-    console.log(3); 
+    console.log(3);
     const updatedTask = await this.prismaService.$transaction(async (tx) => {
       await tx.dailyTaskCompletion.create({
         data: {
@@ -294,26 +323,31 @@ export class DailyMissionService {
     const sixDaysAgo = new Date(today);
     sixDaysAgo.setUTCDate(sixDaysAgo.getUTCDate() - 6);
 
-    const [goal, totalVocabularyLearned, todayMission, weeklyMissions, historyMissions] =
-      await Promise.all([
-        this.prismaService.userDailyGoal.findFirst({ where: { userId } }),
-        this.prismaService.userVocabularyProgress.count({ where: { userId } }),
-        this.prismaService.dailyMission.findUnique({
-          where: { userId_date: { userId, date: today } },
-          include: { DailyTask: true },
-        }),
-        this.prismaService.dailyMission.findMany({
-          where: { userId, date: { gte: sixDaysAgo, lte: today } },
-          include: { DailyTask: true },
-          orderBy: { date: 'asc' },
-        }),
-        this.prismaService.dailyMission.findMany({
-          where: { userId },
-          include: { DailyTask: true },
-          orderBy: { date: 'desc' },
-          take: 10,
-        }),
-      ]);
+    const [
+      goal,
+      totalVocabularyLearned,
+      todayMission,
+      weeklyMissions,
+      historyMissions,
+    ] = await Promise.all([
+      this.prismaService.userDailyGoal.findFirst({ where: { userId } }),
+      this.prismaService.userVocabularyProgress.count({ where: { userId } }),
+      this.prismaService.dailyMission.findUnique({
+        where: { userId_date: { userId, date: today } },
+        include: { DailyTask: true },
+      }),
+      this.prismaService.dailyMission.findMany({
+        where: { userId, date: { gte: sixDaysAgo, lte: today } },
+        include: { DailyTask: true },
+        orderBy: { date: 'asc' },
+      }),
+      this.prismaService.dailyMission.findMany({
+        where: { userId },
+        include: { DailyTask: true },
+        orderBy: { date: 'desc' },
+        take: 10,
+      }),
+    ]);
 
     const streak = {
       currentStreak: goal?.currentStreak ?? 0,
@@ -324,7 +358,13 @@ export class DailyMissionService {
       overallProgress: number;
       completedTasks: number;
       totalTasks: number;
-      tasks: { id: string; taskType: string; completedCount: number; targetCount: number; status: string }[];
+      tasks: {
+        id: string;
+        taskType: string;
+        completedCount: number;
+        targetCount: number;
+        status: string;
+      }[];
     } = { overallProgress: 0, completedTasks: 0, totalTasks: 0, tasks: [] };
 
     if (todayMission) {
@@ -381,11 +421,19 @@ export class DailyMissionService {
       .map((m) => ({
         date: m.date.toISOString().split('T')[0],
         status: m.status,
-        completedTasks: m.DailyTask.filter((t) => t.status === TaskStatus.COMPLETED).length,
+        completedTasks: m.DailyTask.filter(
+          (t) => t.status === TaskStatus.COMPLETED,
+        ).length,
         totalTasks: m.DailyTask.length,
       }));
 
-    return { streak, totalVocabularyLearned, todayProgress, weeklyActivity, missionHistory };
+    return {
+      streak,
+      totalVocabularyLearned,
+      todayProgress,
+      weeklyActivity,
+      missionHistory,
+    };
   }
 
   async getWeeklyActivity(userId: string, weekOffset: number) {
@@ -418,6 +466,73 @@ export class DailyMissionService {
         totalTasks: m ? m.DailyTask.length : 0,
       };
     });
+  }
+
+  async getDailyClozeQuestions(userId: string, taskId: string) {
+    const task = await this.prismaService.dailyTask.findFirst({
+      where: { id: taskId, DailyMission: { userId } },
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    if (task.taskType !== DailyTaskType.CLOZE_LEARN) {
+      throw new BadRequestException('Task is not a CLOZE_LEARN task');
+    }
+
+    const ids = (task.vocabularyIds as any[]).map((id) => Number(id));
+
+    const questions = await this.prismaService.clozeQuestion.findMany({
+      where: { id: { in: ids } },
+      include: { ClozeOptions: true },
+    });
+
+    return questions;
+  }
+
+  async getDailyMatchingQuestions(userId: string, taskId: string) {
+    const task = await this.prismaService.dailyTask.findFirst({
+      where: { id: taskId, DailyMission: { userId } },
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    if (task.taskType !== DailyTaskType.MATCHING_LEARN) {
+      throw new BadRequestException('Task is not a MATCHING_LEARN task');
+    }
+
+    const ids = task.vocabularyIds as string[];
+
+    const pairs = await this.prismaService.matchingPair.findMany({
+      where: { id: { in: ids } },
+    });
+
+    return pairs;
+  }
+
+  async completeDailyExercise(userId: string, taskId: string) {
+    const task = await this.prismaService.dailyTask.findFirst({
+      where: { id: taskId, DailyMission: { userId } },
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    if (task.status === TaskStatus.COMPLETED) {
+      return { alreadyCompleted: true, task };
+    }
+
+    const updatedTask = await this.prismaService.$transaction(async (tx) => {
+      const updated = await tx.dailyTask.update({
+        where: { id: taskId },
+        data: {
+          completedCount: task.targetCount,
+          status: TaskStatus.COMPLETED,
+          updatedAt: new Date(),
+        },
+      });
+
+      await this.checkAndCompleteMission(tx, task.dailyMissionId);
+
+      return updated;
+    });
+
+    return { alreadyCompleted: false, task: updatedTask };
   }
 
   async getTaskWords(userId: string, taskId: string) {
