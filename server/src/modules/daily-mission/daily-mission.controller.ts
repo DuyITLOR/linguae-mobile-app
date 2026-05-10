@@ -62,4 +62,29 @@ export class DailyMissionController {
   ) {
     return this.dailyMissionService.getTaskWords(userId, taskId);
   }
+
+  @Get('task/:taskId/cloze-questions')
+  async getDailyClozeQuestions(
+    @UserId() userId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.dailyMissionService.getDailyClozeQuestions(userId, taskId);
+  }
+
+  @Get('task/:taskId/matching-questions')
+  async getDailyMatchingQuestions(
+    @UserId() userId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.dailyMissionService.getDailyMatchingQuestions(userId, taskId);
+  }
+
+  @Post('task/:taskId/complete-exercise')
+  @HttpCode(HttpStatus.OK)
+  async completeDailyExercise(
+    @UserId() userId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.dailyMissionService.completeDailyExercise(userId, taskId);
+  }
 }

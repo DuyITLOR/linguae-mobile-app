@@ -31,6 +31,8 @@ import com.penguin.linguae.feature.auth.RegisterScreen
 import com.penguin.linguae.feature.practice.cloze.ClozeScreen
 import com.penguin.linguae.feature.practice.matching.MatchingScreen
 import com.penguin.linguae.feature.dailyMission.DailyMissionScreen
+import com.penguin.linguae.feature.dailyMission.DailyClozeScreen
+import com.penguin.linguae.feature.dailyMission.DailyMatchingScreen
 import com.penguin.linguae.feature.favorite.FavoriteScreen
 import com.penguin.linguae.feature.home.HomeScreen
 import com.penguin.linguae.feature.learning.FlashcardListScreen
@@ -591,6 +593,12 @@ fun AppNavigation(
                 },
                 onNavigateToFlashcard = { taskId ->
                     navController.navigate(Screen.DailyFlashcard.createRoute(taskId))
+                },
+                onNavigateToCloze = { taskId ->
+                    navController.navigate(Screen.DailyCloze.createRoute(taskId))
+                },
+                onNavigateToMatching = { taskId ->
+                    navController.navigate(Screen.DailyMatching.createRoute(taskId))
                 }
             )
         }
@@ -604,6 +612,28 @@ fun AppNavigation(
                 topicId = "",
                 onBack = { navController.popBackStack() },
                 taskId = taskId
+            )
+        }
+
+        composable(
+            route = Screen.DailyCloze.route,
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            DailyClozeScreen(
+                taskId = taskId,
+                onReturn = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.DailyMatching.route,
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            DailyMatchingScreen(
+                taskId = taskId,
+                onReturn = { navController.popBackStack() }
             )
         }
     }

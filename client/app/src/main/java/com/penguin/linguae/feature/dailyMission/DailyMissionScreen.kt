@@ -45,6 +45,8 @@ fun DailyMissionScreen(
     onNavigateBack: () -> Unit,
     onNavigateToVocabulary: (String) -> Unit,
     onNavigateToFlashcard: (String) -> Unit,
+    onNavigateToCloze: (String) -> Unit = {},
+    onNavigateToMatching: (String) -> Unit = {},
     viewModel: DailyMissionViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -78,6 +80,8 @@ fun DailyMissionScreen(
                 onNavigateBack = onNavigateBack,
                 onVocabularyTaskToggle = { taskId -> viewModel.toggleVocabularyTask(taskId) },
                 onFlashcardTaskClick = { taskId -> onNavigateToFlashcard(taskId) },
+                onClozeTaskClick = { taskId -> onNavigateToCloze(taskId) },
+                onMatchingTaskClick = { taskId -> onNavigateToMatching(taskId) },
                 onWordClick = { vocabId -> onNavigateToVocabulary(vocabId) },
                 paddingValues = paddingValues
             )
@@ -124,6 +128,8 @@ private fun MissionContent(
     onNavigateBack: () -> Unit,
     onVocabularyTaskToggle: (String) -> Unit,
     onFlashcardTaskClick: (String) -> Unit,
+    onClozeTaskClick: (String) -> Unit,
+    onMatchingTaskClick: (String) -> Unit,
     onWordClick: (String) -> Unit,
     paddingValues: PaddingValues
 ) {
@@ -142,13 +148,20 @@ private fun MissionContent(
         }
         items(tasks, key = { it.id }) { task ->
             val isFlashcard = task.taskType == "FLASHCARD_LEARN"
+            val isCloze = task.taskType == "CLOZE_LEARN"
+            val isMatching = task.taskType == "MATCHING_LEARN"
+            val isNavigateDirect = isFlashcard || isCloze || isMatching
             TaskCard(
                 task = task,
-                isExpanded = !isFlashcard && uiState.expandedTaskId == task.id,
+                isExpanded = !isNavigateDirect && uiState.expandedTaskId == task.id,
                 taskWords = uiState.taskWordsMap[task.id],
                 onCardClick = {
-                    if (isFlashcard) onFlashcardTaskClick(task.id)
-                    else onVocabularyTaskToggle(task.id)
+                    when {
+                        isFlashcard -> onFlashcardTaskClick(task.id)
+                        isCloze -> onClozeTaskClick(task.id)
+                        isMatching -> onMatchingTaskClick(task.id)
+                        else -> onVocabularyTaskToggle(task.id)
+                    }
                 },
                 onWordClick = onWordClick
             )
@@ -209,6 +222,8 @@ private fun TaskCard(
     val (icon, label) = when (task.taskType) {
         "VOCABULARY_LEARN" -> Pair(Icons.Default.MenuBook, "Học từ vựng")
         "FLASHCARD_LEARN" -> Pair(Icons.Default.Layers, "Luyện Flashcard")
+        "CLOZE_LEARN" -> Pair(Icons.Default.Edit, "Luyện Cloze")
+        "MATCHING_LEARN" -> Pair(Icons.Default.Shuffle, "Luyện Matching")
         else -> Pair(Icons.Default.Star, task.taskType)
     }
     val isCompleted = task.status == "COMPLETED"
@@ -254,8 +269,10 @@ private fun TaskCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     StatusBadge(isCompleted = isCompleted)
                     Spacer(modifier = Modifier.width(8.dp))
+                    val isNavigateDirect = task.taskType == "FLASHCARD_LEARN" ||
+                        task.taskType == "CLOZE_LEARN" || task.taskType == "MATCHING_LEARN"
                     Icon(
-                        imageVector = if (isFlashcard) Icons.Default.ChevronRight
+                        imageVector = if (isNavigateDirect) Icons.Default.ChevronRight
                                       else if (isExpanded) Icons.Default.ExpandLess
                                       else Icons.Default.ExpandMore,
                         contentDescription = null,
@@ -274,7 +291,7 @@ private fun TaskCard(
             )
 
             // Word list only for VOCABULARY_LEARN
-            if (!isFlashcard) {
+            if (task.taskType == "VOCABULARY_LEARN") {
                 AnimatedVisibility(
                     visible = isExpanded,
                     enter = expandVertically(),

@@ -29,6 +29,14 @@ sealed class Screen(val route: String) {
         fun createRoute(taskId: String) = "daily_flashcard_screen/$taskId"
     }
 
+    object DailyCloze : Screen("daily_cloze_screen/{taskId}") {
+        fun createRoute(taskId: String) = "daily_cloze_screen/$taskId"
+    }
+
+    object DailyMatching : Screen("daily_matching_screen/{taskId}") {
+        fun createRoute(taskId: String) = "daily_matching_screen/$taskId"
+    }
+
     object VocabularyList: Screen("vocabulary_screen/{topicId}/{title}") {
         fun createRoute(topicId: String, title: String): String {
             return "vocabulary_screen/$topicId/${android.net.Uri.encode(title)}"
