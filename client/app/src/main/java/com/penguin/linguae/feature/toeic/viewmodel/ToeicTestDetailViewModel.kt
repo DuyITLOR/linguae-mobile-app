@@ -42,14 +42,14 @@ data class ToeicTestUiState(
     val totalQuestions: Int
         get() = when (selectedPart) {
             ToeicPart.PART_5 -> part5Questions.size
-            ToeicPart.PART_6 -> part6Questions.size
+            ToeicPart.PART_6 -> part6Questions.sumOf { it.readingPart6Options.size }
         }
 
     val answeredQuestions: Int
         get() = when (selectedPart) {
             ToeicPart.PART_5 -> part5Answers.size
-            ToeicPart.PART_6 -> part6Questions.count { question ->
-                question.readingPart6Options.all { option -> part6Answers.containsKey(option.id) }
+            ToeicPart.PART_6 -> part6Questions.sumOf { question ->
+                question.readingPart6Options.count { option -> part6Answers.containsKey(option.id) }
             }
         }
 

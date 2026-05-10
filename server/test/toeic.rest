@@ -17,7 +17,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
 # ======================== Create =========================
 ### Create Toeic
 
-POST http://localhost:5050/toeic
+POST http://localhost:4000/toeic
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
 
@@ -27,12 +27,152 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
     "part5": [
         {
             "question": "When filling out the order form, please _____ your address clearly to prevent delays.",
-            "options": [
-                "fix",
-                "write",
-                "send",
-                "direct"
-            ],
+            "options": ["fix", "write", "send", "direct"],
+            "answer": 1
+        },
+        {
+            "question": "Ms. Morgan recruited the individuals that the company _____ for the next three months.",
+            "options": ["will employ", "to employ", "has been employed", "employ"],
+            "answer": 0
+        },
+        {
+            "question": "The contractor had a fifteen-percent _____ in his business after advertising in the local newspaper.",
+            "options": ["experience", "growth", "formula", "incentive"],
+            "answer": 1
+        },
+        {
+            "question": "The free clinic was founded by a group of doctors to give _____ for various medical conditions.",
+            "options": ["treatment", "treat", "treated", "treating"],
+            "answer": 0
+        },
+        {
+            "question": "Participants in the walking tour should gather _____ 533 Bates Road on Saturday morning.",
+            "options": ["with", "at", "like", "among"],
+            "answer": 1
+        },
+        {
+            "question": "The figures that accompany the financial statement should be _____ to the spending category.",
+            "options": ["relevance", "relevantly", "more relevantly", "relevant"],
+            "answer": 3
+        },
+        {
+            "question": "The building owner purchased the property _____ three months ago, but she has already spent a great deal of money on renovations.",
+            "options": ["yet", "just", "few", "still"],
+            "answer": 1
+        },
+        {
+            "question": "We would like to discuss this problem honestly and _____ at the next staff meeting.",
+            "options": ["rarely", "tiredly", "openly", "highly"],
+            "answer": 2
+        },
+        {
+            "question": "The store's manager plans to put the new merchandise on display _____ to promote the line of fall fashions.",
+            "options": ["soon", "very", "that", "still"],
+            "answer": 0
+        },
+        {
+            "question": "_____ that the insulation has been replaced, the building is much more energy-efficient.",
+            "options": ["Now", "For", "As", "Though"],
+            "answer": 0
+        },
+        {
+            "question": "Mr. Sims needs a more _____ vehicle for commuting from his suburban home to his office downtown.",
+            "options": ["expressive", "reliable", "partial", "extreme"],
+            "answer": 1
+        },
+        {
+            "question": "The company _____ lowered its prices to outsell its competitors and attract more customers.",
+            "options": ["strategy", "strategically", "strategies", "strategic"],
+            "answer": 1
+        },
+        {
+            "question": "_____ Mr. Williams addressed the audience, he showed a brief video about the engine he had designed.",
+            "options": ["Then", "So that", "Before", "Whereas"],
+            "answer": 2
+        },
+        {
+            "question": "For optimal safety on the road, avoid _____ the view of the rear window and side-view mirrors.",
+            "options": ["obstructs", "obstructed", "obstruction", "obstructing"],
+            "answer": 3
+        },
+        {
+            "question": "Having proper ventilation throughout the building is _____ for protecting the health and well-being of the workers.",
+            "options": ["cooperative", "visible", "essential", "alternative"],
+            "answer": 2
+        },
+        {
+            "question": "_____ sales of junk food have been steadily declining indicates that consumers are becoming more health-conscious.",
+            "options": ["In addition to", "The fact that", "As long as", "In keeping with"],
+            "answer": 1
+        },
+        {
+            "question": "The sprinklers for the lawn's irrigation system are _____ controlled.",
+            "options": ["mechanically", "mechanic", "mechanism", "mechanical"],
+            "answer": 0
+        },
+        {
+            "question": "The library staff posted signs to _____ patrons of the upcoming closure for renovations.",
+            "options": ["notify", "agree", "generate", "perform"],
+            "answer": 0
+        },
+        {
+            "question": "Mr. Ross, _____ is repainting the interior of the lobby, was recommended by a friend of the building manager.",
+            "options": ["himself", "he", "who", "which"],
+            "answer": 2
+        },
+        {
+            "question": "The guidelines for the monthly publication are _____ revised to adapt to the changing readers.",
+            "options": ["courteously", "initially", "periodically", "physically"],
+            "answer": 2
+        },
+        {
+            "question": "_____ an ankle injury, the baseball player participated in the last game of the season.",
+            "options": ["In spite of", "Even if", "Whether", "Given that"],
+            "answer": 0
+        },
+        {
+            "question": "The governmental department used to provide financial aid, but now it offers _____ services only.",
+            "options": ["legal", "legalize", "legally", "legalizes"],
+            "answer": 0
+        },
+        {
+            "question": "At the guest's _____, an extra set of towels and complimentary soaps were brought to the room.",
+            "options": ["quote", "graduation", "request", "dispute"],
+            "answer": 2
+        },
+        {
+            "question": "The upscale boutique Jane's Closet is known for selling the most stylish _____ for young professionals.",
+            "options": ["accessorized", "accessorize", "accessorizes", "accessories"],
+            "answer": 3
+        },
+        {
+            "question": "The company started to recognize the increasing _____ of using resources responsibly.",
+            "options": ["more important", "importantly", "importance", "important"],
+            "answer": 2
+        },
+        {
+            "question": "_____ restructuring several departments within the company, the majority of the problems with miscommunication have disappeared.",
+            "options": ["After", "Until", "Below", "Like"],
+            "answer": 0
+        },
+        {
+            "question": "The riskiest _____ of the development of new medications are the trials with human subjects.",
+            "options": ["proceeds", "perspectives", "installments", "stages"],
+            "answer": 3
+        },
+        {
+            "question": "_____ seeking a position at Tulare Designs must submit a portfolio of previous work.",
+            "options": ["Anyone", "Whenever", "Other", "Fewer"],
+            "answer": 0
+        },
+        {
+            "question": "The board members reached a _____ on the proposed budget after a lengthy discussion.",
+            "options": ["consensus", "census", "concession", "concept"],
+            "answer": 0
+        },
+        {
+            "question": "All employees are required to attend the safety training session _____ of their department.",
+            "options": ["instead", "regardless", "rather", "despite"],
             "answer": 1
         }
     ],
@@ -42,24 +182,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
             "options": [
                 {
                     "title": 131,
-                    "options": [
-                        "seek",
-                        "to seek",
-                        "seeking",
-                        "are seeking"
-                    ],
+                    "options": ["seek", "to seek", "seeking", "are seeking"],
                     "answer": 2
                 },
                 {
                     "title": 132,
-                    "options": [
-                        "extensive",
-                        "restricted",
-                        "generous",
-                        "limitless"
-                    ],
+                    "options": ["extensive", "restricted", "generous", "limitless"],
                     "answer": 0
-                }, 
+                },
                 {
                     "title": 133,
                     "options": [
@@ -72,13 +202,663 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZ
                 },
                 {
                     "title": 134,
+                    "options": ["at", "to", "with", "from"],
+                    "answer": 1
+                }
+            ]
+        },
+        {
+            "question": "<p>Thank you for shopping at Larson's China. Our products are known for their modern and unique patterns and color combinations, as well as <strong>(135)</strong> and strength. <strong>(136)</strong> Please note, however, that repeated drops and rough handling will <strong>(137)</strong> eventual breakage. We suggest you store them carefully and that you don't use harsh chemicals, steel sponges, or <strong>(138)</strong> scrubbing when cleaning them. Please visit our website at www.larsonchina.com for information about handling and care or call us at 555-1234 if you have any questions or concerns.</p>",
+            "options": [
+                {
+                    "title": 135,
+                    "options": ["durable", "durability", "durableness", "nondurable"],
+                    "answer": 1
+                },
+                {
+                    "title": 136,
                     "options": [
-                        "at",
-                        "to",
-                        "with",
-                        "from"
+                        "Larson's utensils and silverware go great with the dinnerware.",
+                        "Our most popular line, the Spring Flower China, is sold out at most locations.",
+                        "Visit our store to check out our other beautiful products.",
+                        "They are dishwasher- and microwave-safe and we're confident that you'll be using them for years to come."
+                    ],
+                    "answer": 3
+                },
+                {
+                    "title": 137,
+                    "options": ["result in", "occur to", "ending at", "stop with"],
+                    "answer": 0
+                },
+                {
+                    "title": 138,
+                    "options": ["ambitious", "combative", "aggressive", "complacent"],
+                    "answer": 2
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Entry Position: Gold &amp; Slide Accounting Firm</strong><br>We are looking for enthusiastic candidates with an educational background in finance or <strong>(139)</strong>. All candidates should have some computer experience. Job experience is not <strong>(140)</strong> but preferred. Candidates with a bilingual language ability <strong>(141)</strong> favored. Positions include jobs in accounting, statistics, and general office assistant. If you are interested, please visit our website at www.G&amp;Saccountingfirm.com/employment for more information. You can send your cover letters and resumes to Karen Hill at khill@G&amp;S.com. We will begin interviewing candidates on Monday, November 5. <strong>(142)</strong></p>",
+            "options": [
+                {
+                    "title": 139,
+                    "options": ["account", "accountant", "accounting", "accounted"],
+                    "answer": 2
+                },
+                {
+                    "title": 140,
+                    "options": ["basic", "decisive", "additional", "necessary"],
+                    "answer": 3
+                },
+                {
+                    "title": 141,
+                    "options": ["is being", "will be", "has been", "were being"],
+                    "answer": 1
+                },
+                {
+                    "title": 142,
+                    "options": [
+                        "We sincerely thank you for your interest.",
+                        "The positions begin the following month.",
+                        "Please call us for more information.",
+                        "We apologize for any inconvenience."
                     ],
                     "answer": 1
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>To:</strong> Kitchen staff, office employees<br><strong>From:</strong> Manager, Larry Park<br><strong>Date:</strong> March 23<br><strong>Subject:</strong> Renovations</p><p>To all kitchen staff and Harmon employees,</p><p>From Sunday, March 23 to Thursday, March 27, the employee cafeteria kitchens will undergo renovations as new appliances and equipment <strong>(143)</strong> in to replace the old ones. <strong>(144)</strong> Instead, the convenience shops will carry more sandwiches, prepared lunch boxes, and snacks for the employees during this time.</p><p>The renovations will increase the number of sinks, ovens, and stove tops so that a larger volume of meals can be provided <strong>(145)</strong> the lunch and dinner rushes. We apologize for the inconvenience but we hope that the changes will <strong>(146)</strong> the services in the cafeteria.</p>",
+            "options": [
+                {
+                    "title": 143,
+                    "options": ["are bringing", "have brought", "bring", "are brought"],
+                    "answer": 3
+                },
+                {
+                    "title": 144,
+                    "options": [
+                        "This will take a lot of work.",
+                        "As a result, the convenience shops will be closed.",
+                        "Because of this, hot meals will not be available for the patrons.",
+                        "There will be noise and chaos as a result."
+                    ],
+                    "answer": 2
+                },
+                {
+                    "title": 145,
+                    "options": ["before", "after", "during", "within"],
+                    "answer": 2
+                },
+                {
+                    "title": 146,
+                    "options": ["develop", "improve", "rectify", "recover"],
+                    "answer": 1
+                }
+            ]
+        }
+    ]
+}
+
+### Create Toeic Test 3 (INTERMEDIATE)
+
+POST http://localhost:4000/toeic
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+{
+    "title": "Toeic Test 3",
+    "level": "INTERMEDIATE",
+    "part5": [
+        {
+            "question": "The merger between the two corporations was _____ approved by the board of directors after months of negotiation.",
+            "options": ["unanimously", "previously", "allegedly", "tentatively"],
+            "answer": 0
+        },
+        {
+            "question": "Shareholders expressed concern that the proposed changes might _____ the company's long-term financial stability.",
+            "options": ["undermine", "undertake", "undergo", "underline"],
+            "answer": 0
+        },
+        {
+            "question": "The CEO emphasized that strict _____ to the new safety protocols would be mandatory for all personnel.",
+            "options": ["adherence", "adherent", "adhere", "adhering"],
+            "answer": 0
+        },
+        {
+            "question": "The marketing team is currently _____ a comprehensive analysis of consumer behavior trends.",
+            "options": ["conducting", "conducted", "conduct", "conducts"],
+            "answer": 0
+        },
+        {
+            "question": "All requests for reimbursement must be submitted _____ to the finance department by the end of the fiscal quarter.",
+            "options": ["directly", "director", "direct", "direction"],
+            "answer": 0
+        },
+        {
+            "question": "The project timeline was _____ revised to accommodate delays caused by the supply chain disruption.",
+            "options": ["subsequently", "simultaneous", "substandard", "subordinate"],
+            "answer": 0
+        },
+        {
+            "question": "Despite the competitive market, the company managed to maintain its _____ position in the industry.",
+            "options": ["dominance", "dominant", "dominated", "dominating"],
+            "answer": 0
+        },
+        {
+            "question": "The new product line was launched _____ with an international marketing campaign.",
+            "options": ["simultaneously", "simultaneous", "simultaneously", "simultaneousness"],
+            "answer": 0
+        },
+        {
+            "question": "The board of directors has decided to _____ the budget for research and development by twenty percent.",
+            "options": ["allocate", "allocation", "allocated", "allocating"],
+            "answer": 0
+        },
+        {
+            "question": "The legal team advised that signing the contract without a thorough review could have _____ consequences.",
+            "options": ["detrimental", "detriment", "detrimentally", "detriments"],
+            "answer": 0
+        },
+        {
+            "question": "The new regulation requires that all imported goods _____ inspected before being cleared for distribution.",
+            "options": ["be", "are", "were", "have been"],
+            "answer": 0
+        },
+        {
+            "question": "Candidates applying for the senior analyst position must demonstrate _____ knowledge of financial modeling.",
+            "options": ["proficient", "proficiency", "proficiently", "proficiencies"],
+            "answer": 1
+        },
+        {
+            "question": "The research findings were presented _____ in order to facilitate discussion among the committee members.",
+            "options": ["concisely", "concise", "conciseness", "more concise"],
+            "answer": 0
+        },
+        {
+            "question": "Our latest revenue report _____ that consumer confidence has significantly improved since last quarter.",
+            "options": ["indicates", "indicate", "indicated", "is indicating"],
+            "answer": 0
+        },
+        {
+            "question": "The proposal was well-received; _____, the committee requested several minor modifications.",
+            "options": ["however", "therefore", "moreover", "otherwise"],
+            "answer": 0
+        },
+        {
+            "question": "The firm's _____ to ethical business practices has earned it a strong reputation among clients.",
+            "options": ["commitment", "commit", "committed", "committing"],
+            "answer": 0
+        },
+        {
+            "question": "The training workshop will be held _____ the conference room on the fourth floor.",
+            "options": ["in", "at", "on", "for"],
+            "answer": 0
+        },
+        {
+            "question": "Management has decided that _____ team member will be evaluated based on individual performance metrics.",
+            "options": ["each", "every", "all", "both"],
+            "answer": 0
+        },
+        {
+            "question": "The client specifically requested that changes to the design _____ prior to final submission.",
+            "options": ["be approved", "approving", "to approve", "approval"],
+            "answer": 0
+        },
+        {
+            "question": "_____ the economic downturn, the startup managed to secure additional investment.",
+            "options": ["Notwithstanding", "Because of", "As a result of", "With regard to"],
+            "answer": 0
+        },
+        {
+            "question": "The company is planning to _____ its operations to three additional countries by the end of next year.",
+            "options": ["expand", "expend", "expose", "explore"],
+            "answer": 0
+        },
+        {
+            "question": "The auditors determined that the financial discrepancies were _____ to clerical errors, not fraud.",
+            "options": ["attributable", "attributed", "attribute", "attribution"],
+            "answer": 0
+        },
+        {
+            "question": "The sales team achieved _____ targets than expected, owing to the new incentive structure.",
+            "options": ["higher", "high", "highest", "highly"],
+            "answer": 0
+        },
+        {
+            "question": "All stakeholders will be notified _____ the board has finalized its decision on the restructuring plan.",
+            "options": ["once", "until", "unless", "despite"],
+            "answer": 0
+        },
+        {
+            "question": "The proposed legislation would require companies to _____ detailed emissions reports on a quarterly basis.",
+            "options": ["submit", "submission", "submitted", "submitting"],
+            "answer": 0
+        },
+        {
+            "question": "Her decade of experience in international trade made her the most _____ candidate for the position.",
+            "options": ["qualified", "qualifying", "qualification", "qualify"],
+            "answer": 0
+        },
+        {
+            "question": "The factory floor must be kept _____ at all times to ensure compliance with safety regulations.",
+            "options": ["unobstructed", "unobstructing", "unobstruct", "unobstruction"],
+            "answer": 0
+        },
+        {
+            "question": "The bank approved the loan on the condition that the applicant _____ collateral equal to the loan amount.",
+            "options": ["provide", "provides", "provided", "providing"],
+            "answer": 0
+        },
+        {
+            "question": "_____ the team had exceeded its quarterly goals, the manager rewarded them with an additional day off.",
+            "options": ["Given that", "In order that", "So that", "Now that"],
+            "answer": 3
+        },
+        {
+            "question": "The conference will bring _____ leading experts from the fields of biotechnology and pharmaceuticals.",
+            "options": ["together", "around", "forward", "alongside"],
+            "answer": 0
+        }
+    ],
+    "part6": [
+        {
+            "question": "<p><strong>Memo</strong><br><strong>To:</strong> All Department Heads<br><strong>From:</strong> Corporate Strategy Office<br><strong>Subject:</strong> Quarterly Performance Review</p><p>In preparation for the upcoming quarterly performance review, all department heads are <strong>(131)</strong> to submit a comprehensive report outlining their team's achievements, challenges, and strategic goals for the next quarter. The report should <strong>(132)</strong> key performance indicators, budget utilization, and staffing updates. <strong>(133)</strong> Please ensure that all figures are verified and supported by relevant data before submission. Reports are due no later than Friday, June 12th. <strong>(134)</strong> by the deadline will result in exclusion from the executive summary presented to the board.</p>",
+            "options": [
+                {
+                    "title": 131,
+                    "options": ["required", "requesting", "require", "requirement"],
+                    "answer": 0
+                },
+                {
+                    "title": 132,
+                    "options": ["address", "dismiss", "overlook", "delay"],
+                    "answer": 0
+                },
+                {
+                    "title": 133,
+                    "options": [
+                        "The board meeting has been rescheduled to next month.",
+                        "Please contact HR for assistance with your budget reports.",
+                        "Incomplete or unverified data may lead to inaccurate strategic decisions.",
+                        "The executive summary will be distributed after the review."
+                    ],
+                    "answer": 2
+                },
+                {
+                    "title": 134,
+                    "options": ["Failure to submit", "Submitting reports", "Any submission", "Prompt reporting"],
+                    "answer": 0
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Notice to Tenants – Westfield Office Complex</strong></p><p>The management of Westfield Office Complex wishes to inform all tenants that the building's fire suppression system will undergo <strong>(135)</strong> maintenance from Monday, July 7 through Wednesday, July 9. During this period, the automated sprinkler systems on floors 3 through 8 will be temporarily <strong>(136)</strong>. <strong>(137)</strong> Therefore, all tenants on the affected floors are strongly encouraged to review their emergency evacuation procedures. A fire watch will be <strong>(138)</strong> throughout the duration of the maintenance work to ensure the safety of all building occupants.</p>",
+            "options": [
+                {
+                    "title": 135,
+                    "options": ["scheduled", "scheduling", "schedule", "schedules"],
+                    "answer": 0
+                },
+                {
+                    "title": 136,
+                    "options": ["deactivated", "activated", "reinstalled", "upgraded"],
+                    "answer": 0
+                },
+                {
+                    "title": 137,
+                    "options": [
+                        "The maintenance team will work around the clock to minimize disruption.",
+                        "As a precautionary measure, smoking is prohibited in all common areas.",
+                        "Portable fire extinguishers will be placed at all exits during this time.",
+                        "Tenants may contact the facilities team for maintenance requests."
+                    ],
+                    "answer": 2
+                },
+                {
+                    "title": 138,
+                    "options": ["maintained", "established", "requested", "postponed"],
+                    "answer": 1
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Press Release – NovaTech Solutions</strong></p><p>NovaTech Solutions is pleased to announce the _____ (139) of its flagship product, the NovaDrive 3000, an AI-powered storage system designed for enterprise-level data management. The device offers unmatched processing speeds and is fully _____ (140) with existing server infrastructure across all major platforms. NovaDrive 3000 _____ (141) to reduce data retrieval times by up to sixty percent compared to conventional storage solutions. _____ (142) NovaTech invites enterprise clients to request a complimentary demonstration at their regional offices.</p>",
+            "options": [
+                {
+                    "title": 139,
+                    "options": ["launch", "launched", "launching", "launches"],
+                    "answer": 0
+                },
+                {
+                    "title": 140,
+                    "options": ["compatible", "competitive", "comparable", "compliant"],
+                    "answer": 0
+                },
+                {
+                    "title": 141,
+                    "options": ["is designed", "designs", "designing", "was designed"],
+                    "answer": 0
+                },
+                {
+                    "title": 142,
+                    "options": [
+                        "The product has received mixed reviews from early adopters.",
+                        "NovaTech plans to discontinue several older product lines.",
+                        "To experience its full potential firsthand,",
+                        "Despite strong competition, NovaTech remains the market leader."
+                    ],
+                    "answer": 2
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Employee Handbook Update – Section 4: Remote Work Policy</strong></p><p>Effective September 1, employees who have been with the company for _____ (143) six months are eligible to apply for a hybrid work arrangement. Applications must be submitted to the Human Resources department and _____ (144) by the employee's direct supervisor. Approved employees may work remotely for up to three days per week, provided that they remain _____ (145) during core business hours and attend all mandatory on-site meetings. The company reserves the right to _____ (146) remote work privileges if performance standards are not consistently met.</p>",
+            "options": [
+                {
+                    "title": 143,
+                    "options": ["at least", "no more than", "as few as", "at most"],
+                    "answer": 0
+                },
+                {
+                    "title": 144,
+                    "options": ["endorsed", "submitted", "rejected", "evaluated"],
+                    "answer": 0
+                },
+                {
+                    "title": 145,
+                    "options": ["accessible", "available", "engaged", "productive"],
+                    "answer": 0
+                },
+                {
+                    "title": 146,
+                    "options": ["revoke", "renew", "reinstate", "recommend"],
+                    "answer": 0
+                }
+            ]
+        }
+    ]
+}
+
+### Create Toeic Test 4 (ADVANCED)
+
+POST http://localhost:4000/toeic
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3NjM5NTczMiwiZXhwIjoxNzc2NDgyMTMyfQ.j2X5GaSQNeHK0WE01stKbIugX4aVsp9ig-FhJNRfbMM
+
+{
+    "title": "Toeic Test 4",
+    "level": "ADVANCED",
+    "part5": [
+        {
+            "question": "The committee's _____ of the proposed regulation has been met with considerable opposition from industry leaders.",
+            "options": ["endorsement", "endorsing", "endorsed", "endorse"],
+            "answer": 0
+        },
+        {
+            "question": "It was not until the third audit that the irregularities in the financial records _____ to light.",
+            "options": ["came", "come", "had come", "were coming"],
+            "answer": 0
+        },
+        {
+            "question": "The arbitration panel ruled that neither party had _____ its contractual obligations during the disputed period.",
+            "options": ["breached", "breaching", "breach", "to breach"],
+            "answer": 0
+        },
+        {
+            "question": "The CEO's announcement was _____ ambiguous, leaving investors uncertain about the company's future direction.",
+            "options": ["deliberately", "deliberate", "deliberation", "deliberating"],
+            "answer": 0
+        },
+        {
+            "question": "The acquisition, _____ was finalized last month, will significantly expand the company's market footprint.",
+            "options": ["which", "that", "what", "it"],
+            "answer": 0
+        },
+        {
+            "question": "The fiscal impact of the new tax policy remains to be _____, as economists continue to debate its long-term effects.",
+            "options": ["ascertained", "ascertain", "ascertaining", "ascertainment"],
+            "answer": 0
+        },
+        {
+            "question": "Had the management team _____ the warning signs earlier, the operational crisis could have been averted.",
+            "options": ["heeded", "heeding", "heed", "to heed"],
+            "answer": 0
+        },
+        {
+            "question": "The consultant's report was _____ in its criticism of the current supply chain management practices.",
+            "options": ["scathing", "scathingly", "scathed", "scathe"],
+            "answer": 0
+        },
+        {
+            "question": "Despite the project's complexity, the team delivered results that far _____ client expectations.",
+            "options": ["exceeded", "exceeded", "exceeding", "excess"],
+            "answer": 0
+        },
+        {
+            "question": "The proposed merger will be subject to _____ review by antitrust regulators before it can be finalized.",
+            "options": ["rigorous", "rigorously", "rigor", "rigorousness"],
+            "answer": 0
+        },
+        {
+            "question": "The board convened an emergency session _____ the sudden resignation of its chief financial officer.",
+            "options": ["in response to", "as a consequence", "irrespective of", "notwithstanding"],
+            "answer": 0
+        },
+        {
+            "question": "The firm's expansion into emerging markets was _____ contingent on favorable exchange rates.",
+            "options": ["largely", "large", "largeness", "larger"],
+            "answer": 0
+        },
+        {
+            "question": "Before _____ any contractual commitments, it is advisable to seek independent legal counsel.",
+            "options": ["entering into", "entering from", "entering on", "enter"],
+            "answer": 0
+        },
+        {
+            "question": "The whistleblower's _____ of internal misconduct prompted an immediate investigation by the regulatory authority.",
+            "options": ["disclosure", "disclose", "disclosed", "disclosing"],
+            "answer": 0
+        },
+        {
+            "question": "The committee _____ that no action be taken until a thorough impact assessment has been completed.",
+            "options": ["recommends", "is recommending", "recommended", "has recommended"],
+            "answer": 0
+        },
+        {
+            "question": "The initiative was praised for its _____ approach to integrating sustainability into core business operations.",
+            "options": ["holistic", "holistically", "holism", "wholesome"],
+            "answer": 0
+        },
+        {
+            "question": "Under the new terms, the vendor is _____ to provide technical support for a minimum of five years post-installation.",
+            "options": ["obligated", "obligating", "obligate", "obligation"],
+            "answer": 0
+        },
+        {
+            "question": "The unexpected surge in demand necessitated a _____ overhaul of the company's distribution network.",
+            "options": ["comprehensive", "comprehensively", "comprehension", "comprehend"],
+            "answer": 0
+        },
+        {
+            "question": "_____ its relatively short operating history, the startup has achieved remarkable market penetration.",
+            "options": ["Despite", "Although", "Because of", "Whereas"],
+            "answer": 0
+        },
+        {
+            "question": "The patent application was filed _____ to prevent competitors from replicating the proprietary technology.",
+            "options": ["preemptively", "preemptive", "preempt", "preemption"],
+            "answer": 0
+        },
+        {
+            "question": "The negotiations broke down _____ both parties refused to make concessions on key contractual terms.",
+            "options": ["when", "unless", "provided that", "in order that"],
+            "answer": 0
+        },
+        {
+            "question": "A thorough _____ of all viable options must be conducted before the board approves any capital expenditure.",
+            "options": ["appraisal", "appraising", "appraise", "appraised"],
+            "answer": 0
+        },
+        {
+            "question": "The company's _____ to leverage big data analytics has given it a considerable competitive advantage.",
+            "options": ["ability", "capable", "capacity", "skill"],
+            "answer": 0
+        },
+        {
+            "question": "Internal memos obtained by journalists _____ that senior executives had been aware of the risks for some time.",
+            "options": ["suggested", "suggest", "suggesting", "to suggest"],
+            "answer": 0
+        },
+        {
+            "question": "The clause in the agreement stipulates that disputes shall be _____ through binding arbitration.",
+            "options": ["resolved", "resolving", "resolve", "resolution"],
+            "answer": 0
+        },
+        {
+            "question": "The quarterly earnings report paints a picture of a company _____ with a rapidly evolving technological landscape.",
+            "options": ["grappling", "grappled", "to grapple", "grapple"],
+            "answer": 0
+        },
+        {
+            "question": "The proposed amendments to the trade agreement are _____ to face stiff opposition in parliament.",
+            "options": ["likely", "possibly", "seemingly", "apparently"],
+            "answer": 0
+        },
+        {
+            "question": "The initiative to reduce carbon emissions has been _____ adopted across all subsidiaries globally.",
+            "options": ["uniformly", "uniform", "uniformity", "uniformed"],
+            "answer": 0
+        },
+        {
+            "question": "The forensic accountant's findings _____ a pattern of deliberate financial misrepresentation spanning three fiscal years.",
+            "options": ["revealed", "reveal", "revealing", "reveals"],
+            "answer": 0
+        },
+        {
+            "question": "_____ the complexity of the regulatory environment, the compliance team has requested additional resources.",
+            "options": ["In light of", "In addition to", "Regardless of", "Prior to"],
+            "answer": 0
+        }
+    ],
+    "part6": [
+        {
+            "question": "<p><strong>Internal Communication – Executive Leadership Team</strong><br><strong>From:</strong> Office of the President<br><strong>Re:</strong> Organizational Restructuring Initiative</p><p>As part of our ongoing commitment to operational efficiency and strategic alignment, the leadership team has authorized a comprehensive organizational restructuring, effective the first quarter of next fiscal year. This initiative will <strong>(131)</strong> the consolidation of certain redundant business units, the reallocation of resources to high-growth divisions, and the implementation of a new performance management framework. All senior managers are expected to <strong>(132)</strong> their respective teams through this transition with transparency and diligence. <strong>(133)</strong> Managers are strongly encouraged to schedule one-on-one meetings with their direct reports to address concerns proactively. Any structural changes affecting headcount will be <strong>(134)</strong> in full compliance with applicable labor laws and internal HR policies.</p>",
+            "options": [
+                {
+                    "title": 131,
+                    "options": ["entail", "enable", "entitle", "enforce"],
+                    "answer": 0
+                },
+                {
+                    "title": 132,
+                    "options": ["guide", "monitor", "oversee", "instruct"],
+                    "answer": 0
+                },
+                {
+                    "title": 133,
+                    "options": [
+                        "The restructuring will not affect the current compensation structure.",
+                        "We anticipate that this period of change may raise questions and concerns among staff.",
+                        "All employees are required to attend a mandatory briefing session next week.",
+                        "The consulting firm has been retained to facilitate the transition."
+                    ],
+                    "answer": 1
+                },
+                {
+                    "title": 134,
+                    "options": ["conducted", "deliberated", "negotiated", "enacted"],
+                    "answer": 0
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Report Excerpt – Global Market Analysis Division</strong></p><p>The global semiconductor shortage, which began in 2020, continues to have far-reaching _____ (135) across multiple industries, from consumer electronics to automotive manufacturing. Supply chain analysts predict that _____ (136) will remain constrained until new fabrication facilities, currently under construction in Southeast Asia and Europe, reach full operational capacity. _____ (137) Companies that had previously relied on single-source suppliers are now actively pursuing diversification strategies to _____ (138) their vulnerability to future disruptions.</p>",
+            "options": [
+                {
+                    "title": 135,
+                    "options": ["implications", "implication", "implied", "implying"],
+                    "answer": 0
+                },
+                {
+                    "title": 136,
+                    "options": ["supply", "demand", "output", "inventory"],
+                    "answer": 0
+                },
+                {
+                    "title": 137,
+                    "options": [
+                        "As a result, many manufacturers have been forced to curtail production.",
+                        "The semiconductor industry has reported record profits this year.",
+                        "This development has had little impact on consumer prices globally.",
+                        "Automotive manufacturers have been the least affected sector."
+                    ],
+                    "answer": 0
+                },
+                {
+                    "title": 138,
+                    "options": ["mitigate", "aggravate", "exacerbate", "acknowledge"],
+                    "answer": 0
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Legal Notice – Hartwell & Associates</strong></p><p>This notice is being issued _____ (139) of the firm's ongoing obligation to maintain full transparency with its clients regarding material developments in their cases. It has come to our attention that recent amendments to the applicable regulatory framework may _____ (140) affect the legal strategy previously outlined in our engagement letter. _____ (141) We therefore strongly advise all affected clients to schedule a consultation with their assigned legal counsel at the earliest opportunity. Please note that any decisions made without _____ (142) legal advice during this period could have significant and potentially adverse consequences.</p>",
+            "options": [
+                {
+                    "title": 139,
+                    "options": ["in fulfillment", "in compliance", "in recognition", "in pursuit"],
+                    "answer": 0
+                },
+                {
+                    "title": 140,
+                    "options": ["materially", "marginally", "incidentally", "superficially"],
+                    "answer": 0
+                },
+                {
+                    "title": 141,
+                    "options": [
+                        "We regret any inconvenience this may have caused.",
+                        "The firm is not liable for any outcomes resulting from these regulatory changes.",
+                        "Our team is currently reviewing all active case files in light of these amendments.",
+                        "Clients are encouraged to refer to the firm's website for further updates."
+                    ],
+                    "answer": 2
+                },
+                {
+                    "title": 142,
+                    "options": ["qualified", "preliminary", "provisional", "informal"],
+                    "answer": 0
+                }
+            ]
+        },
+        {
+            "question": "<p><strong>Investor Relations Bulletin – Meridian Capital Group</strong></p><p>Meridian Capital Group is pleased to _____ (143) its strong financial performance for the third quarter, with net revenues increasing by 18% year-over-year, driven primarily by robust growth in our asset management and private equity divisions. This performance _____ (144) the soundness of our diversified investment strategy and our team's unwavering commitment to value creation. _____ (145) Meridian Capital remains well-positioned to capitalize on emerging opportunities in both domestic and international markets. We wish to assure our investors that the leadership team _____ (146) vigilant in monitoring market conditions and adapting our portfolio strategy accordingly.</p>",
+            "options": [
+                {
+                    "title": 143,
+                    "options": ["report", "announce", "disclose", "acknowledge"],
+                    "answer": 0
+                },
+                {
+                    "title": 144,
+                    "options": ["underscores", "undermines", "underestimates", "understates"],
+                    "answer": 0
+                },
+                {
+                    "title": 145,
+                    "options": [
+                        "However, we anticipate significant headwinds in the coming quarter.",
+                        "The board of directors has voted to suspend dividend payments.",
+                        "Looking ahead, we remain cautiously optimistic about the macroeconomic outlook.",
+                        "Several key executives have announced their intention to resign."
+                    ],
+                    "answer": 2
+                },
+                {
+                    "title": 146,
+                    "options": ["will remain", "remains", "remained", "is remaining"],
+                    "answer": 0
                 }
             ]
         }
