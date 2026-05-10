@@ -87,7 +87,7 @@ fun ResultScreen(
                 }
                 Screen.Matching.route -> {
                     navController.navigate(Screen.Matching.createRoute(topicId = topicId)) {
-                        popUpTo(Screen.ResultScreen.route) {
+                        popUpTo(Screen.Matching.route) {
                             inclusive = true
                         }
                     }
