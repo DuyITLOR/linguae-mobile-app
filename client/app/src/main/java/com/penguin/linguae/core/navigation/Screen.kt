@@ -90,6 +90,7 @@ sealed class Screen(val route: String) {
         fun createRoute(topicId: String, topicTitle: String) =
             "admin/topic/$topicId/menu/${android.net.Uri.encode(topicTitle)}"
     }
+    object AdminManageUsers : Screen("admin/users")
     object ToeicList : Screen("admin/toeic_list")
     object ToeicExamInfoEditor : Screen("admin/toeic/exam_info_editor?toeicId={toeicId}") {
         fun createRoute(toeicId: String? = null): String {

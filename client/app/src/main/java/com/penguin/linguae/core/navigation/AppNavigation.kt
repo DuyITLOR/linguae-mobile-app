@@ -81,6 +81,9 @@ fun AppNavigation(
                 },
                 onNavigateManageExam = {
                     navController.navigate(Screen.ToeicList.route)
+                },
+                onNavigateManageUsers = {
+                    navController.navigate(Screen.AdminManageUsers.route)
                 }
             )
         }
@@ -129,6 +132,12 @@ fun AppNavigation(
                 onEditExam = { toeicId ->
                     navController.navigate(Screen.ToeicExamInfoEditor.createRoute(toeicId))
                 }
+            )
+        }
+
+        composable(Screen.AdminManageUsers.route) {
+            com.penguin.linguae.feature.admin.user.AdminUserScreen(
+                onBack = { navController.popBackStack() }
             )
         }
 

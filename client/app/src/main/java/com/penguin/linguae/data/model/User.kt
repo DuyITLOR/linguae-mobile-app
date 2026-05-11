@@ -12,3 +12,19 @@ data class User(
     val avatarUrl: String?,
     val role: UserRole = UserRole.USER,
 )
+
+data class UserListResponse(
+    val success: Boolean,
+    val message: String,
+    val data: List<User>
+)
+
+data class UpdateUserRoleRequest(
+    val role: UserRole
+)
+
+data class UpdateUserRoleResponse(
+    val success: Boolean,
+    val message: String,
+    val data: Any?
+)

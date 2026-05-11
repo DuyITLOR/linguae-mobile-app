@@ -32,6 +32,10 @@ class AdminScreenViewModel(
     val numberOfToeicExams = _numberOfToeicExams
 
     init {
+        refresh()
+    }
+
+    fun refresh() {
         getNumberOfUsers()
         getNumberOfWords()
         getNumberOfTopics()
