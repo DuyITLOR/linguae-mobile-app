@@ -28,9 +28,8 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
 
         private val _isAnswered = MutableStateFlow(false)
         val isAnswered = _isAnswered.asStateFlow()
-
-        private val _questionsWithOptions = MutableStateFlow<List<ClozeQuestionWithOptions>>(emptyList())
-        val questionsWithOptions = _questionsWithOptions.asStateFlow()
+        private val _shuffledQuestionsWithOptions = MutableStateFlow<List<ClozeQuestionWithOptions>>(emptyList())
+        val shuffleQuestionsWithOptions = _shuffledQuestionsWithOptions.asStateFlow()
 
         private val _currentIndex = MutableStateFlow(0)
         val currentIndex = _currentIndex.asStateFlow()
@@ -54,7 +53,7 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
 
         fun onOptionSelected(optionId: Int) {
             if (_isAnswered.value) return
-            if (_questionsWithOptions.value[_currentIndex.value].options[optionId - 1].isCorrect == true)
+            if (_shuffledQuestionsWithOptions.value[_currentIndex.value].options[optionId - 1].isCorrect == true)
                 correctCount += 1
             _selectedOptionId.value = optionId
             _isAnswered.value = true
@@ -63,7 +62,7 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
         fun onNextQuestionClicked() {
             if (!_isAnswered.value) return
 
-            if (_currentIndex.value >= _questionsWithOptions.value.lastIndex - 1)
+            if (_currentIndex.value >= _shuffledQuestionsWithOptions.value.lastIndex - 1)
                 _isLastQuestion.value = true
 
             _currentIndex.value++
@@ -79,20 +78,19 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
                     val ids = questions.map { it.questionID }
                     val options = _repository.getClozeOptionsForQuestions(ids)
                     val groupedOptions = options.groupBy { it.questionId }
-                    _questionsWithOptions.value = questions.map { question ->
+                    val data = questions.map { question ->
                         ClozeQuestionWithOptions(
                             question = question,
-                            options = groupedOptions[question.questionID] ?: emptyList()
+                            options = (groupedOptions[question.questionID] ?: emptyList()).shuffled()
                         )
-                    }
-                    if (_questionsWithOptions.value.size == 1){
-                        _isLastQuestion.value = true
-                    }
+                    }.shuffled()
+                    _shuffledQuestionsWithOptions.value = data
+                    _isLastQuestion.value = data.size == 1
                 } catch (e: Exception) {
                     _error.value = e.message
                 } finally {
                     _isLoading.value = false  // always runs whether success or error
-                    totalQuestion = _questionsWithOptions.value.size
+                    totalQuestion = _shuffledQuestionsWithOptions.value.size
                 }
             }
         }

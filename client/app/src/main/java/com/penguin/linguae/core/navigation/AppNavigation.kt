@@ -552,7 +552,7 @@ fun AppNavigation(
         }
 
         composable(Screen.ResultScreen.route) {
-            ResultScreen(navController = navController, onReturn = { navController.popBackStack() })
+            ResultScreen(navController = navController)
         }
 
         composable (Screen.PracticeTopic.route) {
