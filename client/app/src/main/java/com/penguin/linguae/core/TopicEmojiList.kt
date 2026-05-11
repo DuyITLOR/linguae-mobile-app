@@ -1,0 +1,81 @@
+package com.penguin.linguae.core
+
+data class EmojiItem(val emoji: String, val label: String)
+data class EmojiCategory(val name: String, val items: List<EmojiItem>)
+
+val topicEmojiCategories = listOf(
+    EmojiCategory("Trái cây", listOf(
+        EmojiItem("🍎", "Apple"),
+        EmojiItem("🍌", "Banana"),
+        EmojiItem("🍇", "Grapes"),
+        EmojiItem("🍉", "Watermelon"),
+        EmojiItem("🍓", "Strawberry"),
+        EmojiItem("🍒", "Cherry"),
+        EmojiItem("🍑", "Peach"),
+        EmojiItem("🍍", "Pineapple"),
+        EmojiItem("🥝", "Kiwi"),
+        EmojiItem("🍋", "Lemon"),
+    )),
+    EmojiCategory("Động vật", listOf(
+        EmojiItem("🐶", "Dog"),
+        EmojiItem("🐱", "Cat"),
+        EmojiItem("🐭", "Mouse"),
+        EmojiItem("🐹", "Hamster"),
+        EmojiItem("🐰", "Rabbit"),
+        EmojiItem("🦊", "Fox"),
+        EmojiItem("🐻", "Bear"),
+        EmojiItem("🐼", "Panda"),
+        EmojiItem("🐨", "Koala"),
+        EmojiItem("🦁", "Lion"),
+    )),
+    EmojiCategory("Phương tiện", listOf(
+        EmojiItem("🚗", "Car"),
+        EmojiItem("🚕", "Taxi"),
+        EmojiItem("🚌", "Bus"),
+        EmojiItem("🚑", "Ambulance"),
+        EmojiItem("🚒", "Fire Truck"),
+        EmojiItem("🚓", "Police Car"),
+        EmojiItem("✈️", "Airplane"),
+        EmojiItem("🚀", "Rocket"),
+        EmojiItem("🚲", "Bicycle"),
+        EmojiItem("🛵", "Scooter"),
+    )),
+    EmojiCategory("Địa điểm", listOf(
+        EmojiItem("🏠", "House"),
+        EmojiItem("🏫", "School"),
+        EmojiItem("🏥", "Hospital"),
+        EmojiItem("🏦", "Bank"),
+        EmojiItem("🏪", "Store"),
+        EmojiItem("🏰", "Castle"),
+        EmojiItem("🗽", "Statue"),
+        EmojiItem("⛪", "Church"),
+        EmojiItem("🏕️", "Camping"),
+        EmojiItem("🏖️", "Beach"),
+    )),
+    EmojiCategory("Đồ vật", listOf(
+        EmojiItem("📚", "Books"),
+        EmojiItem("✏️", "Pencil"),
+        EmojiItem("🖊️", "Pen"),
+        EmojiItem("💻", "Laptop"),
+        EmojiItem("⌚", "Watch"),
+        EmojiItem("📱", "Phone"),
+        EmojiItem("🎧", "Headphones"),
+        EmojiItem("📷", "Camera"),
+        EmojiItem("🕹️", "Game Controller"),
+        EmojiItem("🎸", "Guitar"),
+    )),
+    EmojiCategory("Thể thao & Nghệ thuật", listOf(
+        EmojiItem("⚽", "Soccer Ball"),
+        EmojiItem("🏀", "Basketball"),
+        EmojiItem("🎾", "Tennis"),
+        EmojiItem("🏓", "Ping Pong"),
+        EmojiItem("🏆", "Trophy"),
+        EmojiItem("🎲", "Dice"),
+        EmojiItem("🧩", "Puzzle"),
+        EmojiItem("🎨", "Paint Palette"),
+        EmojiItem("🎤", "Microphone"),
+        EmojiItem("🎬", "Clapper Board"),
+    )),
+)
+
+val topicEmojiAll: List<EmojiItem> = topicEmojiCategories.flatMap { it.items }
