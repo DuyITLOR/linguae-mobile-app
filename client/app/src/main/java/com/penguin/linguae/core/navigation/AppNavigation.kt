@@ -18,7 +18,7 @@ import com.penguin.linguae.feature.admin.topic.ManageTopicScreen
 import com.penguin.linguae.feature.admin.cloze.ManageClozeScreen
 import com.penguin.linguae.feature.admin.matching.MatchingScreen
 import com.penguin.linguae.feature.admin.vocabulary.ManageVocabularyScreen
-import com.penguin.linguae.feature.admin.AdminScreen
+import com.penguin.linguae.feature.admin.dashboard.AdminScreen
 import com.penguin.linguae.feature.admin.topic.TopicContentMenuScreen
 import com.penguin.linguae.feature.admin.toeic.ToeicExamInfoScreen
 import com.penguin.linguae.feature.admin.toeic.ToeicListScreen
