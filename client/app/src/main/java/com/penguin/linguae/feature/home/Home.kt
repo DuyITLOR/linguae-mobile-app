@@ -55,7 +55,6 @@ fun HomeScreen(
                 HomeHeader(
                     name = uiState.user?.fullName ?: "bạn",
                     dayStreak = uiState.streak,
-                    wordLearned = uiState.wordLearned,
                 )
             }
             item {

@@ -31,7 +31,6 @@ import com.penguin.linguae.core.ui.theme.SurfaceColor
 fun HomeHeader(
     name: String,
     dayStreak: Int,
-    wordLearned: Int,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -80,7 +79,7 @@ fun HomeHeader(
             lineHeight = 20.sp,
         )
 
-        StreakCard(dayStreak, wordLearned)
+        StreakCard(dayStreak)
         Spacer(modifier = Modifier.size(1.dp))
     }
 }
