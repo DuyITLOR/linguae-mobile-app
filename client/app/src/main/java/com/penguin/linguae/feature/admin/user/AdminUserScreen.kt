@@ -381,38 +381,41 @@ fun UserItemCard(
             }
 
             // Actions
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = onRoleToggle,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (user.role == UserRole.ADMIN) AppBackground else PurplePrimary,
-                        contentColor = if (user.role == UserRole.ADMIN) PurplePrimary else Color.White
+                        containerColor = if (user.role == UserRole.ADMIN) Color(0xFFFFF3E0) else PurplePrimary,
+                        contentColor = if (user.role == UserRole.ADMIN) Color(0xFFE65100) else Color.White
                     ),
-                    modifier = Modifier.height(32.dp),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+                    modifier = Modifier.height(26.dp),
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp, vertical = 0.dp)
                 ) {
                     Text(
                         text = if (user.role == UserRole.ADMIN) "Make USER" else "Make ADMIN",
-                        fontSize = 11.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFFE53935).copy(alpha = 0.1f), RoundedCornerShape(8.dp))
-                        .clickable { onDeleteClick() },
-                    contentAlignment = Alignment.Center
+                Button(
+                    onClick = onDeleteClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFEBEE),
+                        contentColor = Color(0xFFE53935)
+                    ),
+                    modifier = Modifier.height(26.dp),
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 6.dp, vertical = 0.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = "Delete",
-                        tint = Color(0xFFE53935),
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }

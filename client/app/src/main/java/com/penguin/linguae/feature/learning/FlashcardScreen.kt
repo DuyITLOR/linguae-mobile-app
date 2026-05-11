@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -33,7 +34,8 @@ import kotlinx.coroutines.launch
 data class Card(
     val id: String,
     val word: String,
-    val meaning: String
+    val meaning: String,
+    val level: String = "BEGINNER" // Added level
 )
 
 @Composable
@@ -57,11 +59,11 @@ fun FlashcardScreen(
     }
 
     val apiCards = remember(topic) {
-        topic?.Vocabulary?.map { vocab -> Card(vocab.id, vocab.word, vocab.meaning) } ?: emptyList()
+        topic?.Vocabulary?.map { vocab -> Card(vocab.id, vocab.word, vocab.meaning, topic?.level ?: "BEGINNER") } ?: emptyList()
     }
 
     val cards = remember(taskWords, apiCards) {
-        taskWords?.words?.map { Card(it.id, it.word, it.meaning) } ?: apiCards
+        taskWords?.words?.map { Card(it.id, it.word, it.meaning, topic?.level ?: "BEGINNER") } ?: apiCards
     }
 
     val dailyMissionRepository = remember { if (taskId != null) DailyMissionRepository() else null }
@@ -118,31 +120,66 @@ fun FlashcardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE9E7F2))
-            .padding(16.dp)
+            .background(Color(0xFFF3F2F8)) // Changed to match Toeic list background
+            .padding(bottom = 16.dp) // Removed padding start, end to have full-width header
     ) {
 
-        // 🔹 Header
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null)
+        // 🔹 Header matching ToeicMockTestListScreen
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFF8F6FF),
+                            Color(0xFFF2EEFF)
+                        )
+                    )
+                )
+                .padding(start = 20.dp, end = 20.dp, top = 44.dp, bottom = 12.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFF1E1E2D)
+                        )
+                    }
+                    Text(
+                        text = headerTitle,
+                        color = Color(0xFF1E1E2D),
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = headerTitle,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔹 Progress
-        Text(text = "${if (hasCards) current else 0} / ${cards.size} từ", color = Color.Gray)
+        // 🔹 Progress section wrapped in a padded column
+        Column(modifier = Modifier.padding(horizontal = 20.dp).weight(1f)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${if (hasCards) current else 0} / ${cards.size} từ", 
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                )
+                if (hasCards) {
+                    LevelBadge(level = cards[index].level)
+                }
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
         // 🔹 Progress bar
         Box(
@@ -243,7 +280,7 @@ fun FlashcardScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF8D7DA)),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("❌ Chưa nhớ", color = Color(0xFFD9534F))
+                Text("❌ Chưa nhớ", color = Color(0xFFD9534F), fontWeight = FontWeight.Bold)
             }
 
             Button(
@@ -253,9 +290,43 @@ fun FlashcardScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD4EDDA)),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("✔ Đã nhớ", color = Color(0xFF28A745))
+                Text("✔ Đã nhớ", color = Color(0xFF28A745), fontWeight = FontWeight.Bold)
             }
         }
+        }
+    }
+}
+
+@Composable
+private fun LevelBadge(level: String) {
+    val color = when (level.uppercase()) {
+        "BEGINNER" -> Color(0xFF27AE60)
+        "INTERMEDIATE" -> Color(0xFFE67E22)
+        "ADVANCED" -> Color(0xFFE74C3C)
+        else -> Color(0xFF6B7280)
+    }
+    val label = when (level.uppercase()) {
+        "BEGINNER" -> "Beginner"
+        "INTERMEDIATE" -> "Intermediate"
+        "ADVANCED" -> "Advanced"
+        else -> level
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Text(
+            text = label,
+            color = color,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
