@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
@@ -41,7 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.penguin.linguae.core.ui.theme.AppBackground
+import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.data.model.User
 import coil.compose.AsyncImage
 import com.penguin.linguae.feature.admin.dashboard.viewmodel.AdminScreenViewModel
@@ -59,16 +60,13 @@ fun AdminScreen(
     val totalTopics = viewModel.numberOfTopics.intValue
     val totalExams = viewModel.numberOfToeicExams.intValue
 
-
     Surface(
         color = AppBackground,
         modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxSize()
         ) {
             item {
                 AdminHeader(
@@ -78,16 +76,23 @@ fun AdminScreen(
                 )
             }
             item {
-                TotalUsersCard(totalUsers = totalUsers.toString(), growth = "+12% this month")
+                TotalUsersCard(
+                    totalUsers = totalUsers.toString(),
+                    growth = "+12% this month",
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
             }
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
                     AdminMetricCard(
                         title = totalWords.toString(),
                         subtitle = "Total Words",
                         icon = Icons.Default.MenuBook,
-                        iconBackground = Color(0xFFF0EDFF),
-                        iconTint = Color(0xFF5E52D9),
+                        iconBackground = PurpleLight,
+                        iconTint = PurplePrimary,
                         modifier = Modifier.weight(1f)
                     )
                     AdminMetricCard(
@@ -105,21 +110,27 @@ fun AdminScreen(
                     title = totalExams.toString(),
                     subtitle = "Total Exams",
                     icon = Icons.Default.School,
-                    iconBackground = Color(0xFFEFF4FF),
-                    iconTint = Color(0xFF476DE8),
-                    modifier = Modifier.fillMaxWidth()
+                    iconBackground = BadgeBlueBg,
+                    iconTint = BadgeBlue,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
                 )
             }
             item {
                 Text(
                     text = "Management Hub",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF22243A),
-                    fontWeight = FontWeight.SemiBold
+                    color = TextDark,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
             item {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
                     AdminActionItem(
                         title = "Topics",
                         subtitle = "Manage topics, vocabularies and practices",
@@ -147,47 +158,62 @@ private fun AdminHeader(
     avatarUrl: String?,
     onNavigateProfile: () -> Unit,
 ) {
-    Row(
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(PurplePrimary, PurpleDark, PurpleDeep)
+                )
+            )
+            .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = "Hello, $adminName",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1E1E2C)
-            )
-            Text(
-                text = "System is running smoothly today.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF8D8EA3)
-            )
-        }
-
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(34.dp)
-                    .background(color = Color(0xFFECE9FF), shape = CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    tint = Color(0xFF6D5CE7),
-                    modifier = Modifier.size(18.dp)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    text = "Hello, $adminName",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = "System is running smoothly today.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.75f)
                 )
             }
 
-            ProfileShortcut(
-                avatarUrl = avatarUrl,
-                onClick = onNavigateProfile
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(34.dp)
+                        .background(
+                            color = Color.White.copy(alpha = 0.2f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                ProfileShortcut(
+                    avatarUrl = avatarUrl,
+                    onClick = onNavigateProfile
+                )
+            }
         }
     }
 }
@@ -202,15 +228,15 @@ private fun ProfileShortcut(
         modifier = Modifier
             .size(42.dp)
             .clip(CircleShape)
-            .background(Color.White)
+            .background(Color.White.copy(alpha = 0.3f))
             .clickable(onClick = onClick)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(30.dp)
+                .size(32.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFF1EEFF))
+                .background(Color.White)
         ) {
             if (!avatarUrl.isNullOrBlank()) {
                 AsyncImage(
@@ -218,15 +244,15 @@ private fun ProfileShortcut(
                     contentDescription = "Open profile",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(30.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Open profile",
-                    tint = Color(0xFF5F55DB),
-                    modifier = Modifier.size(16.dp)
+                    tint = PurplePrimary,
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -234,27 +260,31 @@ private fun ProfileShortcut(
 }
 
 @Composable
-private fun TotalUsersCard(totalUsers: String, growth: String) {
+private fun TotalUsersCard(
+    totalUsers: String,
+    growth: String,
+    modifier: Modifier = Modifier
+) {
     val gradient = Brush.linearGradient(
-        colors = listOf(Color(0xFF4F5DE9), Color(0xFF6E46F2))
+        colors = listOf(HomeHeroStart, HomeHeroMid)
     )
 
     Card(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
                 .background(brush = gradient)
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 18.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = "TOTAL USERS",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color(0x99FFFFFF),
+                    color = Color.White.copy(alpha = 0.7f),
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
@@ -266,7 +296,7 @@ private fun TotalUsersCard(totalUsers: String, growth: String) {
                 Box(
                     modifier = Modifier
                         .background(
-                            color = Color(0x26FFFFFF),
+                            color = Color.White.copy(alpha = 0.15f),
                             shape = RoundedCornerShape(999.dp)
                         )
                         .padding(horizontal = 10.dp, vertical = 4.dp)
@@ -294,35 +324,36 @@ private fun AdminMetricCard(
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(36.dp)
                     .background(iconBackground, CircleShape)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF25253A)
+                color = TextDark
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF8A8A9D)
+                color = TextGray
             )
         }
     }
@@ -338,28 +369,29 @@ private fun AdminActionItem(
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 14.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(34.dp)
-                    .background(color = Color(0xFFF1EEFF), shape = CircleShape)
+                    .size(38.dp)
+                    .background(color = PurpleLight, shape = CircleShape)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color(0xFF5F55DB),
-                    modifier = Modifier.size(18.dp)
+                    tint = PurplePrimary,
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
@@ -370,20 +402,21 @@ private fun AdminActionItem(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
-                    color = Color(0xFF2B2C40),
+                    color = TextDark,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF9A9AAF)
+                    color = TextGray
                 )
             }
 
-            Text(
-                text = ">",
-                color = Color(0xFFB5B6C8),
-                style = MaterialTheme.typography.titleMedium
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Color(0xFFB5B6C8),
+                modifier = Modifier.size(24.dp)
             )
         }
     }
