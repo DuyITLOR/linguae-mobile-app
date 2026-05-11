@@ -45,8 +45,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.CircularProgressIndicator
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.core.ui.theme.GreenCorrect
 import com.penguin.linguae.core.ui.theme.PurpleLight
@@ -99,6 +103,7 @@ fun ToeicPart6EditorScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    var isAdding by remember { mutableStateOf(false) }
 
     Surface(
         color = AppBackground,
@@ -205,16 +210,21 @@ fun ToeicPart6EditorScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             P6AddFab(
+                                isAdding = isAdding,
                                 label = "Thêm bài đọc",
                                 onClick = {
+                                    isAdding = true
                                     viewModel.addPart6Passage()
                                     scope.launch {
                                         kotlinx.coroutines.delay(100)
                                         listState.animateScrollToItem(viewModel.part6Passages.size)
+                                        kotlinx.coroutines.delay(300)
+                                        isAdding = false
                                     }
                                 }
                             )
                             P6SaveFab(
+                                isSaving = viewModel.isSaving,
                                 onClick = {
                                     scope.launch {
                                         val errorMessage = viewModel.saveQuestion()
@@ -358,7 +368,12 @@ private fun P6EmptyState(modifier: Modifier = Modifier) {
 // ── FABs ──────────────────────────────────────────────────────────────────────
 
 @Composable
-private fun P6AddFab(label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun P6AddFab(
+    isAdding: Boolean,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(50.dp))
@@ -366,27 +381,39 @@ private fun P6AddFab(label: String, onClick: () -> Unit, modifier: Modifier = Mo
                 brush = Brush.horizontalGradient(listOf(P6GradientStart, P6GradientEnd)),
                 shape = RoundedCornerShape(50.dp)
             )
-            .clickable { onClick() }
+            .clickable(enabled = !isAdding) { onClick() }
             .padding(horizontal = 24.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = label,
-                tint = Color.White,
+        if (isAdding) {
+            CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 2.dp,
                 modifier = Modifier.size(20.dp)
             )
-            Text(text = label, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = label,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(text = label, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+            }
         }
     }
 }
 
 @Composable
-private fun P6SaveFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun P6SaveFab(
+    isSaving: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(50.dp))
@@ -394,21 +421,29 @@ private fun P6SaveFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
                 brush = Brush.horizontalGradient(listOf(P6GradientStart, P6GradientEnd)),
                 shape = RoundedCornerShape(50.dp)
             )
-            .clickable { onClick() }
+            .clickable(enabled = !isSaving) { onClick() }
             .padding(horizontal = 24.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Lưu bài",
-                tint = Color.White,
+        if (isSaving) {
+            CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 2.dp,
                 modifier = Modifier.size(20.dp)
             )
-            Text(text = "Lưu bài", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "Lưu bài",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(text = "Lưu bài", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+            }
         }
     }
 }

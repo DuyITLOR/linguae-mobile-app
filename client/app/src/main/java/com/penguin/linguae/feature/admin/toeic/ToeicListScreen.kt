@@ -71,7 +71,6 @@ import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.data.model.Toeic
 import com.penguin.linguae.feature.admin.toeic.viewmodel.ToeicListViewModel
 
-// ── Shared palette (consistent with AdminScreen) ──────────────────────────────
 private val HeaderGradientStart = Color(0xFF4F5DE9)
 private val HeaderGradientEnd = Color(0xFF6E46F2)
 private val CardSurface = Color.White
@@ -106,238 +105,251 @@ fun ToeicListScreen(
         color = AppBackground,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-        ) {
-            // ── Top bar ─────────────────────────────────────────────────────
-            Row(
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
-                IconButton(
-                    onClick = onBack,
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = TextDark,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-                Text(
-                    text = "Manage Exams",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextDark,
+                // ── Top bar ─────────────────────────────────────────────────────
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 4.dp)
-                )
-                IconButton(
-                    onClick = onAddExam,
-                    modifier = Modifier
-                        .background(PurplePrimary, CircleShape)
-                        .size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Add exam",
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // ── Gradient hero banner (matches AdminScreen TotalUsersCard) ───
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(HeaderGradientStart, HeaderGradientEnd)
-                            )
-                        )
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 18.dp)
+                        .padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Exam Library",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Organize, edit, and publish your TOEIC learning materials.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.72f)
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = TextDark,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // ── Search bar (Material icon instead of emoji) ─────────────────
-            TextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                placeholder = {
                     Text(
-                        "Search exams...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = SubtleText
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search",
-                        tint = SubtleText,
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 2.dp,
-                        shape = RoundedCornerShape(14.dp),
-                        ambientColor = Color(0x0D000000)
-                    ),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = TextDark),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = CardSurface,
-                    focusedContainerColor = CardSurface,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    cursorColor = PurplePrimary
-                ),
-                shape = RoundedCornerShape(14.dp),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // ── Content area ────────────────────────────────────────────────
-            when {
-                viewModel.isLoading -> {
-                    Box(
+                        text = "Manage Exams",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextDark,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
+                            .weight(1f)
+                            .padding(start = 4.dp)
+                    )
+                    IconButton(
+                        onClick = onAddExam,
+                        modifier = Modifier
+                            .background(PurplePrimary, CircleShape)
+                            .size(36.dp)
                     ) {
-                        CircularProgressIndicator(color = PurplePrimary)
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add exam",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
 
-                viewModel.error != null -> {
-                    val errorMessage = resolveToeicAdminErrorMessage(viewModel.error)
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // ── Gradient hero banner ───────────────────────────────────────
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Box(
                         modifier = Modifier
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(HeaderGradientStart, HeaderGradientEnd)
+                                )
+                            )
                             .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
+                            .padding(horizontal = 20.dp, vertical = 18.dp)
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(14.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .background(Color(0xFFFFE9E9), CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = null,
-                                    tint = Color(0xFFE53935),
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text(
-                                text = "Kết nối có vấn đề",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = TextDark
+                                text = "Exam Library",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
                             Text(
-                                text = errorMessage,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = SubtleText,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(horizontal = 24.dp)
+                                text = "Organize, edit, and publish your TOEIC learning materials.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.72f)
                             )
-                            Card(
-                                shape = RoundedCornerShape(10.dp),
-                                colors = CardDefaults.cardColors(containerColor = PurplePrimary),
-                                modifier = Modifier.clickable { viewModel.retry() }
-                            ) {
-                                Text(
-                                    "Retry",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White,
-                                    modifier = Modifier.padding(
-                                        horizontal = 20.dp,
-                                        vertical = 10.dp
-                                    )
-                                )
-                            }
                         }
                     }
                 }
 
-                viewModel.toeicTests.isEmpty() -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // ── Search bar ─────────────────────────────────────────────────
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = {
                         Text(
-                            text = "No exams available",
+                            "Search exams...",
                             style = MaterialTheme.typography.bodyMedium,
                             color = SubtleText
                         )
-                    }
-                }
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search",
+                            tint = SubtleText,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(14.dp),
+                            ambientColor = Color(0x0D000000)
+                        ),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = TextDark),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = CardSurface,
+                        focusedContainerColor = CardSurface,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        cursorColor = PurplePrimary
+                    ),
+                    shape = RoundedCornerShape(14.dp),
+                    singleLine = true
+                )
 
-                else -> {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        items(viewModel.toeicTests.filter { exam ->
-                            searchQuery.isEmpty() || exam.title.contains(
-                                searchQuery,
-                                ignoreCase = true
-                            )
-                        }) { exam ->
-                            ExamCard(
-                                exam = exam,
-                                onEdit = { onEditExam(exam.id) },
-                                onDelete = {
-                                    viewModel.deleteToeic(exam.id) {
-                                        Toast.makeText(context, "Xóa thành công", Toast.LENGTH_SHORT).show()
-                                    }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // ── Content area ────────────────────────────────────────────────
+                when {
+                    viewModel.isLoading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = PurplePrimary)
+                        }
+                    }
+
+                    viewModel.error != null -> {
+                        val errorMessage = resolveToeicAdminErrorMessage(viewModel.error)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(56.dp)
+                                        .background(Color(0xFFFFE9E9), CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = null,
+                                        tint = Color(0xFFE53935),
+                                        modifier = Modifier.size(32.dp)
+                                    )
                                 }
+                                Text(
+                                    text = "Kết nối có vấn đề",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = TextDark
+                                )
+                                Text(
+                                    text = errorMessage,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = SubtleText,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(horizontal = 24.dp)
+                                )
+                                Card(
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = CardDefaults.cardColors(containerColor = PurplePrimary),
+                                    modifier = Modifier.clickable { viewModel.retry() }
+                                ) {
+                                    Text(
+                                        "Retry",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(
+                                            horizontal = 20.dp,
+                                            vertical = 10.dp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    viewModel.toeicTests.isEmpty() -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No exams available",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = SubtleText
                             )
                         }
                     }
+
+                    else -> {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            items(viewModel.toeicTests.filter { exam ->
+                                searchQuery.isEmpty() || exam.title.contains(
+                                    searchQuery,
+                                    ignoreCase = true
+                                )
+                            }) { exam ->
+                                ExamCard(
+                                    exam = exam,
+                                    onEdit = { onEditExam(exam.id) },
+                                    onDelete = {
+                                        viewModel.deleteToeic(exam.id) {
+                                            Toast.makeText(context, "Xóa thành công", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (viewModel.isDeleting) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = PurplePrimary)
                 }
             }
         }
@@ -432,44 +444,6 @@ private fun ExamCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Live toggle
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                ) {
-//                    val dotColor by animateColorAsState(
-//                        targetValue = if (isLive) Color(0xFF4CAF50) else SubtleText,
-//                        animationSpec = tween(250),
-//                        label = "dotColor"
-//                    )
-//                    Box(
-//                        modifier = Modifier
-//                            .size(8.dp)
-//                            .background(dotColor, CircleShape)
-//                    )
-//                    Text(
-//                        text = if (isLive) "Live" else "Offline",
-//                        style = MaterialTheme.typography.labelMedium,
-//                        fontWeight = FontWeight.Medium,
-//                        color = if (isLive) Color(0xFF4CAF50) else SubtleText
-//                    )
-//                    Switch(
-//                        checked = isLive,
-//                        onCheckedChange = { isLive = it },
-//                        colors = SwitchDefaults.colors(
-//                            checkedThumbColor = Color.White,
-//                            checkedTrackColor = PurplePrimary,
-//                            uncheckedThumbColor = Color.White,
-//                            uncheckedTrackColor = Color(0xFFD0D0D8),
-//                            uncheckedBorderColor = Color.Transparent,
-//                            checkedBorderColor = Color.Transparent
-//                        ),
-//                        modifier = Modifier
-//                            .height(24.dp)
-//                            .width(44.dp)
-//                    )
-//                }
-
                 // Action buttons
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     ActionIconButton(
