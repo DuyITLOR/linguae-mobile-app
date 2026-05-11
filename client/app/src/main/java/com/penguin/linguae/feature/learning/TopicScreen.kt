@@ -231,22 +231,14 @@ fun CompactTopicCard(
     val fallbackIcon = topicIconFor(seed)
     val lvlColor = levelColor(topic.level)
 
-    val cardGradient = Brush.linearGradient(
-        colors = listOf(
-            accent.copy(alpha = 0.22f),
-            accent.copy(alpha = 0.12f),
-            Color.White.copy(alpha = 0.94f)
-        )
-    )
-
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(cardGradient)
+            .background(Color.White)
             .border(
                 width = 1.dp,
-                color = accent.copy(alpha = 0.24f),
+                color = Color(0xFFEEEEF2),
                 shape = RoundedCornerShape(20.dp)
             )
             .clickable(onClick = onClick)
@@ -262,7 +254,7 @@ fun CompactTopicCard(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(accent.copy(alpha = 0.28f)),
+                        .background(accent.copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
                 ) {
                     if (!topic.icon.isNullOrBlank()) {
@@ -295,7 +287,7 @@ fun CompactTopicCard(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(lvlColor.copy(alpha = 0.15f))
+                                .background(lvlColor.copy(alpha = 0.10f))
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Text(
@@ -310,7 +302,7 @@ fun CompactTopicCard(
                     Icon(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = null,
-                        tint = accent.copy(alpha = 0.7f)
+                        tint = Color(0xFFCCCCD6)
                     )
                 }
             }
@@ -321,10 +313,10 @@ fun CompactTopicCard(
                 progress = progress,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
+                    .height(6.dp)
                     .clip(RoundedCornerShape(100.dp)),
                 color = accent,
-                trackColor = accent.copy(alpha = 0.24f)
+                trackColor = Color(0xFFF0F0F5)
             )
 
             Spacer(modifier = Modifier.height(8.dp))

@@ -15,6 +15,13 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
     import kotlin.properties.Delegates
 
 
+    class ClozeViewModelFactory(private val topicId: String) : androidx.lifecycle.ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return ClozeViewModel(topicId) as T
+        }
+    }
+
     class ClozeViewModel (
         val topicId: String
     ) : ViewModel() {

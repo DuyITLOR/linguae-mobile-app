@@ -116,8 +116,9 @@ export class TopicService {
       );
     }
 
-    return await this.prisma.topic.delete({
-      where: { id: topicId },
+    return await this.prisma.$transaction(async (tx) => {
+      await tx.topicPracticeConfig.deleteMany({ where: { topicId } });
+      return tx.topic.delete({ where: { id: topicId } });
     });
   }
 

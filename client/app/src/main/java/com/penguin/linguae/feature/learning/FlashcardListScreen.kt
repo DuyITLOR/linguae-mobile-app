@@ -345,24 +345,16 @@ private fun FlashcardCard(
     contentMaxWidth: Dp,
     onClick: () -> Unit
 ) {
-    val cardGradient = Brush.linearGradient(
-        colors = listOf(
-            topic.accent.copy(alpha = 0.22f),
-            topic.accent.copy(alpha = 0.12f),
-            Color.White.copy(alpha = 0.94f)
-        )
-    )
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .widthIn(max = contentMaxWidth)
             .padding(horizontal = if (compact) 16.dp else 20.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(cardGradient)
+            .background(Color.White)
             .border(
                 width = 1.dp,
-                color = topic.accent.copy(alpha = 0.24f),
+                color = Color(0xFFEEEEF2),
                 shape = RoundedCornerShape(20.dp)
             )
             .clickable(onClick = onClick)
@@ -378,7 +370,7 @@ private fun FlashcardCard(
                     modifier = Modifier
                         .size(if (compact) 44.dp else 48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(topic.accent.copy(alpha = 0.28f)),
+                        .background(topic.accent.copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -413,7 +405,7 @@ private fun FlashcardCard(
                     Icon(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = "next",
-                        tint = topic.accent.copy(alpha = 0.7f)
+                        tint = Color(0xFFCCCCD6)
                     )
                 }
             }
@@ -424,10 +416,10 @@ private fun FlashcardCard(
                 progress = topic.progress,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
+                    .height(6.dp)
                     .clip(RoundedCornerShape(100.dp)),
                 color = topic.accent,
-                trackColor = topic.accent.copy(alpha = 0.24f)
+                trackColor = Color(0xFFF0F0F5)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
