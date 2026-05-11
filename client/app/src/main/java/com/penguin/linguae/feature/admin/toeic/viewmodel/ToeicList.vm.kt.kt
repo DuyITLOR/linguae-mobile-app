@@ -14,6 +14,7 @@ class ToeicListViewModel : ViewModel() {
 
     var toeicTests by mutableStateOf<List<Toeic>>(emptyList())
     var isLoading by mutableStateOf(false)
+    var isDeleting by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
 
     init {
@@ -37,12 +38,14 @@ class ToeicListViewModel : ViewModel() {
 
     fun deleteToeic(toeicId: String, onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
+            isDeleting = true
             repository.deleteToeic(toeicId)
                 .onSuccess {
                     toeicTests = toeicTests.filterNot { it.id == toeicId }
                     onSuccess()
                 }
                 .onFailure { error = it.message ?: "Failed to delete test" }
+            isDeleting = false
         }
     }
 }

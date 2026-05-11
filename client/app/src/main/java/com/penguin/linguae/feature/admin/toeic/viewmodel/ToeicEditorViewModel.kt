@@ -49,6 +49,9 @@ class ToeicEditorViewModel : ViewModel() {
     var isLoadingDraft by mutableStateOf(false)
         private set
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     var draftLoadError by mutableStateOf<String?>(null)
         private set
 
@@ -204,7 +207,12 @@ class ToeicEditorViewModel : ViewModel() {
     }
 
     suspend fun saveQuestion(): String? {
-        validateDrafts()?.let { return it }
+        isSaving = true
+
+        validateDrafts()?.let {
+            isSaving = false
+            return it
+        }
 
         return try {
             val editingToeicId = activeToeicId
@@ -260,6 +268,8 @@ class ToeicEditorViewModel : ViewModel() {
         } catch (e: Exception) {
             Log.e("ToeicEditorVM", "Save TOEIC failed", e)
             e.message ?: "Khong the tao de TOEIC"
+        } finally {
+            isSaving = false
         }
     }
 
@@ -310,6 +320,7 @@ class ToeicEditorViewModel : ViewModel() {
         createDraftStarted = false
         draftLoadError = null
         isLoadingDraft = false
+        isSaving = false
     }
 
     private fun normalizeOptions(options: List<String>): List<String> {

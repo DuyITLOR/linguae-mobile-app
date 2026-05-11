@@ -58,6 +58,7 @@ import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.feature.admin.toeic.viewmodel.ToeicEditorViewModel
+import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.launch
 
 // ── Palette ───────────────────────────────────────────────────────────────────
@@ -237,6 +238,7 @@ fun ToeicExamInfoScreen(
             }
 
             // ── Save FAB ─────────────────────────────────────────────────────
+            val isSaving = viewModel.isSaving
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -246,7 +248,7 @@ fun ToeicExamInfoScreen(
                         brush = Brush.horizontalGradient(listOf(EIGradientStart, EIGradientEnd)),
                         shape = RoundedCornerShape(50.dp)
                     )
-                    .clickable {
+                    .clickable(enabled = !isSaving) {
                         scope.launch {
                             val errorMessage = viewModel.saveQuestion()
                             if (errorMessage != null) {
@@ -260,22 +262,30 @@ fun ToeicExamInfoScreen(
                     .padding(horizontal = 24.dp, vertical = 14.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = "Lưu bài",
-                        tint = Color.White,
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
                         modifier = Modifier.size(20.dp)
                     )
-                    Text(
-                        text = "Lưu bài",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 15.sp
-                    )
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Lưu bài",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "Lưu bài",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 15.sp
+                        )
+                    }
                 }
             }
 

@@ -182,10 +182,7 @@ fun AppNavigation(
                     }
                 },
                 onSaveExam = {
-                    navController.navigate(Screen.ToeicList.route) {
-                        popUpTo(Screen.ToeicList.route) { inclusive = false }
-                        launchSingleTop = true
-                    }
+                    navController.popBackStack(Screen.ToeicList.route, inclusive = false)
                 },
                 viewModel = editorViewModel
             )
@@ -233,10 +230,7 @@ fun AppNavigation(
                     }
                 },
                 onSaveExam = {
-                    navController.navigate(Screen.ToeicList.route) {
-                        popUpTo(Screen.ToeicList.route) { inclusive = false }
-                        launchSingleTop = true
-                    }
+                    navController.popBackStack(Screen.ToeicList.route, inclusive = false)
                 },
                 viewModel = editorViewModel
             )
@@ -284,10 +278,7 @@ fun AppNavigation(
                     }
                 },
                 onSaveExam = {
-                    navController.navigate(Screen.ToeicList.route) {
-                        popUpTo(Screen.ToeicList.route) { inclusive = false }
-                        launchSingleTop = true
-                    }
+                    navController.popBackStack(Screen.ToeicList.route, inclusive = false)
                 },
                 viewModel = editorViewModel
             )
