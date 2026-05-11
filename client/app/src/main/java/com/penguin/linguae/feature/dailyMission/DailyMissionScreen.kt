@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.graphics.Brush
 import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.data.model.DailyMissionWord
 import com.penguin.linguae.data.model.DailyTaskSummary
@@ -67,7 +68,7 @@ fun DailyMissionScreen(
         return
     }
 
-    Scaffold(containerColor = AppBackground) { paddingValues ->
+    Scaffold(containerColor = AppBackground, contentWindowInsets = WindowInsets(0)) { paddingValues ->
         when {
             uiState.isLoading -> LoadingScreen(paddingValues)
             uiState.error != null -> ErrorScreen(
@@ -178,9 +179,11 @@ private fun MissionHeader(overallProgress: Int, onNavigateBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(PurpleBlueTheme)
-            .padding(horizontal = 20.dp)
-            .padding(top = 24.dp, bottom = 28.dp)
+            .background(
+                Brush.linearGradient(listOf(PurplePrimary, PurpleDark, PurpleDeep))
+            )
+            .padding(horizontal = 24.dp)
+            .padding(top = 30.dp, bottom = 28.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onNavigateBack) {

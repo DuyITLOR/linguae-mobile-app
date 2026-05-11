@@ -135,21 +135,18 @@ export class VocabularyService {
       where: { id },
     });
 
-    if (!vocabulary) {
-      throw new NotFoundException('Vocabulary is not found');
-    }
+    if (!vocabulary) return null;
 
-    await this.prisma.vocabularyExample.deleteMany({
-      where: { vocabularyId: id },
-    });
+    const [, , , , , deleted] = await this.prisma.$transaction([
+      this.prisma.dailyTaskCompletion.deleteMany({ where: { vocabularyId: id } }),
+      this.prisma.favoriteVocabulary.deleteMany({ where: { vocabularyId: id } }),
+      this.prisma.flashcardReview.deleteMany({ where: { vocabularyId: id } }),
+      this.prisma.userVocabularyProgress.deleteMany({ where: { vocabularyId: id } }),
+      this.prisma.vocabularyExample.deleteMany({ where: { vocabularyId: id } }),
+      this.prisma.vocabulary.delete({ where: { id } }),
+    ]);
 
-    await this.prisma.userVocabularyProgress.deleteMany({
-      where: { vocabularyId: id },
-    });
-
-    return await this.prisma.vocabulary.delete({
-      where: { id },
-    });
+    return deleted;
   }
 
   async update(id: string, dto: UpdateVocabularyDto) {

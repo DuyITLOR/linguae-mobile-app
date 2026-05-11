@@ -86,7 +86,7 @@ fun WeeklyActivityChart(
                 }
 
                 Text(
-                    text = weekLabel(weekOffset),
+                    text = monthYearLabel(activity, weekOffset),
                     color = TextGray,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
@@ -158,41 +158,73 @@ fun WeeklyActivityChart(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 activity.forEach { day ->
-                    Text(
-                        text = dateToLabel(day.date),
-                        color = TextGray,
-                        fontSize = 12.sp,
+                    Column(
                         modifier = Modifier.weight(1f),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = dateToWeekDay(day.date),
+                            color = TextGray,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = dateToDayNumber(day.date),
+                            color = TextDark,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-private fun weekLabel(weekOffset: Int): String = when {
+private fun monthYearLabel(activity: List<DailyActivityStats>, weekOffset: Int): String {
+    val midDate = activity.getOrNull(3)?.date ?: activity.lastOrNull()?.date
+    if (midDate != null) {
+        return try {
+            val parts = midDate.split("-")
+            val month = parts[1].toInt()
+            val year = parts[0].toInt()
+            "Tháng $month, $year"
+        } catch (e: Exception) {
+            weekLabelFallback(weekOffset)
+        }
+    }
+    return weekLabelFallback(weekOffset)
+}
+
+private fun weekLabelFallback(weekOffset: Int): String = when {
     weekOffset == 0 -> "Tuần này"
     weekOffset == -1 -> "Tuần trước"
     else -> "${-weekOffset} tuần trước"
 }
 
-private fun dateToLabel(dateStr: String): String {
-    return try {
-        val parts = dateStr.split("-")
-        val cal = Calendar.getInstance().apply {
-            set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
-        }
-        when (cal.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.MONDAY -> "T2"
-            Calendar.TUESDAY -> "T3"
-            Calendar.WEDNESDAY -> "T4"
-            Calendar.THURSDAY -> "T5"
-            Calendar.FRIDAY -> "T6"
-            Calendar.SATURDAY -> "T7"
-            else -> "CN"
-        }
-    } catch (e: Exception) {
-        ""
+private fun calendarFromDateStr(dateStr: String): Calendar? = try {
+    val parts = dateStr.split("-")
+    Calendar.getInstance().apply {
+        set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
     }
+} catch (e: Exception) { null }
+
+private fun dateToWeekDay(dateStr: String): String {
+    val cal = calendarFromDateStr(dateStr) ?: return ""
+    return when (cal.get(Calendar.DAY_OF_WEEK)) {
+        Calendar.MONDAY -> "T2"
+        Calendar.TUESDAY -> "T3"
+        Calendar.WEDNESDAY -> "T4"
+        Calendar.THURSDAY -> "T5"
+        Calendar.FRIDAY -> "T6"
+        Calendar.SATURDAY -> "T7"
+        else -> "CN"
+    }
+}
+
+private fun dateToDayNumber(dateStr: String): String {
+    val cal = calendarFromDateStr(dateStr) ?: return ""
+    return cal.get(Calendar.DAY_OF_MONTH).toString()
 }

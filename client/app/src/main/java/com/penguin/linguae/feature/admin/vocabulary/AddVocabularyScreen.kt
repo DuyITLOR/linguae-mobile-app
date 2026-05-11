@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -125,7 +126,8 @@ fun ManageVocabularyScreen(
 
     Scaffold(
         containerColor = AppBackground,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = WindowInsets(0)
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -135,15 +137,14 @@ fun ManageVocabularyScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(90.dp)
                     .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                     .background(Brush.verticalGradient(listOf(PurplePrimary, PurpleDark, PurpleDeep)))
+                    .padding(horizontal = 24.dp, vertical = 0.dp)
+                    .padding(top = 30.dp, bottom = 28.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 4.dp, vertical = 16.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(onClick = {
                         if (viewModel.mode != VocabManageMode.LIST) viewModel.cancelForm() else onBack()

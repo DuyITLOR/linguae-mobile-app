@@ -18,6 +18,12 @@ class DailyClozeViewModel(val taskId: String) : ViewModel() {
     private var totalQuestion by Delegates.notNull<Int>()
     private var correctCount = 0
 
+    private val _correctCount = MutableStateFlow(0)
+    val correctCountState = _correctCount.asStateFlow()
+
+    private val _totalQuestion = MutableStateFlow(0)
+    val totalQuestionState = _totalQuestion.asStateFlow()
+
     private val _questionsWithOptions = MutableStateFlow<List<ClozeQuestionWithOptions>>(emptyList())
     val questionsWithOptions = _questionsWithOptions.asStateFlow()
 
@@ -42,6 +48,9 @@ class DailyClozeViewModel(val taskId: String) : ViewModel() {
     private val _navigationEvent = MutableSharedFlow<Unit>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
+    private val _showRetry = MutableStateFlow(false)
+    val showRetry = _showRetry.asStateFlow()
+
     init {
         fetchQuestions()
     }
@@ -55,6 +64,7 @@ class DailyClozeViewModel(val taskId: String) : ViewModel() {
                         ClozeQuestionWithOptions(question = q, options = q.clozeOptions)
                     }
                     totalQuestion = questions.size
+                    _totalQuestion.value = questions.size
                     if (questions.size == 1) _isLastQuestion.value = true
                 }
                 .onFailure { _error.value = it.message }
@@ -65,7 +75,10 @@ class DailyClozeViewModel(val taskId: String) : ViewModel() {
     fun onOptionSelected(optionId: Int) {
         if (_isAnswered.value) return
         val current = _questionsWithOptions.value[_currentIndex.value]
-        if (current.options.find { it.id == optionId }?.isCorrect == true) correctCount++
+        if (current.options.find { it.id == optionId }?.isCorrect == true) {
+            correctCount++
+            _correctCount.value = correctCount
+        }
         _selectedOptionId.value = optionId
         _isAnswered.value = true
     }
@@ -79,8 +92,28 @@ class DailyClozeViewModel(val taskId: String) : ViewModel() {
     }
 
     fun onFinish() {
+        if (correctCount == totalQuestion) {
+            viewModelScope.launch {
+                repository.completeDailyExercise(taskId)
+                _navigationEvent.emit(Unit)
+            }
+        } else {
+            _showRetry.value = true
+        }
+    }
+
+    fun onRetry() {
+        correctCount = 0
+        _correctCount.value = 0
+        _currentIndex.value = 0
+        _selectedOptionId.value = null
+        _isAnswered.value = false
+        _isLastQuestion.value = _questionsWithOptions.value.size == 1
+        _showRetry.value = false
+    }
+
+    fun onSkip() {
         viewModelScope.launch {
-            repository.completeDailyExercise(taskId)
             _navigationEvent.emit(Unit)
         }
     }

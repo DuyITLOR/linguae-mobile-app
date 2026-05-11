@@ -1,6 +1,8 @@
 package com.penguin.linguae.feature.dailyMission
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,12 +11,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -34,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.penguin.linguae.core.ui.component.ErrorView
+import androidx.compose.ui.graphics.Color
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.core.ui.theme.Black
 import com.penguin.linguae.core.ui.theme.Green
@@ -56,6 +62,9 @@ fun DailyClozeScreen(
     val isLastQuestion by viewModel.isLastQuestion.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
+    val showRetry by viewModel.showRetry.collectAsStateWithLifecycle()
+    val correctCount by viewModel.correctCountState.collectAsStateWithLifecycle()
+    val totalQuestion by viewModel.totalQuestionState.collectAsStateWithLifecycle()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -65,6 +74,17 @@ fun DailyClozeScreen(
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = AppBackground) {
+        if (showRetry) {
+            RetryOverlay(
+                correctCount = correctCount,
+                totalQuestion = totalQuestion,
+                accentColor = Green,
+                onRetry = { viewModel.onRetry() },
+                onSkip = { viewModel.onSkip() }
+            )
+            return@Surface
+        }
+
         when {
             isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

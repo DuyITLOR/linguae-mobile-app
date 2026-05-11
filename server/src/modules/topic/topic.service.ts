@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
@@ -86,8 +86,15 @@ export class TopicService {
 
   async delete(topicId: string) {
     const topic = await this.prisma.topic.findUnique({
-      where: {
-        id: topicId,
+      where: { id: topicId },
+      include: {
+        _count: {
+          select: {
+            Vocabulary: true,
+            ClozeQuestion: true,
+            MatchingQuestion: true,
+          },
+        },
       },
     });
 
@@ -95,10 +102,22 @@ export class TopicService {
       throw new NotFoundException('Topic not found');
     }
 
+    const parts: string[] = [];
+    if (topic._count.Vocabulary > 0)
+      parts.push(`${topic._count.Vocabulary} từ vựng`);
+    if (topic._count.ClozeQuestion > 0)
+      parts.push(`${topic._count.ClozeQuestion} câu cloze`);
+    if (topic._count.MatchingQuestion > 0)
+      parts.push(`${topic._count.MatchingQuestion} câu matching`);
+
+    if (parts.length > 0) {
+      throw new BadRequestException(
+        `Không thể xóa chủ đề vì còn chứa: ${parts.join(', ')}. Hãy xóa hết nội dung trước.`,
+      );
+    }
+
     return await this.prisma.topic.delete({
-      where: {
-        id: topicId,
-      },
+      where: { id: topicId },
     });
   }
 

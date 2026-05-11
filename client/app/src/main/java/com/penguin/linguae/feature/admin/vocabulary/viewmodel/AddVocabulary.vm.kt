@@ -154,7 +154,7 @@ class ManageVocabularyViewModel(
             isLoading = true
             vocabRepository.deleteVocabulary(id)
                 .onSuccess { loadVocabularies() }
-                .onFailure { error = it.message ?: "Failed to delete vocabulary" }
+                .onFailure { error = it.message ?: "Failed to delete vocabulary"  }
             isLoading = false
         }
     }

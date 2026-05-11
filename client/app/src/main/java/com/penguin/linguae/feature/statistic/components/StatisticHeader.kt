@@ -36,7 +36,7 @@ fun StatisticHeader(currentStreak: Int, totalVocabLearned: Int) {
                     listOf(PurplePrimary, PurpleDark, PurpleDeep)
                 )
             )
-            .padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 32.dp)
+            .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 32.dp)
     ) {
         // Decorative blobs
         Box(

@@ -57,7 +57,7 @@ fun ProfileHeroHeader(
                         colors = listOf(PurplePrimary, PurpleDark, PurpleDeep)
                     )
                 )
-                .padding(horizontal = 24.dp, vertical = 22.dp)
+                .padding(horizontal = 24.dp, vertical = 24.dp)
         ) {
             Box(
                 modifier = Modifier
