@@ -169,6 +169,7 @@ fun MatchingItemCard(
 ) {
     val backgroundColor = when {
         item.isMatched -> Color(0xFFE7F9EF)
+        item.isCorrect == false -> Red
         isSelected -> PurpleLight
         else -> Color.White
     }

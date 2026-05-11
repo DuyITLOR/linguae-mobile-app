@@ -8,6 +8,7 @@ import com.penguin.linguae.data.model.MatchingQuestionUi
 import com.penguin.linguae.data.model.ResultData
 import com.penguin.linguae.data.repository.MatchingRepository
 import com.penguin.linguae.data.repository.ResultRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -108,26 +109,90 @@ class MatchingViewModel(
     }
 
     private fun checkMatch() {
+
         val leftId = _selectedLeftId.value
         val rightId = _selectedRightId.value
 
         if (leftId != null && rightId != null) {
-            if (leftId == rightId) {
-                // Correct match
-                _leftItems.value = _leftItems.value.map {
-                    if (it.id == leftId) it.copy(isMatched = true, isCorrect = true) else it
+
+            viewModelScope.launch {
+
+                if (leftId == rightId) {
+
+                    // Correct match
+                    _leftItems.value = _leftItems.value.map {
+
+                        if (it.id == leftId) {
+                            it.copy(
+                                isMatched = true,
+                                isCorrect = true
+                            )
+                        } else {
+                            it
+                        }
+                    }
+
+                    _rightItems.value = _rightItems.value.map {
+
+                        if (it.id == rightId) {
+                            it.copy(
+                                isMatched = true,
+                                isCorrect = true
+                            )
+                        } else {
+                            it
+                        }
+                    }
+
+                } else {
+
+                    // Show red state
+                    _leftItems.value = _leftItems.value.map {
+
+                        if (it.id == leftId) {
+                            it.copy(isCorrect = false)
+                        } else {
+                            it
+                        }
+                    }
+
+                    _rightItems.value = _rightItems.value.map {
+
+                        if (it.id == rightId) {
+                            it.copy(isCorrect = false)
+                        } else {
+                            it
+                        }
+                    }
+
+                    // Delay for flash effect
+                    delay(300)
+
+                    // Reset red state
+                    _leftItems.value = _leftItems.value.map {
+
+                        if (it.id == leftId) {
+                            it.copy(isCorrect = null)
+                        } else {
+                            it
+                        }
+                    }
+
+                    _rightItems.value = _rightItems.value.map {
+
+                        if (it.id == rightId) {
+                            it.copy(isCorrect = null)
+                        } else {
+                            it
+                        }
+                    }
                 }
-                _rightItems.value = _rightItems.value.map {
-                    if (it.id == rightId) it.copy(isMatched = true, isCorrect = true) else it
-                }
-            } else {
-                // Incorrect match - briefly show error then reset?
-                // For now just reset selection
+
+                _selectedLeftId.value = null
+                _selectedRightId.value = null
+
+                checkCompletion()
             }
-            _selectedLeftId.value = null
-            _selectedRightId.value = null
-            
-            checkCompletion()
         }
     }
 
