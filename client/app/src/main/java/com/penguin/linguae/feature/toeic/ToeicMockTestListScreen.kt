@@ -102,7 +102,7 @@ fun ToeicMockTestListScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(bottom = paddingValues.calculateBottomPadding()),
             contentPadding = PaddingValues(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
