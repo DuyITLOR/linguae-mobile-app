@@ -103,7 +103,13 @@ fun MissionProgressCard(todayProgress: TodayProgressStats, modifier: Modifier = 
                 )
             } else {
                 tasks.forEach { task ->
-                    val taskLabel = if (task.taskType == "VOCABULARY_LEARN") "Học từ vựng" else "Luyện Flashcard"
+                    val taskLabel = when (task.taskType) {
+                        "VOCABULARY_LEARN" -> "Học từ vựng"
+                        "FLASHCARD_LEARN"  -> "Luyện Flashcard"
+                        "CLOZE_LEARN"      -> "Luyện Cloze"
+                        "MATCHING_LEARN"   -> "Luyện Matching"
+                        else               -> task.taskType
+                    }
                     val taskRatio by animateFloatAsState(
                         targetValue = if (task.targetCount > 0) task.completedCount.toFloat() / task.targetCount else 0f,
                         label = "task_${task.id}"
