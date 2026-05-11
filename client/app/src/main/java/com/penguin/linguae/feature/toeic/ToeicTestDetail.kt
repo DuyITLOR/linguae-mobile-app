@@ -177,6 +177,7 @@ fun ToeicTest(
             )
             Spacer(modifier = Modifier.height(10.dp))
             Header(
+                title = uiState.title,
                 currentQuestion = uiState.currentQuestionIndex + 1,
                 totalQuestions = uiState.totalQuestions,
                 remainingTime = remainingTimeText,
@@ -382,21 +383,33 @@ private fun BottomControlPanel(
             }
         }
 
-        QuestionJumpBar(
-            totalQuestions = uiState.totalQuestions,
-            currentQuestionIndex = uiState.currentQuestionIndex,
-            answeredCount = uiState.answeredQuestions,
-            answeredIndexes = when (uiState.selectedPart) {
-                ToeicPart.PART_5 -> uiState.part5Answers.keys
-                ToeicPart.PART_6 -> uiState.part6Questions.mapIndexedNotNull { index, question ->
+        if (uiState.selectedPart == ToeicPart.PART_6) {
+            // Part 6: hiện theo số đoạn văn, nhưng label chỉ rõ tổng câu hỏi
+            val totalPassages = uiState.part6Questions.size
+            val totalSubQuestions = uiState.totalQuestions
+            QuestionJumpBar(
+                totalQuestions = totalPassages,
+                currentQuestionIndex = uiState.currentQuestionIndex,
+                answeredCount = uiState.answeredQuestions,
+                totalSubQuestions = totalSubQuestions,
+                answeredIndexes = uiState.part6Questions.mapIndexedNotNull { index, question ->
                     val answeredAll = question.readingPart6Options.all { option ->
                         uiState.part6Answers.containsKey(option.id)
                     }
                     index.takeIf { answeredAll }
-                }.toSet()
-            },
-            onQuestionClick = onJumpToQuestion
-        )
+                }.toSet(),
+                labelForIndex = { index -> "P${index + 1}" },
+                onQuestionClick = onJumpToQuestion
+            )
+        } else {
+            QuestionJumpBar(
+                totalQuestions = uiState.totalQuestions,
+                currentQuestionIndex = uiState.currentQuestionIndex,
+                answeredCount = uiState.answeredQuestions,
+                answeredIndexes = uiState.part5Answers.keys,
+                onQuestionClick = onJumpToQuestion
+            )
+        }
     }
 }
 
@@ -446,6 +459,7 @@ private fun QuestionProgressBar(
 
 @Composable
 private fun Header(
+    title: String,
     currentQuestion: Int,
     totalQuestions: Int,
     remainingTime: String,
@@ -467,10 +481,11 @@ private fun Header(
             )
         }
         Text(
-            text = "Mock Test 1 Practice",
+            text = title,
             color = TextDark,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
         )
         Text(
             text = remainingTime,
@@ -741,12 +756,15 @@ private fun QuestionJumpBar(
     currentQuestionIndex: Int,
     answeredCount: Int,
     answeredIndexes: Set<Int>,
-    onQuestionClick: (Int) -> Unit
+    onQuestionClick: (Int) -> Unit,
+    totalSubQuestions: Int? = null,
+    labelForIndex: ((Int) -> String)? = null
 ) {
     if (totalQuestions <= 0) return
+    val displayTotal = totalSubQuestions ?: totalQuestions
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            text = "Question Navigator ($answeredCount/$totalQuestions)",
+            text = "Question Navigator ($answeredCount/$displayTotal)",
             color = TextGray,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
@@ -765,7 +783,7 @@ private fun QuestionJumpBar(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "${index + 1}",
+                        text = labelForIndex?.invoke(index) ?: "${index + 1}",
                         color = textColor,
                         fontWeight = FontWeight.SemiBold
                     )

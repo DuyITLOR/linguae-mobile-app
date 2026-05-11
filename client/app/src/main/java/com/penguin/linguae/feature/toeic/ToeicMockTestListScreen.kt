@@ -102,7 +102,7 @@ fun ToeicMockTestListScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(bottom = paddingValues.calculateBottomPadding()),
             contentPadding = PaddingValues(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -385,7 +385,7 @@ private fun ToeicMockTestCard(
 
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -395,16 +395,14 @@ private fun ToeicMockTestCard(
                         Text(
                             text = mockTest.title,
                             color = TextDark,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
+                        Spacer(modifier = Modifier.size(8.dp))
                         StatusBadge("OPEN")
                     }
-                    Text(
-                        text = "Level ${mockTest.level}",
-                        color = TextGray,
-                        fontSize = 14.sp
-                    )
+                    LevelBadge(level = mockTest.level)
                 }
             }
             Row(
@@ -418,6 +416,39 @@ private fun ToeicMockTestCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun LevelBadge(level: String) {
+    val color = when (level.uppercase()) {
+        "BEGINNER" -> Color(0xFF27AE60)
+        "INTERMEDIATE" -> Color(0xFFE67E22)
+        "ADVANCED" -> Color(0xFFE74C3C)
+        else -> Color(0xFF6B7280)
+    }
+    val label = when (level.uppercase()) {
+        "BEGINNER" -> "Beginner"
+        "INTERMEDIATE" -> "Intermediate"
+        "ADVANCED" -> "Advanced"
+        else -> level
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Text(
+            text = label,
+            color = color,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 

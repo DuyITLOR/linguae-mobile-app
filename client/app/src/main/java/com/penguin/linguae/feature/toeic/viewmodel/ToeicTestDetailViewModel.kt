@@ -24,6 +24,7 @@ private const val DEFAULT_TOEIC_DURATION_SECONDS = 60 * 60
 data class ToeicTestUiState(
     val isLoading: Boolean = false,
     val isSubmitting: Boolean = false,
+    val title: String = "",
     val errorMessage: String? = null,
     val submitMessage: String? = null,
     val selectedPart: ToeicPart = ToeicPart.PART_5,
@@ -177,14 +178,17 @@ class ToeicTestDetailViewModel : ViewModel() {
         )
 
         viewModelScope.launch {
+            val toeicDeferred = async { repository.getToeicById(toeicId) }
             val part5Deferred = async { repository.getReadingPart5Questions(toeicId) }
             val part6Deferred = async { repository.getReadingPart6Questions(toeicId) }
 
+            val toeicResult = toeicDeferred.await()
             val part5Result = part5Deferred.await()
             val part6Result = part6Deferred.await()
 
             val error = part5Result.exceptionOrNull()
                 ?: part6Result.exceptionOrNull()
+                ?: toeicResult.exceptionOrNull()
             if (error != null) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -193,10 +197,12 @@ class ToeicTestDetailViewModel : ViewModel() {
                 return@launch
             }
 
+            val toeic = toeicResult.getOrNull()
             val part5Questions = part5Result.getOrDefault(emptyList())
             val part6Questions = part6Result.getOrDefault(emptyList())
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
+                title = toeic?.title.orEmpty(),
                 selectedPart = selectedPart,
                 part5Questions = part5Questions,
                 part6Questions = part6Questions,
