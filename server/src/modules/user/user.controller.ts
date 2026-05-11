@@ -45,4 +45,9 @@ export class UserController {
       'Cập nhật thông tin người dùng thành công',
     );
   }
+
+  @Get('number-of-users')
+  async getNumberOfUsers() {
+    return this.userService.getNumberOfUsers();
+  }
 }

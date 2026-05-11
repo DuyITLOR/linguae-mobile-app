@@ -1,4 +1,4 @@
-package com.penguin.linguae.feature.admin
+package com.penguin.linguae.feature.admin.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,26 +34,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.AppBackground
 import com.penguin.linguae.data.model.User
 import coil.compose.AsyncImage
+import com.penguin.linguae.feature.admin.dashboard.viewmodel.AdminScreenViewModel
 
 @Composable
 fun AdminScreen(
-    modifier: Modifier = Modifier,
     currentUser: User? = null,
     onNavigateProfile: () -> Unit = {},
     onNavigateAddTopic: () -> Unit = {},
     onNavigateManageExam: () -> Unit = {},
+    viewModel: AdminScreenViewModel = viewModel(),
 ) {
+    val totalUsers = viewModel.numberOfUsers.intValue
+    val totalWords = viewModel.numberOfWords.intValue
+    val totalTopics = viewModel.numberOfTopics.intValue
+    val totalExams = viewModel.numberOfToeicExams.intValue
+
+
     Surface(
         color = AppBackground,
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -69,12 +78,12 @@ fun AdminScreen(
                 )
             }
             item {
-                TotalUsersCard(totalUsers = "24.8k", growth = "+12% this month")
+                TotalUsersCard(totalUsers = totalUsers.toString(), growth = "+12% this month")
             }
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     AdminMetricCard(
-                        title = "12.4k",
+                        title = totalWords.toString(),
                         subtitle = "Total Words",
                         icon = Icons.Default.MenuBook,
                         iconBackground = Color(0xFFF0EDFF),
@@ -82,7 +91,7 @@ fun AdminScreen(
                         modifier = Modifier.weight(1f)
                     )
                     AdminMetricCard(
-                        title = "86",
+                        title = totalTopics.toString(),
                         subtitle = "Active Topics",
                         icon = Icons.Default.TrendingUp,
                         iconBackground = Color(0xFFFFEEF6),
@@ -93,7 +102,7 @@ fun AdminScreen(
             }
             item {
                 AdminMetricCard(
-                    title = "412",
+                    title = totalExams.toString(),
                     subtitle = "Total Exams",
                     icon = Icons.Default.School,
                     iconBackground = Color(0xFFEFF4FF),
@@ -277,7 +286,7 @@ private fun TotalUsersCard(totalUsers: String, growth: String) {
 private fun AdminMetricCard(
     title: String,
     subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     iconBackground: Color,
     iconTint: Color,
     modifier: Modifier = Modifier
@@ -323,7 +332,7 @@ private fun AdminMetricCard(
 private fun AdminActionItem(
     title: String,
     subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     onClick: () -> Unit = {}
 ) {
     Card(

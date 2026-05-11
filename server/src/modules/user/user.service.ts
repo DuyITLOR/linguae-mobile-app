@@ -132,4 +132,9 @@ export class UserService {
       typeof candidate.role === 'string'
     );
   }
+
+  async getNumberOfUsers(): Promise<number> {
+    const count = await this.prisma.user.count();
+    return count;
+  }
 }
