@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -172,6 +173,8 @@ private fun ClozeListContent(
                 message = error,
                 onRetry = onRetry
             )
+        } else if (questions.isEmpty()) {
+            ClozeEmptyState(onAdd = onAdd)
         } else {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -185,6 +188,65 @@ private fun ClozeListContent(
                     )
                 }
                 item { Spacer(Modifier.height(24.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClozeEmptyState(onAdd: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(horizontal = 40.dp)
+        ) {
+            // Illustrated icon box
+            Surface(
+                color = PurpleLight.copy(alpha = 0.18f),
+                shape = RoundedCornerShape(32.dp),
+                modifier = Modifier.size(110.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Icon(
+                        imageVector = Icons.Default.EditNote,
+                        contentDescription = null,
+                        tint = PurplePrimary.copy(alpha = 0.6f),
+                        modifier = Modifier.size(56.dp)
+                    )
+                }
+            }
+
+            Text(
+                text = "No questions yet",
+                color = TextDark,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Create your first cloze question by tapping the button below. Use '___' to mark where the blank should appear.",
+                color = TextGray,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Button(
+                onClick = onAdd,
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 12.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Create First Question", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
             }
         }
     }
@@ -247,7 +309,7 @@ private fun ClozeFormContent(viewModel: ManageClozeViewModel) {
         ClozeFormSection(title = "Options") {
             Text("Select the correct answer and fill in the text.", color = TextGray, fontSize = 12.sp)
             Spacer(Modifier.height(8.dp))
-            
+
             viewModel.options.forEachIndexed { index, opt ->
                 val borderColor = if (opt.isCorrect) PurplePrimary else BorderGray
                 val backgroundColor = if (opt.isCorrect) PurpleLight.copy(alpha = 0.2f) else Color.Transparent
@@ -312,7 +374,7 @@ private fun ClozeFormContent(viewModel: ManageClozeViewModel) {
             } else {
                 Text(
                     text = if (viewModel.mode == ClozeManageMode.EDIT) "Update Question" else "Create Question",
-                    fontWeight = FontWeight.SemiBold, 
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp
                 )
             }
