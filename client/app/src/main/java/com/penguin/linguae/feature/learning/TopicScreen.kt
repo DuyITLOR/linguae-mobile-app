@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.core.ui.theme.PageBg
 import com.penguin.linguae.core.ui.theme.PurpleDark
@@ -31,15 +34,29 @@ import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.data.model.Topic
+import com.penguin.linguae.feature.learning.viewmodel.FlashcardViewModel
 import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
 
 @Composable
 fun TopicScreen(
     onTopicClick: (String, String) -> Unit = { _, _ -> },
-    viewModel: TopicViewModel = viewModel()
+    viewModel: TopicViewModel = viewModel(),
+    flashcardViewModel: FlashcardViewModel = viewModel()
 ) {
     val topics by viewModel.topics.collectAsState()
     val querySearch by viewModel.querySearch.collectAsState()
+    val flashcardTopics by flashcardViewModel.topics.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                flashcardViewModel.refreshTopics()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.fetchTopic()
@@ -68,9 +85,14 @@ fun TopicScreen(
             }
 
             items(topics) { topic ->
+                val flashcardTopic = flashcardTopics.find { it.id == topic.id }
+                val progress = if (flashcardTopic != null && flashcardTopic.totalWords > 0)
+                    flashcardTopic.learnedWords.toFloat() / flashcardTopic.totalWords
+                else 0f
                 CompactTopicCard(
                     topic = topic,
-                    progress = 0f,
+                    progress = progress,
+                    learnedWords = flashcardTopic?.learnedWords ?: 0,
                     onClick = { onTopicClick(topic.id, topic.title) },
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                 )
@@ -223,6 +245,7 @@ private fun levelLabel(level: String): String = when (level.uppercase()) {
 fun CompactTopicCard(
     topic: Topic,
     progress: Float,
+    learnedWords: Int = 0,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -321,12 +344,22 @@ fun CompactTopicCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "${topic._count.Vocabulary} từ",
-                color = TextGray,
-                fontSize = 12.sp,
-                modifier = Modifier.align(Alignment.End)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "$learnedWords đã học",
+                    color = accent,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "${topic._count.Vocabulary} từ",
+                    color = TextGray,
+                    fontSize = 12.sp
+                )
+            }
         }
     }
 }

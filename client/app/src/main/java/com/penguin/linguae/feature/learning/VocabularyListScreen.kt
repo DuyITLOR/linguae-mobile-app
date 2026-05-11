@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +35,7 @@ import com.penguin.linguae.core.ui.theme.TextDark
 import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.data.model.Vocabulary
 import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
+import com.penguin.linguae.feature.learning.viewmodel.FlashcardViewModel
 import com.penguin.linguae.feature.learning.viewmodel.TopicViewModel
 import com.penguin.linguae.feature.learning.viewmodel.VocabularyViewModel
 
@@ -47,10 +49,20 @@ fun VocabularyListScreen(
     onNavigateBack: () -> Unit,
     viewModel: VocabularyViewModel = viewModel(),
     favoriteViewModel: FavoriteViewModel = viewModel(),
+    flashcardViewModel: FlashcardViewModel = viewModel(),
 ) {
     val vocabularies by viewModel.vocabulary.collectAsState()
     val favoriteIds by favoriteViewModel.favoriteIds.collectAsState()
     val querySearch by viewModel.querySearch.collectAsState()
+    val flashcardTopics by flashcardViewModel.topics.collectAsState()
+    val currentTopic = flashcardTopics.find { it.id == topicId }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(navBackStackEntry) {
+        if (navBackStackEntry?.destination?.route == Screen.VocabularyList.route) {
+            flashcardViewModel.refreshTopics()
+        }
+    }
 
     LaunchedEffect(topicId) {
         viewModel.fetchVocabularyByTopic(topicId, "")
@@ -66,6 +78,9 @@ fun VocabularyListScreen(
                 .padding(paddingValues)
         ) {
             TopHeader(onNavigateBack = onNavigateBack, title = title)
+            currentTopic?.let {
+                TopicProgressBar(learnedWords = it.learnedWords, totalWords = it.totalWords)
+            }
             SearchBar(
                 query = querySearch,
                 onQueryChange = { newQuery ->
@@ -75,6 +90,7 @@ fun VocabularyListScreen(
             VocabularyList(
                 vocabularyList = vocabularies,
                 favoriteIds = favoriteIds,
+                masteredIds = currentTopic?.masteredVocabIds?.toSet() ?: emptySet(),
                 onItemClick = { vocabId ->
                     navController.navigate(Screen.Vocabulary.createRoute(vocabId))
                 },
@@ -116,6 +132,43 @@ fun TopHeader(onNavigateBack: () -> Unit, title: String) {
 }
 
 @Composable
+fun TopicProgressBar(learnedWords: Int, totalWords: Int) {
+    val progress = if (totalWords > 0) learnedWords.toFloat() / totalWords else 0f
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Đã học",
+                fontSize = 13.sp,
+                color = TextGray
+            )
+            Text(
+                text = "$learnedWords / $totalWords từ",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = PurpleBlueTheme
+            )
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(4.dp)),
+            color = PurpleBlueTheme,
+            trackColor = PurpleBlueTheme.copy(alpha = 0.15f)
+        )
+    }
+}
+
+@Composable
 fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
     TextField(
         value = query,
@@ -142,6 +195,7 @@ fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
 fun VocabularyList(
     vocabularyList: List<Vocabulary>,
     favoriteIds: Set<String>,
+    masteredIds: Set<String> = emptySet(),
     onItemClick: (String) -> Unit,
     onFavoriteClick: (Vocabulary, Boolean) -> Unit
 ) {
@@ -151,10 +205,12 @@ fun VocabularyList(
     ) {
         items(vocabularyList, key = { it.id }) { vocab ->
             val isFavorite = favoriteIds.contains(vocab.id)
+            val isMastered = masteredIds.contains(vocab.id)
 
             VocabularyCard(
                 vocabulary = vocab,
                 isFavorite = isFavorite,
+                isMastered = isMastered,
                 onClick = { onItemClick(vocab.id) },
                 onFavoriteClick = { onFavoriteClick(vocab, isFavorite) }
             )
@@ -166,6 +222,7 @@ fun VocabularyList(
 fun VocabularyCard(
     vocabulary: Vocabulary,
     isFavorite: Boolean,
+    isMastered: Boolean = false,
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
@@ -184,13 +241,32 @@ fun VocabularyCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    text = vocabulary.word,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextDark
-                )
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = vocabulary.word,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextDark
+                    )
+                    if (isMastered) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = Color(0xFF27AE60).copy(alpha = 0.12f)
+                        ) {
+                            Text(
+                                text = "Đã học",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF27AE60),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = vocabulary.pronunciationText,
