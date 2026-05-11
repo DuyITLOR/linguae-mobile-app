@@ -94,7 +94,6 @@ fun AdminScreen(
             item {
                 TotalUsersCard(
                     totalUsers = totalUsers.toString(),
-                    growth = "+12% this month",
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
@@ -284,7 +283,6 @@ private fun ProfileShortcut(
 @Composable
 private fun TotalUsersCard(
     totalUsers: String,
-    growth: String,
     modifier: Modifier = Modifier
 ) {
     val gradient = Brush.linearGradient(
@@ -315,20 +313,7 @@ private fun TotalUsersCard(
                     fontSize = 36.sp,
                     fontWeight = FontWeight.ExtraBold
                 )
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.White.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(999.dp)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = growth,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White
-                    )
-                }
+
             }
         }
     }
