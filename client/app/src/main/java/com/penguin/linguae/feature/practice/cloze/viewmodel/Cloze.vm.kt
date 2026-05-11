@@ -53,8 +53,13 @@ package com.penguin.linguae.feature.practice.cloze.viewmodel
 
         fun onOptionSelected(optionId: Int) {
             if (_isAnswered.value) return
-            if (_shuffledQuestionsWithOptions.value[_currentIndex.value].options[optionId - 1].isCorrect == true)
-                correctCount += 1
+
+            val selectedOption = _shuffledQuestionsWithOptions.value[_currentIndex.value]
+                .options
+                .find { it.id == optionId } ?: return
+
+            if (selectedOption.isCorrect == true) correctCount += 1
+
             _selectedOptionId.value = optionId
             _isAnswered.value = true
         }

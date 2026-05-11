@@ -80,55 +80,30 @@ export class VocabularyService {
     });
   }
 
-  async create(dto: CreateVocabularyDto) {
-    // Ensure TopicPracticeConfig exists for this topic and has 'VOCABULARY' type
-    const config = await this.prisma.topicPracticeConfig.findFirst({
-      where: { topicId: dto.topicId },
-    });
-
-    if (config) {
-      if (!config.questionType.includes('VOCABULARY')) {
-        await this.prisma.topicPracticeConfig.update({
-          where: { id: config.id },
-          data: {
-            questionType: {
-              push: 'VOCABULARY',
-            },
-          },
-        });
-      }
-    } else {
-      await this.prisma.topicPracticeConfig.create({
+    async create(dto: CreateVocabularyDto) {
+      return await this.prisma.vocabulary.create({
         data: {
           topicId: dto.topicId,
-          questionType: ['VOCABULARY'],
+          word: dto.word,
+          meaning: dto.meaning,
+          pronunciationText: dto.pronunciationText,
+          partOfSpeech: dto.partOfSpeech,
+          difficulty: dto.difficulty ?? 1,
+          updatedAt: new Date(),
+          VocabularyExample: dto.examples?.length
+            ? {
+                create: dto.examples.map((e) => ({
+                  sentence: e.sentence,
+                  translation: e.translation,
+                })),
+              }
+            : undefined,
+        },
+        include: {
+          VocabularyExample: true,
         },
       });
     }
-
-    return await this.prisma.vocabulary.create({
-      data: {
-        topicId: dto.topicId,
-        word: dto.word,
-        meaning: dto.meaning,
-        pronunciationText: dto.pronunciationText,
-        partOfSpeech: dto.partOfSpeech,
-        difficulty: dto.difficulty ?? 1,
-        updatedAt: new Date(),
-        VocabularyExample: dto.examples?.length
-          ? {
-              create: dto.examples.map((e) => ({
-                sentence: e.sentence,
-                translation: e.translation,
-              })),
-            }
-          : undefined,
-      },
-      include: {
-        VocabularyExample: true,
-      },
-    });
-  }
 
   async delete(id: string) {
     const vocabulary = await this.prisma.vocabulary.findUnique({
