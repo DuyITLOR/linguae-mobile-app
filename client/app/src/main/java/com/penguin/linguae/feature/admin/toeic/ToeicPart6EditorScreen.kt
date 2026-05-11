@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -94,6 +95,7 @@ fun ToeicPart6EditorScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     Surface(
         color = AppBackground,
@@ -122,6 +124,7 @@ fun ToeicPart6EditorScreen(
                         )
                     } else {
                         LazyColumn(
+                            state = listState,
                             verticalArrangement = Arrangement.spacedBy(20.dp),
                             modifier = Modifier
                                 .fillMaxSize()
@@ -165,7 +168,13 @@ fun ToeicPart6EditorScreen(
                     ) {
                         P6AddFab(
                             label = "Thêm bài đọc",
-                            onClick = { viewModel.addPart6Passage() }
+                            onClick = {
+                                viewModel.addPart6Passage()
+                                scope.launch {
+                                    kotlinx.coroutines.delay(100)
+                                    listState.animateScrollToItem(viewModel.part6Passages.size)
+                                }
+                            }
                         )
                         P6SaveFab(
                             onClick = {

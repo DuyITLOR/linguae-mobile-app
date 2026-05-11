@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -90,6 +91,7 @@ fun ToeicPart5EditorScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     Surface(
         color = AppBackground,
@@ -121,6 +123,7 @@ fun ToeicPart5EditorScreen(
                         )
                     } else {
                         LazyColumn(
+                            state = listState,
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier
                                 .fillMaxSize()
@@ -151,7 +154,13 @@ fun ToeicPart5EditorScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AddQuestionFab(onClick = { viewModel.addPart5Question() })
+                        AddQuestionFab(onClick = {
+                            viewModel.addPart5Question()
+                            scope.launch {
+                                kotlinx.coroutines.delay(100)
+                                listState.animateScrollToItem(viewModel.part5Questions.size)
+                            }
+                        })
                         SaveExamFab(
                             onClick = {
                                 scope.launch {
