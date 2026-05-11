@@ -33,7 +33,7 @@ fun ClozeScreen(
     viewModel: ClozeViewModel = ClozeViewModel(topicId),
     onReturn: () -> Unit = {}
 ){
-    val questionsWithOptions by viewModel.questionsWithOptions.collectAsStateWithLifecycle()
+    val questionsWithOptions by viewModel.shuffleQuestionsWithOptions.collectAsStateWithLifecycle()
     val currentIndex by viewModel.currentIndex.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()

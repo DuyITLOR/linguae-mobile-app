@@ -50,7 +50,6 @@ import kotlinx.coroutines.flow.collectLatest
 fun ResultScreen(
     navController: NavController,
     viewModel: ResultViewModel = viewModel(),
-    onReturn: () -> Unit = {}
 ) {
 
 
@@ -226,7 +225,11 @@ fun ResultScreen(
             }
 
             OutlinedButton(
-                onClick = onReturn,
+                onClick = { navController.navigate(Screen.PracticeTopic.route) {
+                    popUpTo(Screen.PracticeTopic.route) {
+                        inclusive = true
+                    }
+                } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
