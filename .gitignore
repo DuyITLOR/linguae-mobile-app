@@ -40,3 +40,4 @@ server/package-lock.json
 # Claude
 .claude/
 CLAUDE.md
+docs/
