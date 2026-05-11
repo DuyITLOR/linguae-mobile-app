@@ -546,7 +546,7 @@ export class DailyMissionService {
 
     if (!task) throw new NotFoundException('Task not found');
 
-    const ids = task.vocabularyIds as string[];
+    const ids = (task.vocabularyIds as any[]).map(String);
     const completedIds = task.DailyTaskCompletion.map((c) => c.vocabularyId);
 
     const vocabularies = await this.prismaService.vocabulary.findMany({
