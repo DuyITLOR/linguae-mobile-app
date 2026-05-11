@@ -53,7 +53,7 @@ fun ChatSheet(
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.lastIndex)
+            listState.scrollToItem(messages.lastIndex)
         }
     }
 
@@ -117,7 +117,7 @@ fun ChatSheet(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f, fill = false)
+                    .weight(1f)
                     .heightIn(min = 280.dp, max = 520.dp)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {

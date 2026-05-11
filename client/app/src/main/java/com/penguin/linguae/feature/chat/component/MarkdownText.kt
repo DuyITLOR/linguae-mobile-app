@@ -34,6 +34,12 @@ fun MarkdownText(
         val document = parser.parse(text)
         renderer.render(document)
     }
+    val spannedText = remember(html) {
+        HtmlCompat.fromHtml(
+            html,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+    }
 
     AndroidView(
         modifier = modifier,
@@ -46,11 +52,13 @@ fun MarkdownText(
             }
         },
         update = { textView ->
-            textView.setTextColor(textColor)
-            textView.text = HtmlCompat.fromHtml(
-                html,
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            )
+            if (textView.currentTextColor != textColor) {
+                textView.setTextColor(textColor)
+            }
+            if (textView.tag != html) {
+                textView.text = spannedText
+                textView.tag = html
+            }
         }
     )
 }
