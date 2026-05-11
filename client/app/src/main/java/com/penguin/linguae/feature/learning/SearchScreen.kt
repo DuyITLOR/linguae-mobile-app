@@ -53,7 +53,7 @@ fun SearchScreen(
         focusRequester.requestFocus()
     }
 
-    Scaffold(containerColor = PageBg) { paddingValues ->
+    Scaffold(containerColor = PageBg, contentWindowInsets = WindowInsets(0)) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -61,36 +61,43 @@ fun SearchScreen(
         ) {
             SearchHeader()
 
-            TextField(
-                value = query,
-                onValueChange = { viewModel.onQueryChange(it) },
-                placeholder = {
-                    Text(
-                        text = "Nhập từ cần tìm...",
-                        color = PurpleBlueTheme.copy(alpha = 0.6f)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        tint = PurplePrimary
-                    )
-                },
-                singleLine = true,
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .focusRequester(focusRequester),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = SearchBg,
-                    unfocusedContainerColor = SearchBg,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    cursorColor = PurplePrimary
+                    .padding(horizontal = 20.dp)
+                    .offset(y = (-20).dp)
+            ) {
+                TextField(
+                    value = query,
+                    onValueChange = { viewModel.onQueryChange(it) },
+                    placeholder = {
+                        Text(
+                            text = "Nhập từ cần tìm...",
+                            color = PurpleBlueTheme.copy(alpha = 0.6f),
+                            fontSize = 14.sp
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = PurplePrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .focusRequester(focusRequester),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = SearchBg,
+                        unfocusedContainerColor = SearchBg,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        cursorColor = PurplePrimary
+                    )
                 )
-            )
+            }
 
             when {
                 isLoading -> {
@@ -136,7 +143,7 @@ fun SearchScreen(
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
                     )
                     LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(results, key = { it.id }) { vocab ->
@@ -166,7 +173,7 @@ private fun SearchHeader() {
             .background(
                 Brush.linearGradient(listOf(PurplePrimary, PurpleDark, PurpleDeep))
             )
-            .padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 56.dp)
+            .padding(start = 24.dp, end = 24.dp, top = 30.dp, bottom = 60.dp)
     ) {
         Box(
             modifier = Modifier

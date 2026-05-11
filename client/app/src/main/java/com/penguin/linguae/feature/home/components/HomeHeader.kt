@@ -47,7 +47,7 @@ fun HomeHeader(
                     )
                 )
             )
-            .padding(horizontal = 20.dp, vertical = 24.dp)
+            .padding(horizontal = 24.dp, vertical = 24.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
