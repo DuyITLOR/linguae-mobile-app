@@ -20,8 +20,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -90,6 +94,7 @@ fun ToeicPart5EditorScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     Surface(
         color = AppBackground,
@@ -121,6 +126,7 @@ fun ToeicPart5EditorScreen(
                         )
                     } else {
                         LazyColumn(
+                            state = listState,
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier
                                 .fillMaxSize()
@@ -143,28 +149,70 @@ fun ToeicPart5EditorScreen(
                         }
                     }
 
-                    // ── Floating add/save buttons ────────────────────────────────
-                    Row(
+                    // ── Bottom Controls (Nav & FABs) ─────────────────────────────
+                    Column(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        AddQuestionFab(onClick = { viewModel.addPart5Question() })
-                        SaveExamFab(
-                            onClick = {
-                                scope.launch {
-                                    val errorMessage = viewModel.saveQuestion()
-                                    if (errorMessage != null) {
-                                        snackbarHostState.showSnackbar(errorMessage)
-                                    } else {
-                                        snackbarHostState.showSnackbar("Lưu bài thành công")
-                                        onSaveExam()
+                        if (viewModel.part5Questions.isNotEmpty()) {
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(viewModel.part5Questions.size) { index ->
+                                    val isSelected = index == listState.firstVisibleItemIndex
+                                    Box(
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(if (isSelected) PurplePrimary else Color.White, CircleShape)
+                                            .border(1.dp, if (isSelected) PurplePrimary else PurpleLight, CircleShape)
+                                            .clickable {
+                                                scope.launch {
+                                                    listState.animateScrollToItem(index)
+                                                }
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = (index + 1).toString(),
+                                            color = if (isSelected) Color.White else PurplePrimary,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp
+                                        )
                                     }
                                 }
                             }
-                        )
+                        }
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AddQuestionFab(onClick = {
+                                viewModel.addPart5Question()
+                                scope.launch {
+                                    kotlinx.coroutines.delay(100)
+                                    listState.animateScrollToItem(viewModel.part5Questions.size)
+                                }
+                            })
+                            SaveExamFab(
+                                onClick = {
+                                    scope.launch {
+                                        val errorMessage = viewModel.saveQuestion()
+                                        if (errorMessage != null) {
+                                            snackbarHostState.showSnackbar(errorMessage)
+                                        } else {
+                                            snackbarHostState.showSnackbar("Lưu bài thành công")
+                                            onSaveExam()
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }
