@@ -71,6 +71,8 @@ class TopicRepository {
         return try {
             api.deleteTopic(topicId)
             Result.success(Unit)
+        } catch (e: HttpException) {
+            Result.failure(parseHttpError(e))
         } catch (e: Exception) {
             Result.failure(e)
         }
