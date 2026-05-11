@@ -1,6 +1,11 @@
-@baseUrl = http://localhost:5050
+@baseUrl = http://localhost:4000
 @apiKey = your-api-key
-@token = your-bearer-token
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZmZhMjRjZC0yODQ3LTQ1YTUtYTQzZC0zMDE5MDZmNDE1NmQiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlhdCI6MTc3ODUwOTI4MywiZXhwIjoxNzc4NTk1NjgzfQ.Qrvg6ZR4Xhy17Q-urKpDWXoivIWYrDkwyFwnyDY0TEs
+
+###
+GET {{baseUrl}}/users
+x-api-key: {{apiKey}}
+Authorization: Bearer {{token}} 
 
 ### 1. Lấy thông tin user hiện tại
 GET {{baseUrl}}/users/info

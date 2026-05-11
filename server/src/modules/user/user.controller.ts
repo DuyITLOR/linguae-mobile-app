@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Patch, UploadedFile, UseInterceptors, } from '@nestjs/common';
-import { HttpResponseBody, HttpResponseService, UserId } from '../../common';
+import { Body, Controller, Get, Patch, UploadedFile, UseGuards, UseInterceptors, } from '@nestjs/common';
+import { AdminGuard, HttpResponseBody, HttpResponseService, UserId } from '../../common';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -44,6 +44,13 @@ export class UserController {
       result,
       'Cập nhật thông tin người dùng thành công',
     );
+  }
+
+  @Get()
+  @UseGuards(AdminGuard)
+  async getAllUsers(): Promise<HttpResponseBody<unknown>> {
+    const result = await this.userService.getAllUsers();
+    return this.httpResponse.ok(result, 'Lấy danh sách người dùng thành công');
   }
 
   @Get('number-of-users')

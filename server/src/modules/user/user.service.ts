@@ -133,6 +133,37 @@ export class UserService {
     );
   }
 
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        avatarUrl: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        provider: true,
+        UserDailyGoal: true,
+        UserSetting: true,
+        UserLearningPlan: {
+          where: { isCurrent: true },
+        },
+        _count: {
+          select: {
+            PracticeSession: true,
+            FlashcardSession: true,
+            FavoriteVocabulary: true,
+            LearningHistory: true,
+            UserVocabularyProgress: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async getNumberOfUsers(): Promise<number> {
     const count = await this.prisma.user.count();
     return count;
