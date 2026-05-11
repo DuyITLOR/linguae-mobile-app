@@ -46,6 +46,15 @@ class DailyMatchingViewModel(val taskId: String) : ViewModel() {
     private val _isEvaluated = MutableStateFlow(false)
     val isEvaluated = _isEvaluated.asStateFlow()
 
+    private val _showRetry = MutableStateFlow(false)
+    val showRetry = _showRetry.asStateFlow()
+
+    private val _correctCount = MutableStateFlow(0)
+    val correctCount = _correctCount.asStateFlow()
+
+    private val _totalQuestion = MutableStateFlow(0)
+    val totalQuestion = _totalQuestion.asStateFlow()
+
     private val _navigationEvent = MutableSharedFlow<Unit>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
@@ -64,6 +73,7 @@ class DailyMatchingViewModel(val taskId: String) : ViewModel() {
                 .onSuccess { pairs ->
                     _leftItems.value = pairs.map { DailyMatchingItem(id = it.id, text = it.leftText) }.shuffled()
                     _rightItems.value = pairs.map { DailyMatchingItem(id = it.id, text = it.rightText) }.shuffled()
+                    _totalQuestion.value = pairs.size
                 }
                 .onFailure { _error.value = it.message }
             _isLoading.value = false
@@ -133,19 +143,45 @@ class DailyMatchingViewModel(val taskId: String) : ViewModel() {
         if (!allPaired) return
         // Đánh giá: đúng khi leftId == rightId (vì id của pair trùng nhau)
         val pairings = _pairings.value
-        _leftItems.value = _leftItems.value.map { item ->
+        val evaluatedLeft = _leftItems.value.map { item ->
             val pairedRightId = pairings[item.id]
             item.copy(isCorrect = pairedRightId == item.id)
         }
-        _rightItems.value = _rightItems.value.map { item ->
+        val evaluatedRight = _rightItems.value.map { item ->
             val pairedLeftId = pairings.entries.find { it.value == item.id }?.key
             item.copy(isCorrect = pairedLeftId == item.id)
         }
+        _leftItems.value = evaluatedLeft
+        _rightItems.value = evaluatedRight
         _isEvaluated.value = true
 
+        val correctPairs = evaluatedLeft.count { it.isCorrect == true }
+        _correctCount.value = correctPairs
+        val allCorrect = correctPairs == evaluatedLeft.size
         viewModelScope.launch {
             delay(1500) // Cho user nhìn kết quả 1.5s
-            repository.completeDailyExercise(taskId)
+            if (allCorrect) {
+                repository.completeDailyExercise(taskId)
+                _navigationEvent.emit(Unit)
+            } else {
+                _showRetry.value = true
+            }
+        }
+    }
+
+    fun onRetry() {
+        _correctCount.value = 0
+        _pairings.value = emptyMap()
+        _isEvaluated.value = false
+        _showRetry.value = false
+        _selectedLeftId.value = null
+        _selectedRightId.value = null
+        _leftItems.value = _leftItems.value.map { it.copy(pairIndex = null, isCorrect = null) }.shuffled()
+        _rightItems.value = _rightItems.value.map { it.copy(pairIndex = null, isCorrect = null) }.shuffled()
+    }
+
+    fun onSkip() {
+        viewModelScope.launch {
             _navigationEvent.emit(Unit)
         }
     }

@@ -63,6 +63,9 @@ fun DailyMatchingScreen(
     val selectedRightId by viewModel.selectedRightId.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isEvaluated by viewModel.isEvaluated.collectAsStateWithLifecycle()
+    val showRetry by viewModel.showRetry.collectAsStateWithLifecycle()
+    val correctCount by viewModel.correctCount.collectAsStateWithLifecycle()
+    val totalQuestion by viewModel.totalQuestion.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -70,6 +73,17 @@ fun DailyMatchingScreen(
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = AppBackground) {
+        if (showRetry) {
+            RetryOverlay(
+                correctCount = correctCount,
+                totalQuestion = totalQuestion,
+                accentColor = PurplePrimary,
+                onRetry = { viewModel.onRetry() },
+                onSkip = { viewModel.onSkip() }
+            )
+            return@Surface
+        }
+
         when {
             isLoading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
