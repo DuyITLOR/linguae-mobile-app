@@ -1,8 +1,8 @@
 package com.penguin.linguae.feature.admin.topic
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -71,8 +76,10 @@ import com.penguin.linguae.core.ui.theme.TextGray
 import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.feature.admin.topic.viewmodel.ManageTopicViewModel
 import com.penguin.linguae.feature.admin.topic.viewmodel.TopicManageMode
+import com.penguin.linguae.core.topicEmojiCategories
 import com.penguin.linguae.feature.learning.topicColorFor
 import com.penguin.linguae.feature.learning.topicIconFor
+
 
 private val topicLevels = listOf("BEGINNER", "INTERMEDIATE", "ADVANCED")
 
@@ -365,16 +372,8 @@ private fun TopicFormContent(viewModel: ManageTopicViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            TopicFormField(label = "Icon (emoji or URL)") {
-                OutlinedTextField(
-                    value = viewModel.icon,
-                    onValueChange = { viewModel.icon = it },
-                    placeholder = { Text("e.g. 💬", color = TextGray) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(18.dp),
-                    colors = topicFieldColors(),
-                    modifier = Modifier.fillMaxWidth()
-                )
+            TopicFormField(label = "Icon") {
+                IconPickerField(selected = viewModel.icon, onSelect = { viewModel.icon = it })
             }
         }
 
@@ -457,6 +456,86 @@ private fun TopicFormField(label: String, content: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(text = label, color = TextGray, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
         content()
+    }
+}
+
+@Composable
+private fun IconPickerField(selected: String, onSelect: (String) -> Unit) {
+    var selectedCategory by remember { mutableStateOf(topicEmojiCategories.first()) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // Preview
+        Surface(
+            color = Color.White,
+            shape = RoundedCornerShape(14.dp),
+            border = BorderStroke(1.5.dp, if (selected.isNotBlank()) PurplePrimary else BorderGray),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                if (selected.isNotBlank()) {
+                    Text(selected, fontSize = 26.sp)
+                    Spacer(Modifier.width(12.dp))
+                    Text("Đã chọn", color = PurplePrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                } else {
+                    Text("Chưa chọn icon", color = TextGray, fontSize = 14.sp)
+                }
+            }
+        }
+
+        // Category tabs
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(topicEmojiCategories) { category ->
+                val isActive = category == selectedCategory
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isActive) PurplePrimary else Color.White)
+                        .border(1.dp, if (isActive) PurplePrimary else BorderGray, RoundedCornerShape(20.dp))
+                        .clickable { selectedCategory = category }
+                        .padding(horizontal = 14.dp, vertical = 7.dp)
+                ) {
+                    Text(
+                        text = category.name,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (isActive) Color.White else TextGray
+                    )
+                }
+            }
+        }
+
+        // Emoji grid
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(6),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        ) {
+            items(selectedCategory.items) { item ->
+                val isSelected = item.emoji == selected
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (isSelected) PurplePrimary.copy(alpha = 0.15f) else Color.White)
+                        .border(
+                            width = if (isSelected) 2.dp else 1.dp,
+                            color = if (isSelected) PurplePrimary else BorderGray,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { onSelect(if (isSelected) "" else item.emoji) }
+                        .padding(6.dp)
+                ) {
+                    Text(item.emoji, fontSize = 22.sp)
+                }
+            }
+        }
     }
 }
 
