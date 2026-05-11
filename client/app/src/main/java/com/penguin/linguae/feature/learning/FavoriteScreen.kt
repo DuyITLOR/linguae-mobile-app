@@ -26,6 +26,18 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguin.linguae.feature.learning.viewmodel.FavoriteViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Search
+import com.penguin.linguae.core.ui.theme.PageBg
+import com.penguin.linguae.core.ui.theme.PurplePrimary
+import com.penguin.linguae.core.ui.theme.PurpleDark
+import com.penguin.linguae.core.ui.theme.PurpleDeep
+import com.penguin.linguae.core.ui.theme.PurpleMid
+import com.penguin.linguae.core.ui.theme.TextDark
 
 // ✅ Data model
 data class FavoriteItem(
@@ -57,103 +69,189 @@ fun FavoriteScreen(
 
     val favoriteVocab by favoriteViewModel.favorites.collectAsState()
 
-    val favoriteData = favoriteVocab.map { favorite ->
-        FavoriteItem(
-            id = favorite.vocabularyId,
-            title = favorite.Vocabulary.word,
-            subtitle = favorite.Vocabulary.meaning
-        )
-    }
+    var searchQuery by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFE9E7F2))
-    ) {
-
-        // 🔹 Purple Gradient Banner Header
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color(0xFF7B5EA7), Color(0xFF5B4FCF))
-                    )
-                )
-                .padding(start = 8.dp, end = 24.dp, top = 16.dp, bottom = 28.dp)
-        ) {
-            // Decorative circle (top-right)
-            Box(
-                modifier = Modifier
-                    .size(110.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = 30.dp, y = (-20).dp)
-                    .background(Color(0x22FFFFFF), shape = CircleShape)
+    val favoriteData = favoriteVocab
+        .filter {
+            it.Vocabulary.word.contains(searchQuery, ignoreCase = true) ||
+            it.Vocabulary.meaning.contains(searchQuery, ignoreCase = true)
+        }
+        .map { favorite ->
+            FavoriteItem(
+                id = favorite.vocabularyId,
+                title = favorite.Vocabulary.word,
+                subtitle = favorite.Vocabulary.meaning
             )
+        }
 
-            Column {
-                // Back button row
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onBack) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = PageBg
+    ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item {
+                // 🔹 Purple Gradient Banner Header (giống TopicScreen)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.linearGradient(
+                                listOf(PurplePrimary, PurpleDark, PurpleDeep)
+                            )
+                        )
+                        .padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 60.dp)
+            ) {
+                // Decorative circle lớn (top-right)
+                Box(
+                    modifier = Modifier
+                        .size(140.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = 30.dp, y = (-30).dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.07f))
+                )
+                // Decorative circle nhỏ
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = (-10).dp, y = 30.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.07f))
+                )
+
+                Column {
+                    // Nút back
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.15f))
+                            .clickable(onClick = onBack),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            tint = Color.White
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Quay lại",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Subtitle nhỏ phía trên
+                    Text(
+                        text = "Từ vựng của bạn",
+                        color = Color.White.copy(alpha = 0.65f),
+                        fontSize = 13.sp,
+                        letterSpacing = 0.5.sp
+                    )
+
+                    Spacer(Modifier.height(6.dp))
+
+                    // Title chính
+                    Text(
+                        text = "Từ yêu thích",
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        lineHeight = 32.sp
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // Tagline
+                    Text(
+                        text = "Ôn tập những từ bạn đã lưu!",
+                        color = Color.White.copy(alpha = 0.70f),
+                        fontSize = 14.sp
+                    )
+
+                    Spacer(Modifier.height(20.dp))
+
+                    // Pill đếm số từ
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.White.copy(alpha = 0.15f))
+                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = "${favoriteData.size} từ yêu thích",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
+            }
+        }
 
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Title
-                Text(
-                    text = "Từ yêu thích",
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+        item {
+            FavoriteSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it }
                 )
+            }
 
-                Spacer(modifier = Modifier.height(4.dp))
+            item { Spacer(modifier = Modifier.height(8.dp)) }
 
-                // Subtitle tagline
-                Text(
-                    text = "Ôn tập những từ bạn đã lưu!",
-                    fontSize = 13.sp,
-                    color = Color(0xCCFFFFFF)
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Word count badge
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50))
-                        .background(Color(0x33FFFFFF))
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = "${favoriteData.size} TỪ",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+            // 🔹 List items
+            items(favoriteData) { item ->
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    FavoriteCard(
+                        item = item,
+                        onClick = { onVocabularyClick(item.id) }
                     )
                 }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 🔹 List items
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            favoriteData.forEach {
-                FavoriteCard(
-                    item = it,
-                    onClick = { onVocabularyClick(it.id) }
-                )
-
                 Spacer(modifier = Modifier.height(12.dp))
             }
+            
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
+    }
+}
+
+@Composable
+private fun FavoriteSearchBar(query: String, onQueryChange: (String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .offset(y = (-20).dp)
+    ) {
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = {
+                Text(
+                    text = "Tìm kiếm từ vựng...",
+                    color = PurpleMid.copy(alpha = 0.6f),
+                    fontSize = 14.sp
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = PurpleMid,
+                    modifier = Modifier.size(18.dp)
+                )
+            },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp)),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = PurpleMid,
+                focusedTextColor = TextDark,
+                unfocusedTextColor = TextDark
+            )
+        )
     }
 }
 
