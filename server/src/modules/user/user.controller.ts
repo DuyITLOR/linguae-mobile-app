@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Patch, UploadedFile, UseGuards, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, UploadedFile, UseGuards, UseInterceptors, } from '@nestjs/common';
 import { AdminGuard, HttpResponseBody, HttpResponseService, UserId } from '../../common';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -51,6 +52,25 @@ export class UserController {
   async getAllUsers(): Promise<HttpResponseBody<unknown>> {
     const result = await this.userService.getAllUsers();
     return this.httpResponse.ok(result, 'Lấy danh sách người dùng thành công');
+  }
+
+  @Patch(':id/role')
+  @UseGuards(AdminGuard)
+  async updateUserRole(
+    @Param('id') id: string,
+    @Body() body: UpdateUserRoleDto,
+  ): Promise<HttpResponseBody<unknown>> {
+    const result = await this.userService.updateUserRole(id, body.role);
+    return this.httpResponse.ok(result, 'Cập nhật quyền người dùng thành công');
+  }
+
+  @Delete(':id')
+  @UseGuards(AdminGuard)
+  async deleteUser(
+    @Param('id') id: string,
+  ): Promise<HttpResponseBody<unknown>> {
+    await this.userService.deleteUser(id);
+    return this.httpResponse.ok(null, 'Xóa người dùng thành công');
   }
 
   @Get('number-of-users')
