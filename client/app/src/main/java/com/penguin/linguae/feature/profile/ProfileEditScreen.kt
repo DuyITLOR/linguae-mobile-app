@@ -81,7 +81,7 @@ fun ProfileEditScreen(
                     avatarUri = selectedAvatarUri,
                 )
             },
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
         )
     }
 }
