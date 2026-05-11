@@ -15,6 +15,7 @@ data class FlashcardTopic(
 	val title: String,
 	val level: String,
 	val learnedWords: Int,
-	val totalWords: Int
+	val totalWords: Int,
+	val masteredVocabIds: List<String> = emptyList()
 )
 

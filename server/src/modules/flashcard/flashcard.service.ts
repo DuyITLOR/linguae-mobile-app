@@ -8,11 +8,13 @@ export interface FlashcardTopicResponse {
   level: string;
   learnedWords: number;
   totalWords: number;
+  masteredVocabIds: string[];
 }
 
 export interface TopicWithMasteredStatusDto {
   id: string;
   learnedWords: number;
+  masteredVocabIds: string[];
 }
 
 @Injectable()
@@ -49,14 +51,17 @@ export class FlashcardService {
       const newTopicsWithMasteedStatus = [] as TopicWithMasteredStatusDto[];
       for (const topicWithStatus of topicsWithMasteedStatus) {
         let learnedWords = 0;
+        const masteredVocabIds: string[] = [];
         for (const vocab of topicWithStatus.Vocabulary) {
           if (vocab.UserVocabularyProgress.length > 0) {
             learnedWords++;
+            masteredVocabIds.push(vocab.id);
           }
         }
         newTopicsWithMasteedStatus.push({
           id: topicWithStatus.id,
           learnedWords,
+          masteredVocabIds,
         });
       }
 
@@ -71,6 +76,7 @@ export class FlashcardService {
               level: topic.level,
               learnedWords: topicWithStatus.learnedWords,
               totalWords,
+              masteredVocabIds: topicWithStatus.masteredVocabIds,
             });
           }
         }
