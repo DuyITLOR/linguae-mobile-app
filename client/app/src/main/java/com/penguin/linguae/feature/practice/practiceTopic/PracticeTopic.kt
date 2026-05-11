@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,6 +31,7 @@ import com.penguin.linguae.core.ui.theme.*
 import com.penguin.linguae.data.model.Topic
 import com.penguin.linguae.feature.practice.practiceTopic.viewmodel.PracticeTopicViewModel
 import com.penguin.linguae.core.ui.component.ErrorView
+import com.penguin.linguae.feature.learning.topicIconFor
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 @Composable
@@ -216,6 +218,9 @@ fun AllTopicsCard(onClick: () -> Unit) {
 // ─── Topic card ──────────────────────────────────────────────────────────────
 @Composable
 fun TopicCard(topic: Topic, onClick: () -> Unit) {
+    val seed = "${topic.id}_${topic.title}_${topic.level}"
+    val fallbackIcon = topicIconFor(seed)
+
     val levelColor = when (topic.level.lowercase()) {
         "beginner" -> Green
         "intermediate" -> Yellow
@@ -239,11 +244,14 @@ fun TopicCard(topic: Topic, onClick: () -> Unit) {
                 .background(BgColor),
             contentAlignment = Alignment.Center
         ) {
-//            Text(topic.emoji, fontSize = 24.sp)
-            Icon(
-                Icons.Default.Topic,
-                contentDescription = null
-            )
+            if (!topic.icon.isNullOrBlank()) {
+                Text(text = topic.icon)
+            } else {
+                Icon(
+                    imageVector = fallbackIcon,
+                    contentDescription = null,
+                )
+            }
         }
 
         Spacer(Modifier.width(14.dp))
