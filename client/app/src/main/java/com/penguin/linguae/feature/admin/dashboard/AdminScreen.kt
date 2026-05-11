@@ -30,7 +30,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -53,12 +57,24 @@ fun AdminScreen(
     onNavigateProfile: () -> Unit = {},
     onNavigateAddTopic: () -> Unit = {},
     onNavigateManageExam: () -> Unit = {},
+    onNavigateManageUsers: () -> Unit = {},
     viewModel: AdminScreenViewModel = viewModel(),
 ) {
     val totalUsers = viewModel.numberOfUsers.intValue
     val totalWords = viewModel.numberOfWords.intValue
     val totalTopics = viewModel.numberOfTopics.intValue
     val totalExams = viewModel.numberOfToeicExams.intValue
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refresh()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     Surface(
         color = AppBackground,
@@ -142,6 +158,12 @@ fun AdminScreen(
                         subtitle = "Import assessment modules",
                         icon = Icons.Default.FileUpload,
                         onClick = onNavigateManageExam
+                    )
+                    AdminActionItem(
+                        title = "Users",
+                        subtitle = "Manage users and roles",
+                        icon = Icons.Default.Person,
+                        onClick = onNavigateManageUsers
                     )
                 }
             }

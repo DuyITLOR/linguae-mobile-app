@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, UploadedFile, UseGuards, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query, UploadedFile, UseGuards, UseInterceptors, } from '@nestjs/common';
 import { AdminGuard, HttpResponseBody, HttpResponseService, UserId } from '../../common';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
@@ -71,6 +71,13 @@ export class UserController {
   ): Promise<HttpResponseBody<unknown>> {
     await this.userService.deleteUser(id);
     return this.httpResponse.ok(null, 'Xóa người dùng thành công');
+  }
+
+  @Get('search')
+  @UseGuards(AdminGuard)
+  async searchUsers(@Query('q') query: string): Promise<HttpResponseBody<unknown>> {
+    const result = await this.userService.searchUsers(query);
+    return this.httpResponse.ok(result, 'Tìm kiếm người dùng thành công');
   }
 
   @Get('number-of-users')
