@@ -1,11 +1,15 @@
 package com.penguin.linguae.feature.profile
 
 import android.Manifest
+import android.app.TimePickerDialog
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
@@ -51,6 +56,7 @@ import com.penguin.linguae.core.ui.theme.PrimaryPurple
 import com.penguin.linguae.core.ui.theme.PurplePrimary
 import com.penguin.linguae.feature.profile.viewmodel.NotificationSettingsViewModel
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun NotificationSettingsScreen(
@@ -60,6 +66,9 @@ fun NotificationSettingsScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val currentReminderTime = remember(viewModel.reminderTime) {
+        parseReminderTime(viewModel.reminderTime)
+    }
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -148,19 +157,20 @@ fun NotificationSettingsScreen(
                         )
                     }
 
-                    OutlinedTextField(
+                    TimePickerField(
                         value = viewModel.reminderTime,
-                        onValueChange = { viewModel.updateReminderTime(it) },
-                        label = { Text("Giờ nhắc") },
-                        placeholder = { Text("20:00") },
-                        singleLine = true,
                         enabled = viewModel.enabled,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryPurple,
-                            unfocusedBorderColor = BorderGray,
-                        )
+                        onClick = {
+                            TimePickerDialog(
+                                context,
+                                { _, hour, minute ->
+                                    viewModel.updateReminderTime(formatReminderTime(hour, minute))
+                                },
+                                currentReminderTime.first,
+                                currentReminderTime.second,
+                                true,
+                            ).show()
+                        },
                     )
 
                     OutlinedTextField(
@@ -229,4 +239,75 @@ fun NotificationSettingsScreen(
             }
         }
     }
+}
+
+@Composable
+private fun TimePickerField(
+    value: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "Giờ nhắc",
+            color = Color(0xFF756985),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        Surface(
+            color = if (enabled) Color.White else Color(0xFFF4F1FA),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(1.dp, BorderGray),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(58.dp)
+                .clickable(enabled = enabled, onClick = onClick),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccessTime,
+                    contentDescription = null,
+                    tint = if (enabled) PrimaryPurple else Color(0xFF9A93A8),
+                )
+                Spacer(modifier = Modifier.size(12.dp))
+                Text(
+                    text = value,
+                    color = if (enabled) Color(0xFF2F2342) else Color(0xFF9A93A8),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f),
+                )
+                Box(
+                    modifier = Modifier
+                        .height(34.dp)
+                        .padding(start = 8.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Chọn",
+                        color = if (enabled) PrimaryPurple else Color(0xFF9A93A8),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun parseReminderTime(value: String): Pair<Int, Int> {
+    val parts = value.split(":")
+    val hour = parts.getOrNull(0)?.toIntOrNull()?.coerceIn(0, 23) ?: 20
+    val minute = parts.getOrNull(1)?.toIntOrNull()?.coerceIn(0, 59) ?: 0
+    return hour to minute
+}
+
+private fun formatReminderTime(hour: Int, minute: Int): String {
+    return String.format(Locale.US, "%02d:%02d", hour, minute)
 }
