@@ -167,7 +167,7 @@ fun FlashcardListScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(bottom = paddingValues.calculateBottomPadding()),
                 contentPadding = PaddingValues(bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 14.dp)
             ) {
@@ -395,11 +395,8 @@ private fun FlashcardCard(
                             fontWeight = FontWeight.Bold,
                             fontSize = if (compact) 16.sp else 17.sp
                         )
-                        Text(
-                            text = topic.level,
-                            color = TextGray,
-                            fontSize = 13.sp
-                        )
+                        Spacer(Modifier.height(4.dp))
+                        LevelBadge(level = topic.level)
                     }
 
                     Icon(
@@ -431,5 +428,38 @@ private fun FlashcardCard(
                 modifier = Modifier.align(Alignment.End)
             )
         }
+    }
+}
+
+@Composable
+private fun LevelBadge(level: String) {
+    val color = when (level.uppercase()) {
+        "BEGINNER" -> Color(0xFF27AE60)
+        "INTERMEDIATE" -> Color(0xFFE67E22)
+        "ADVANCED" -> Color(0xFFE74C3C)
+        else -> Color(0xFF6B7280)
+    }
+    val label = when (level.uppercase()) {
+        "BEGINNER" -> "Beginner"
+        "INTERMEDIATE" -> "Intermediate"
+        "ADVANCED" -> "Advanced"
+        else -> level
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Text(
+            text = label,
+            color = color,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
