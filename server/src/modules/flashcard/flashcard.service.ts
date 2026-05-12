@@ -37,7 +37,6 @@ export class FlashcardService {
               UserVocabularyProgress: {
                 where: {
                   userId: userId,
-                  status: 'MASTERED',
                 },
                 select: {
                   vocabularyId: true,
