@@ -64,7 +64,7 @@ class VocabularyViewModel: ViewModel() {
             result.onSuccess {
                 _selectedVocabulary.value = it
                 launch {
-                    flashcardRepository.reviewFlashcard(id, FlashcardReviewStatus.MASTERED)
+                    flashcardRepository.reviewFlashcard(id, FlashcardReviewStatus.LEARNING)
                 }
                 DailyMissionCache.getTaskIdForVocab(id, "VOCABULARY_LEARN")?.let { taskId ->
                     launch {
